@@ -10,6 +10,10 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as BuildersRouteImport } from './routes/builders'
+import { Route as EcosystemRouteImport } from './routes/ecosystem'
+import { Route as ProblemMapRouteImport } from './routes/problem-map'
+import { Route as SubmitRouteImport } from './routes/submit'
 import { Route as OpportunitiesIndexRouteImport } from './routes/opportunities.index'
 import { Route as OpportunitiesSlugRouteImport } from './routes/opportunities.$slug'
 import { Route as ProblemsIndexRouteImport } from './routes/problems.index'
@@ -18,6 +22,26 @@ import { Route as ProblemsSlugRouteImport } from './routes/problems.$slug'
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BuildersRoute = BuildersRouteImport.update({
+  id: '/builders',
+  path: '/builders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const EcosystemRoute = EcosystemRouteImport.update({
+  id: '/ecosystem',
+  path: '/ecosystem',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProblemMapRoute = ProblemMapRouteImport.update({
+  id: '/problem-map',
+  path: '/problem-map',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SubmitRoute = SubmitRouteImport.update({
+  id: '/submit',
+  path: '/submit',
   getParentRoute: () => rootRouteImport,
 } as any)
 const OpportunitiesIndexRoute = OpportunitiesIndexRouteImport.update({
@@ -43,6 +67,10 @@ const ProblemsSlugRoute = ProblemsSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/problem-map': typeof ProblemMapRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$slug': typeof OpportunitiesSlugRoute
   '/problems/$slug': typeof ProblemsSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -50,6 +78,10 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/problem-map': typeof ProblemMapRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$slug': typeof OpportunitiesSlugRoute
   '/problems/$slug': typeof ProblemsSlugRoute
   '/opportunities': typeof OpportunitiesIndexRoute
@@ -58,6 +90,10 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/builders': typeof BuildersRoute
+  '/ecosystem': typeof EcosystemRoute
+  '/problem-map': typeof ProblemMapRoute
+  '/submit': typeof SubmitRoute
   '/opportunities/$slug': typeof OpportunitiesSlugRoute
   '/problems/$slug': typeof ProblemsSlugRoute
   '/opportunities/': typeof OpportunitiesIndexRoute
@@ -67,6 +103,10 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/builders'
+    | '/ecosystem'
+    | '/problem-map'
+    | '/submit'
     | '/opportunities/$slug'
     | '/problems/$slug'
     | '/opportunities/'
@@ -74,6 +114,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/builders'
+    | '/ecosystem'
+    | '/problem-map'
+    | '/submit'
     | '/opportunities/$slug'
     | '/problems/$slug'
     | '/opportunities'
@@ -81,6 +125,10 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/builders'
+    | '/ecosystem'
+    | '/problem-map'
+    | '/submit'
     | '/opportunities/$slug'
     | '/problems/$slug'
     | '/opportunities/'
@@ -89,6 +137,10 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  BuildersRoute: typeof BuildersRoute
+  EcosystemRoute: typeof EcosystemRoute
+  ProblemMapRoute: typeof ProblemMapRoute
+  SubmitRoute: typeof SubmitRoute
   OpportunitiesSlugRoute: typeof OpportunitiesSlugRoute
   ProblemsSlugRoute: typeof ProblemsSlugRoute
   OpportunitiesIndexRoute: typeof OpportunitiesIndexRoute
@@ -102,6 +154,34 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/builders': {
+      id: '/builders'
+      path: '/builders'
+      fullPath: '/builders'
+      preLoaderRoute: typeof BuildersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/ecosystem': {
+      id: '/ecosystem'
+      path: '/ecosystem'
+      fullPath: '/ecosystem'
+      preLoaderRoute: typeof EcosystemRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/problem-map': {
+      id: '/problem-map'
+      path: '/problem-map'
+      fullPath: '/problem-map'
+      preLoaderRoute: typeof ProblemMapRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/submit': {
+      id: '/submit'
+      path: '/submit'
+      fullPath: '/submit'
+      preLoaderRoute: typeof SubmitRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/opportunities/': {
@@ -137,6 +217,10 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  BuildersRoute: BuildersRoute,
+  EcosystemRoute: EcosystemRoute,
+  ProblemMapRoute: ProblemMapRoute,
+  SubmitRoute: SubmitRoute,
   OpportunitiesSlugRoute: OpportunitiesSlugRoute,
   ProblemsSlugRoute: ProblemsSlugRoute,
   OpportunitiesIndexRoute: OpportunitiesIndexRoute,
