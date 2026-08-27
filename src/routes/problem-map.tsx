@@ -23,8 +23,11 @@ export const Route = createFileRoute("/problem-map")({
 });
 
 function ProblemMapPage() {
-  const [selected, setSelected] = useState(MAP_COUNTRIES[0].name);
+  const [selected, setSelected] = useState(MAP_COUNTRIES[0]?.name ?? "");
   const country = MAP_COUNTRIES.find((c) => c.name === selected) ?? MAP_COUNTRIES[0];
+
+  if (!country) return null;
+
 
   return (
     <div className="mx-auto max-w-5xl">
