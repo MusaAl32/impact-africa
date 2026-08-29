@@ -1,270 +1,232 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import mapImage from "@/assets/nigeria-signal-map.jpg";
-import { CATEGORIES, OPPORTUNITIES, PROBLEMS, BUILD_LOG } from "@/data/aom";
+import { ArrowRight, Check, Globe2, Layers, ShieldCheck, Zap } from "lucide-react";
+
+import { DeptIcon } from "@/components/dept-icon";
+import { SiteFooter } from "@/components/site-footer";
+import { SiteHeader } from "@/components/site-header";
+import { Button } from "@/components/ui/button";
+import { AGENT_DEPARTMENTS, DEPARTMENTS } from "@/lib/departments";
+import { AFRICAN_LANGUAGES } from "@/lib/languages";
 
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Africa Opportunity Map — Problems Into Opportunities" },
+      { title: "Nuru AI — One AI. Built for Africa. Connected to the world." },
       {
         name: "description",
         content:
-          "Africa Opportunity Map identifies the continent's biggest challenges and connects them with data, technology, researchers and builders.",
+          "Nuru AI unifies specialist AI departments, 40+ African languages, voice and vision, and an Africa business hub into one professional workspace.",
       },
-      { property: "og:title", content: "Africa Opportunity Map" },
+      { property: "og:title", content: "Nuru AI — One AI. Built for Africa." },
       {
         property: "og:description",
         content:
-          "Discover problems. Identify opportunities. Connect builders. Create African solutions.",
+          "Agriculture, business, education, research, documents and languages — coordinated by one African AI system.",
       },
     ],
   }),
-  component: Home,
+  component: Landing,
 });
 
-function Home() {
+const PILLARS = [
+  {
+    icon: Layers,
+    title: "One system, many specialists",
+    body: "Ask once. Nuru routes your request across specialist departments and returns a single, coherent answer.",
+  },
+  {
+    icon: Globe2,
+    title: "African languages first",
+    body: `Translate, detect and converse across ${AFRICAN_LANGUAGES.length}+ languages, with a registry built to keep scaling.`,
+  },
+  {
+    icon: Zap,
+    title: "Built for real work",
+    body: "Plans, budgets, documents, research, code and campaigns — grounded in African markets and realities.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Honest by design",
+    body: "Nuru flags uncertainty and tells you what to verify locally instead of inventing prices, laws or statistics.",
+  },
+];
+
+function Landing() {
   return (
-    <div className="mx-auto max-w-5xl">
-      <section className="overflow-hidden px-4 pt-12 pb-8">
-        <div className="animate-fade-up">
-          <div className="mb-4 inline-flex items-center gap-2">
-            <span className="size-2 animate-pulse rounded-full bg-primary" />
-            <span className="font-mono text-[10px] uppercase tracking-widest text-primary">
-              Live Signal Feed
-            </span>
-          </div>
-          <h1 className="mb-6 text-4xl font-extrabold leading-[0.95] tracking-tight text-balance">
-            Africa's Problems <br />
-            Are <span className="italic text-primary">Greatest</span> Opportunities.
-          </h1>
-          <p className="mb-8 max-w-[42ch] text-sm font-medium leading-relaxed text-muted-foreground">
-            Connecting continental challenges with the data, technology, and builders required to
-            solve them.
-          </p>
-          <div className="flex flex-col gap-3">
-            <Link
-              to="/problem-map"
-              className="w-full rounded-sm bg-primary py-4 text-center text-sm font-bold uppercase tracking-widest text-primary-foreground"
-            >
-              Explore the Map
-            </Link>
-            <Link
-              to="/submit"
-              className="w-full rounded-sm border border-border py-4 text-center text-sm font-bold uppercase tracking-widest"
-            >
-              Submit a Problem
-            </Link>
-          </div>
-        </div>
-      </section>
+    <div className="flex min-h-screen flex-col">
+      <SiteHeader />
 
-      <section className="grid grid-cols-2 divide-x divide-border border-y border-border">
-        <div className="p-6">
-          <div className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">Countries</div>
-          <div className="text-3xl font-extrabold tracking-tighter">54</div>
-        </div>
-        <div className="p-6">
-          <div className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
-            Priority Problems
-          </div>
-          <div className="text-3xl font-extrabold tracking-tighter text-primary">100+</div>
-        </div>
-        <div className="border-t border-border p-6">
-          <div className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">
-            Active Sectors
-          </div>
-          <div className="text-3xl font-extrabold tracking-tighter">12</div>
-        </div>
-        <div className="border-t border-border p-6">
-          <div className="mb-1 font-mono text-[10px] uppercase text-muted-foreground">Community</div>
-          <div className="pt-2 text-sm font-bold uppercase leading-none tracking-tight">
-            Growing Rapidly
-          </div>
-        </div>
-      </section>
-
-      <section className="px-4 py-12">
-        <div className="mb-8 flex items-end justify-between">
-          <h2 className="font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-            01 / Problem Categories
-          </h2>
-        </div>
-        <div className="grid grid-cols-2 gap-2 md:grid-cols-4">
-          {CATEGORIES.slice(0, 4).map((c) => (
-            <div
-              key={c.slug}
-              className="flex aspect-square flex-col justify-between border border-border bg-surface p-4"
-            >
-              <span className="text-2xl">{c.emoji}</span>
-              <span className="text-xs font-bold uppercase tracking-tight">{c.name}</span>
-            </div>
-          ))}
-        </div>
-        <Link
-          to="/problems"
-          className="mt-4 block w-full text-center font-mono text-[11px] uppercase text-muted-foreground"
-        >
-          View All 12 Categories &rarr;
-        </Link>
-      </section>
-
-      <section className="overflow-hidden bg-foreground px-4 py-12 text-background">
-        <div className="mb-8">
-          <div className="mb-2 flex items-center gap-2">
-            <div className="rounded border border-background/20 px-1.5 py-0.5 font-mono text-[9px]">
-              EXPANDING CONTINUOUSLY
-            </div>
-          </div>
-          <h2 className="text-3xl font-extrabold tracking-tighter">Nigeria Platform State</h2>
-        </div>
-
-        <div className="mb-8">
-          <img
-            src={mapImage}
-            alt="Tactical intelligence map showing problem and builder nodes across Nigeria"
-            width={1024}
-            height={576}
-            className="mb-6 aspect-video w-full rounded-sm object-cover outline-1 -outline-offset-1 outline-background/10"
+      <main className="flex-1">
+        <section className="relative overflow-hidden border-b border-border/60">
+          <div
+            className="pointer-events-none absolute -top-40 left-1/2 size-[42rem] -translate-x-1/2 rounded-full opacity-25 blur-3xl"
+            style={{ backgroundImage: "var(--gradient-gold)" }}
+            aria-hidden="true"
           />
+          <div className="relative mx-auto max-w-6xl px-4 py-20 md:py-28">
+            <div className="animate-fade-up max-w-3xl">
+              <span className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+                <span className="size-1.5 animate-pulse rounded-full bg-primary" />
+                African AI ecosystem
+              </span>
+              <h1 className="mt-6 text-4xl font-bold leading-[1.05] tracking-tight text-balance md:text-6xl">
+                One AI.{" "}
+                <span className="bg-clip-text text-transparent" style={{ backgroundImage: "var(--gradient-gold)" }}>
+                  Built for Africa.
+                </span>{" "}
+                Connected to the world.
+              </h1>
+              <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
+                Nuru is a single intelligent platform with specialist departments for agriculture,
+                business, education, research, documents, code and creative work — fluent in
+                African languages, voice and images.
+              </p>
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                <Button asChild size="lg">
+                  <Link to="/app">
+                    Start with Nuru <ArrowRight className="ml-1.5 size-4" />
+                  </Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link to="/app/languages">Try African translation</Link>
+                </Button>
+              </div>
 
-          <div className="space-y-4">
-            <div className="border-l border-primary pl-4">
-              <div className="mb-1 font-mono text-[10px] uppercase text-primary">
-                Priority Problems
-              </div>
-              <p className="text-xs font-medium text-background/80">
-                Energy Reliability, Digital Skills, Market Access
-              </p>
-            </div>
-            <div className="border-l border-signal-green pl-4">
-              <div className="mb-1 font-mono text-[10px] uppercase text-signal-green">
-                Opportunity Vectors
-              </div>
-              <p className="text-xs font-medium text-background/80">
-                AI Skills Platforms, Energy Analytics
-              </p>
+              <dl className="mt-12 grid grid-cols-2 gap-6 sm:grid-cols-4">
+                {[
+                  ["AI departments", `${AGENT_DEPARTMENTS.length}`],
+                  ["African languages", `${AFRICAN_LANGUAGES.length}+`],
+                  ["Countries served", "54"],
+                  ["Workspace", "Unified"],
+                ].map(([label, value]) => (
+                  <div key={label}>
+                    <dd className="font-mono text-2xl font-semibold text-primary">{value}</dd>
+                    <dt className="mt-1 text-xs uppercase tracking-wider text-muted-foreground">
+                      {label}
+                    </dt>
+                  </div>
+                ))}
+              </dl>
             </div>
           </div>
-        </div>
-        <Link
-          to="/problem-map"
-          className="block w-full border border-background/20 py-3 text-center font-mono text-[10px] uppercase tracking-widest"
-        >
-          Open the Problem Map
-        </Link>
-      </section>
+        </section>
 
-      <section className="bg-surface px-4 py-12">
-        <h2 className="mb-8 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-          02 / Scored Opportunities
-        </h2>
-
-        <div className="space-y-6">
-          {OPPORTUNITIES.slice(0, 2).map((o) => (
-            <div key={o.slug} className="border border-border p-5">
-              <div className="mb-6 flex items-start justify-between">
-                <div>
-                  <span className="rounded-full bg-border px-1.5 py-0.5 font-mono text-[9px] uppercase">
-                    {o.sector}
-                  </span>
-                  <h3 className="mt-2 text-lg font-extrabold leading-tight">{o.title}</h3>
+        <section id="platform" className="border-b border-border/60 py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              A platform, not a chatbot
+            </h2>
+            <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              {PILLARS.map((p) => (
+                <div key={p.title} className="rounded-2xl border border-border bg-card p-6">
+                  <p.icon className="size-5 text-primary" aria-hidden="true" />
+                  <h3 className="mt-4 font-semibold">{p.title}</h3>
+                  <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{p.body}</p>
                 </div>
-                <div className="flex flex-col items-end">
-                  <span className="text-2xl font-black text-primary">{o.score}</span>
-                  <span className="font-mono text-[9px] uppercase tracking-tighter text-muted-foreground">
-                    Opportunity Score
-                  </span>
-                </div>
-              </div>
-              <div className="flex items-center justify-between border-t border-border pt-4">
-                <div className="flex items-center gap-2">
-                  <span className="size-2 rounded-full bg-signal-green" />
-                  <span className="font-mono text-[10px] font-bold uppercase">{o.status}</span>
-                </div>
-                <Link
-                  to="/opportunities/$slug"
-                  params={{ slug: o.slug }}
-                  className="text-[10px] font-bold uppercase tracking-widest"
-                >
-                  Explore &rarr;
-                </Link>
-              </div>
+              ))}
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      <section className="border-t border-border px-4 py-12">
-        <h2 className="mb-8 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-          03 / Top Problems
-        </h2>
-        <div className="divide-y divide-border border-y border-border">
-          {PROBLEMS.map((p, i) => (
-            <Link
-              key={p.slug}
-              to="/problems/$slug"
-              params={{ slug: p.slug }}
-              className="flex items-center justify-between gap-4 py-4"
-            >
-              <div className="flex gap-4">
-                <span className="font-mono text-[10px] text-muted-foreground">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <div>
-                  <div className="text-sm font-extrabold tracking-tight">{p.title}</div>
-                  <div className="font-mono text-[10px] uppercase text-muted-foreground">
-                    {p.sector}
-                  </div>
-                </div>
+        <section id="departments" className="border-b border-border/60 py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="flex flex-wrap items-end justify-between gap-4">
+              <div>
+                <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                  Specialist AI departments
+                </h2>
+                <p className="mt-2 max-w-[52ch] text-sm text-muted-foreground">
+                  Each department carries its own expertise and prompts — and they coordinate when a
+                  problem spans more than one.
+                </p>
               </div>
-              <span className="text-lg font-black text-primary">{p.score}</span>
-            </Link>
-          ))}
-        </div>
-      </section>
+              <Button asChild variant="ghost">
+                <Link to="/app">
+                  Open the dashboard <ArrowRight className="ml-1.5 size-4" />
+                </Link>
+              </Button>
+            </div>
 
-      <section className="border-t border-border bg-surface px-4 py-12">
-        <h2 className="mb-6 font-mono text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground">
-          04 / Building in Public
-        </h2>
-        <div className="space-y-2">
-          {BUILD_LOG.thisWeek.map((item) => (
-            <Row key={item} name={item} tone="available" label="Available" />
-          ))}
-          {BUILD_LOG.building.map((item) => (
-            <Row key={item} name={item} tone="development" label="In Development" />
-          ))}
-          {BUILD_LOG.next.map((item) => (
-            <Row key={item} name={item} tone="soon" label="Coming Soon" />
-          ))}
-        </div>
-      </section>
-    </div>
-  );
-}
+            <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+              {DEPARTMENTS.filter((d) => d.id !== "settings").map((d) => (
+                <Link
+                  key={d.id}
+                  to={d.path}
+                  className="group rounded-2xl border border-border bg-card p-6 transition-colors hover:border-primary/50"
+                >
+                  <span className="inline-flex size-10 items-center justify-center rounded-xl bg-primary/10 text-primary">
+                    <DeptIcon name={d.icon} className="size-5" />
+                  </span>
+                  <h3 className="mt-4 font-semibold group-hover:text-primary">{d.name}</h3>
+                  <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{d.tagline}</p>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </section>
 
-function Row({
-  name,
-  tone,
-  label,
-}: {
-  name: string;
-  tone: "available" | "development" | "soon";
-  label: string;
-}) {
-  const badge =
-    tone === "available"
-      ? "bg-signal-green text-background"
-      : tone === "development"
-        ? "bg-signal-amber text-background"
-        : "border border-border text-muted-foreground";
+        <section id="languages" className="border-b border-border/60 py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+              {AFRICAN_LANGUAGES.length}+ African languages, and growing
+            </h2>
+            <p className="mt-2 max-w-[56ch] text-sm text-muted-foreground">
+              Kiswahili to Chichewa, Hausa to isiZulu, Amharic to Wolof — translation, detection and
+              full conversation, with voice where the browser supports it.
+            </p>
+            <div className="mt-8 flex flex-wrap gap-2">
+              {AFRICAN_LANGUAGES.slice(0, 26).map((l) => (
+                <span
+                  key={l.code}
+                  className="rounded-full border border-border bg-card px-3 py-1.5 text-xs"
+                >
+                  {l.name} <span className="text-muted-foreground">· {l.nativeName}</span>
+                </span>
+              ))}
+              <Link
+                to="/app/languages"
+                className="rounded-full bg-primary/15 px-3 py-1.5 text-xs font-medium text-primary"
+              >
+                See all {AFRICAN_LANGUAGES.length} →
+              </Link>
+            </div>
+          </div>
+        </section>
 
-  return (
-    <div className="flex items-center justify-between gap-3 rounded-sm border border-border bg-background p-3">
-      <span className="text-[11px] font-bold uppercase">{name}</span>
-      <span className={`rounded-sm px-2 py-0.5 font-mono text-[9px] uppercase ${badge}`}>
-        {label}
-      </span>
+        <section id="hub" className="py-20">
+          <div className="mx-auto max-w-6xl px-4">
+            <div className="rounded-3xl border border-border bg-card p-8 md:p-12">
+              <h2 className="text-2xl font-semibold tracking-tight md:text-3xl">
+                Africa Business Hub
+              </h2>
+              <p className="mt-3 max-w-[56ch] text-sm leading-relaxed text-muted-foreground">
+                Sector intelligence, trade corridors and market playbooks — with Nuru ready to turn
+                any of it into a plan you can act on this week.
+              </p>
+              <ul className="mt-8 grid gap-3 sm:grid-cols-2">
+                {[
+                  "Sector snapshots across 8 growth industries",
+                  "Regional trade corridors and market notes",
+                  "Turn any listing into a business plan",
+                  "Save outputs to your personal workspace",
+                ].map((item) => (
+                  <li key={item} className="flex items-start gap-2 text-sm text-muted-foreground">
+                    <Check className="mt-0.5 size-4 shrink-0 text-primary" aria-hidden="true" />
+                    {item}
+                  </li>
+                ))}
+              </ul>
+              <Button asChild className="mt-8">
+                <Link to="/app/hub">
+                  Explore the hub <ArrowRight className="ml-1.5 size-4" />
+                </Link>
+              </Button>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <SiteFooter />
     </div>
   );
 }
