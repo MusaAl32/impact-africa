@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AppRouteImport } from './routes/app'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppIndexRouteImport } from './routes/app.index'
+import { Route as AppDepartmentRouteImport } from './routes/app.$department'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -34,16 +35,23 @@ const AppIndexRoute = AppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => AppRoute,
 } as any)
+const AppDepartmentRoute = AppDepartmentRouteImport.update({
+  id: '/$department',
+  path: '/$department',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/app/$department': typeof AppDepartmentRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
+  '/app/$department': typeof AppDepartmentRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -51,14 +59,15 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
+  '/app/$department': typeof AppDepartmentRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/app' | '/api/chat' | '/app/'
+  fullPaths: '/' | '/app' | '/api/chat' | '/app/$department' | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/chat' | '/app'
-  id: '__root__' | '/' | '/app' | '/api/chat' | '/app/'
+  to: '/' | '/api/chat' | '/app/$department' | '/app'
+  id: '__root__' | '/' | '/app' | '/api/chat' | '/app/$department' | '/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -97,14 +106,23 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppIndexRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/$department': {
+      id: '/app/$department'
+      path: '/$department'
+      fullPath: '/app/$department'
+      preLoaderRoute: typeof AppDepartmentRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
+  AppDepartmentRoute: typeof AppDepartmentRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
+  AppDepartmentRoute: AppDepartmentRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
