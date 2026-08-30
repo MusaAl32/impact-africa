@@ -16,6 +16,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppDepartmentRouteImport } from './routes/app.$department'
 import { Route as AppHubRouteImport } from './routes/app.hub'
 import { Route as AppLanguagesRouteImport } from './routes/app.languages'
+import { Route as AppWorkspaceRouteImport } from './routes/app.workspace'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -52,6 +53,11 @@ const AppLanguagesRoute = AppLanguagesRouteImport.update({
   path: '/languages',
   getParentRoute: () => AppRoute,
 } as any)
+const AppWorkspaceRoute = AppWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
+  getParentRoute: () => AppRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -60,6 +66,7 @@ export interface FileRoutesByFullPath {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
@@ -68,6 +75,7 @@ export interface FileRoutesByTo {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -78,6 +86,7 @@ export interface FileRoutesById {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
@@ -89,6 +98,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/workspace'
     | '/app/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -97,6 +107,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/workspace'
     | '/app'
   id:
     | '__root__'
@@ -106,6 +117,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/workspace'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -166,6 +178,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLanguagesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/workspace': {
+      id: '/app/workspace'
+      path: '/workspace'
+      fullPath: '/app/workspace'
+      preLoaderRoute: typeof AppWorkspaceRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
@@ -173,6 +192,7 @@ interface AppRouteChildren {
   AppDepartmentRoute: typeof AppDepartmentRoute
   AppHubRoute: typeof AppHubRoute
   AppLanguagesRoute: typeof AppLanguagesRoute
+  AppWorkspaceRoute: typeof AppWorkspaceRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
@@ -180,6 +200,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDepartmentRoute: AppDepartmentRoute,
   AppHubRoute: AppHubRoute,
   AppLanguagesRoute: AppLanguagesRoute,
+  AppWorkspaceRoute: AppWorkspaceRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
