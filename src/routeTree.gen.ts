@@ -14,7 +14,10 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppDepartmentRouteImport } from './routes/app.$department'
+import { Route as AppHubRouteImport } from './routes/app.hub'
 import { Route as AppLanguagesRouteImport } from './routes/app.languages'
+import { Route as AppSettingsRouteImport } from './routes/app.settings'
+import { Route as AppWorkspaceRouteImport } from './routes/app.workspace'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,9 +44,24 @@ const AppDepartmentRoute = AppDepartmentRouteImport.update({
   path: '/$department',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHubRoute = AppHubRouteImport.update({
+  id: '/hub',
+  path: '/hub',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLanguagesRoute = AppLanguagesRouteImport.update({
   id: '/languages',
   path: '/languages',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppSettingsRoute = AppSettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => AppRoute,
+} as any)
+const AppWorkspaceRoute = AppWorkspaceRouteImport.update({
+  id: '/workspace',
+  path: '/workspace',
   getParentRoute: () => AppRoute,
 } as any)
 
@@ -52,14 +70,20 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app': typeof AppIndexRoute
 }
 export interface FileRoutesById {
@@ -68,22 +92,44 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/settings': typeof AppSettingsRoute
+  '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/app' | '/api/chat' | '/app/$department' | '/app/languages' | '/app/'
+    | '/'
+    | '/app'
+    | '/api/chat'
+    | '/app/$department'
+    | '/app/hub'
+    | '/app/languages'
+    | '/app/settings'
+    | '/app/workspace'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/chat' | '/app/$department' | '/app/languages' | '/app'
+  to:
+    | '/'
+    | '/api/chat'
+    | '/app/$department'
+    | '/app/hub'
+    | '/app/languages'
+    | '/app/settings'
+    | '/app/workspace'
+    | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/api/chat'
     | '/app/$department'
+    | '/app/hub'
     | '/app/languages'
+    | '/app/settings'
+    | '/app/workspace'
     | '/app/'
   fileRoutesById: FileRoutesById
 }
@@ -130,6 +176,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDepartmentRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/hub': {
+      id: '/app/hub'
+      path: '/hub'
+      fullPath: '/app/hub'
+      preLoaderRoute: typeof AppHubRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/languages': {
       id: '/app/languages'
       path: '/languages'
@@ -137,18 +190,38 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLanguagesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/settings': {
+      id: '/app/settings'
+      path: '/settings'
+      fullPath: '/app/settings'
+      preLoaderRoute: typeof AppSettingsRouteImport
+      parentRoute: typeof AppRoute
+    }
+    '/app/workspace': {
+      id: '/app/workspace'
+      path: '/workspace'
+      fullPath: '/app/workspace'
+      preLoaderRoute: typeof AppWorkspaceRouteImport
+      parentRoute: typeof AppRoute
+    }
   }
 }
 
 interface AppRouteChildren {
   AppDepartmentRoute: typeof AppDepartmentRoute
+  AppHubRoute: typeof AppHubRoute
   AppLanguagesRoute: typeof AppLanguagesRoute
+  AppSettingsRoute: typeof AppSettingsRoute
+  AppWorkspaceRoute: typeof AppWorkspaceRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDepartmentRoute: AppDepartmentRoute,
+  AppHubRoute: AppHubRoute,
   AppLanguagesRoute: AppLanguagesRoute,
+  AppSettingsRoute: AppSettingsRoute,
+  AppWorkspaceRoute: AppWorkspaceRoute,
   AppIndexRoute: AppIndexRoute,
 }
 
