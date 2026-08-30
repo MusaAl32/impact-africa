@@ -14,6 +14,7 @@ import { Route as AppRouteImport } from './routes/app'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppDepartmentRouteImport } from './routes/app.$department'
+import { Route as AppHubRouteImport } from './routes/app.hub'
 import { Route as AppLanguagesRouteImport } from './routes/app.languages'
 
 const IndexRoute = IndexRouteImport.update({
@@ -41,6 +42,11 @@ const AppDepartmentRoute = AppDepartmentRouteImport.update({
   path: '/$department',
   getParentRoute: () => AppRoute,
 } as any)
+const AppHubRoute = AppHubRouteImport.update({
+  id: '/hub',
+  path: '/hub',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppLanguagesRoute = AppLanguagesRouteImport.update({
   id: '/languages',
   path: '/languages',
@@ -52,6 +58,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
   '/app/': typeof AppIndexRoute
 }
@@ -59,6 +66,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
   '/app': typeof AppIndexRoute
 }
@@ -68,21 +76,35 @@ export interface FileRoutesById {
   '/app': typeof AppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AppDepartmentRoute
+  '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
   '/app/': typeof AppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/app' | '/api/chat' | '/app/$department' | '/app/languages' | '/app/'
+    | '/'
+    | '/app'
+    | '/api/chat'
+    | '/app/$department'
+    | '/app/hub'
+    | '/app/languages'
+    | '/app/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/chat' | '/app/$department' | '/app/languages' | '/app'
+  to:
+    | '/'
+    | '/api/chat'
+    | '/app/$department'
+    | '/app/hub'
+    | '/app/languages'
+    | '/app'
   id:
     | '__root__'
     | '/'
     | '/app'
     | '/api/chat'
     | '/app/$department'
+    | '/app/hub'
     | '/app/languages'
     | '/app/'
   fileRoutesById: FileRoutesById
@@ -130,6 +152,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppDepartmentRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/hub': {
+      id: '/app/hub'
+      path: '/hub'
+      fullPath: '/app/hub'
+      preLoaderRoute: typeof AppHubRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/languages': {
       id: '/app/languages'
       path: '/languages'
@@ -142,12 +171,14 @@ declare module '@tanstack/react-router' {
 
 interface AppRouteChildren {
   AppDepartmentRoute: typeof AppDepartmentRoute
+  AppHubRoute: typeof AppHubRoute
   AppLanguagesRoute: typeof AppLanguagesRoute
   AppIndexRoute: typeof AppIndexRoute
 }
 
 const AppRouteChildren: AppRouteChildren = {
   AppDepartmentRoute: AppDepartmentRoute,
+  AppHubRoute: AppHubRoute,
   AppLanguagesRoute: AppLanguagesRoute,
   AppIndexRoute: AppIndexRoute,
 }
