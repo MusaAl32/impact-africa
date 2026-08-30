@@ -48,7 +48,7 @@ export const Route = createFileRoute("/api/chat")({
               ...(body.language ? { language: body.language } : {}),
               ...(body.projectContext ? { projectContext: body.projectContext } : {}),
             }),
-            messages: convertToModelMessages(body.messages),
+            messages: await convertToModelMessages(body.messages),
             stopWhen: stepCountIs(6),
             abortSignal: request.signal,
             tools: {
