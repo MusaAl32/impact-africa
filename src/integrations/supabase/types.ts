@@ -14,7 +14,174 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      aom_analyses: {
+        Row: {
+          analysis: string
+          created_at: string
+          created_by: string | null
+          department: string
+          id: string
+          item_id: string
+          item_title: string
+          item_type: string
+          model: string
+        }
+        Insert: {
+          analysis: string
+          created_at?: string
+          created_by?: string | null
+          department: string
+          id?: string
+          item_id: string
+          item_title?: string
+          item_type: string
+          model?: string
+        }
+        Update: {
+          analysis?: string
+          created_at?: string
+          created_by?: string | null
+          department?: string
+          id?: string
+          item_id?: string
+          item_title?: string
+          item_type?: string
+          model?: string
+        }
+        Relationships: []
+      }
+      aom_problems: {
+        Row: {
+          category: string
+          country: string
+          created_at: string
+          evidence: string
+          id: string
+          opportunity_score: number
+          region: string
+          severity: number
+          source_url: string | null
+          status: string
+          summary: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          country: string
+          created_at?: string
+          evidence?: string
+          id?: string
+          opportunity_score?: number
+          region?: string
+          severity?: number
+          source_url?: string | null
+          status?: string
+          summary: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          country?: string
+          created_at?: string
+          evidence?: string
+          id?: string
+          opportunity_score?: number
+          region?: string
+          severity?: number
+          source_url?: string | null
+          status?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      aom_research: {
+        Row: {
+          abstract: string
+          category: string
+          country: string
+          created_at: string
+          id: string
+          source: string
+          source_url: string | null
+          title: string
+          updated_at: string
+          year: number | null
+        }
+        Insert: {
+          abstract: string
+          category: string
+          country?: string
+          created_at?: string
+          id?: string
+          source?: string
+          source_url?: string | null
+          title: string
+          updated_at?: string
+          year?: number | null
+        }
+        Update: {
+          abstract?: string
+          category?: string
+          country?: string
+          created_at?: string
+          id?: string
+          source?: string
+          source_url?: string | null
+          title?: string
+          updated_at?: string
+          year?: number | null
+        }
+        Relationships: []
+      }
+      aom_submissions: {
+        Row: {
+          ai_summary: string | null
+          category: string
+          contact_email: string | null
+          country: string
+          created_at: string
+          evidence_url: string | null
+          id: string
+          status: string
+          summary: string
+          title: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          ai_summary?: string | null
+          category: string
+          contact_email?: string | null
+          country: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          status?: string
+          summary: string
+          title: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          ai_summary?: string | null
+          category?: string
+          contact_email?: string | null
+          country?: string
+          created_at?: string
+          evidence_url?: string | null
+          id?: string
+          status?: string
+          summary?: string
+          title?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
