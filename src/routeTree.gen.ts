@@ -16,6 +16,7 @@ import { Route as AppIndexRouteImport } from './routes/app.index'
 import { Route as AppDepartmentRouteImport } from './routes/app.$department'
 import { Route as AppHubRouteImport } from './routes/app.hub'
 import { Route as AppLanguagesRouteImport } from './routes/app.languages'
+import { Route as AppOpportunitiesRouteImport } from './routes/app.opportunities'
 import { Route as AppSettingsRouteImport } from './routes/app.settings'
 import { Route as AppWorkspaceRouteImport } from './routes/app.workspace'
 
@@ -54,6 +55,11 @@ const AppLanguagesRoute = AppLanguagesRouteImport.update({
   path: '/languages',
   getParentRoute: () => AppRoute,
 } as any)
+const AppOpportunitiesRoute = AppOpportunitiesRouteImport.update({
+  id: '/opportunities',
+  path: '/opportunities',
+  getParentRoute: () => AppRoute,
+} as any)
 const AppSettingsRoute = AppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -72,6 +78,7 @@ export interface FileRoutesByFullPath {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/opportunities': typeof AppOpportunitiesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
@@ -82,6 +89,7 @@ export interface FileRoutesByTo {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/opportunities': typeof AppOpportunitiesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/workspace': typeof AppWorkspaceRoute
   '/app': typeof AppIndexRoute
@@ -94,6 +102,7 @@ export interface FileRoutesById {
   '/app/$department': typeof AppDepartmentRoute
   '/app/hub': typeof AppHubRoute
   '/app/languages': typeof AppLanguagesRoute
+  '/app/opportunities': typeof AppOpportunitiesRoute
   '/app/settings': typeof AppSettingsRoute
   '/app/workspace': typeof AppWorkspaceRoute
   '/app/': typeof AppIndexRoute
@@ -107,6 +116,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/opportunities'
     | '/app/settings'
     | '/app/workspace'
     | '/app/'
@@ -117,6 +127,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/opportunities'
     | '/app/settings'
     | '/app/workspace'
     | '/app'
@@ -128,6 +139,7 @@ export interface FileRouteTypes {
     | '/app/$department'
     | '/app/hub'
     | '/app/languages'
+    | '/app/opportunities'
     | '/app/settings'
     | '/app/workspace'
     | '/app/'
@@ -190,6 +202,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AppLanguagesRouteImport
       parentRoute: typeof AppRoute
     }
+    '/app/opportunities': {
+      id: '/app/opportunities'
+      path: '/opportunities'
+      fullPath: '/app/opportunities'
+      preLoaderRoute: typeof AppOpportunitiesRouteImport
+      parentRoute: typeof AppRoute
+    }
     '/app/settings': {
       id: '/app/settings'
       path: '/settings'
@@ -211,6 +230,7 @@ interface AppRouteChildren {
   AppDepartmentRoute: typeof AppDepartmentRoute
   AppHubRoute: typeof AppHubRoute
   AppLanguagesRoute: typeof AppLanguagesRoute
+  AppOpportunitiesRoute: typeof AppOpportunitiesRoute
   AppSettingsRoute: typeof AppSettingsRoute
   AppWorkspaceRoute: typeof AppWorkspaceRoute
   AppIndexRoute: typeof AppIndexRoute
@@ -220,6 +240,7 @@ const AppRouteChildren: AppRouteChildren = {
   AppDepartmentRoute: AppDepartmentRoute,
   AppHubRoute: AppHubRoute,
   AppLanguagesRoute: AppLanguagesRoute,
+  AppOpportunitiesRoute: AppOpportunitiesRoute,
   AppSettingsRoute: AppSettingsRoute,
   AppWorkspaceRoute: AppWorkspaceRoute,
   AppIndexRoute: AppIndexRoute,

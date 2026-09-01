@@ -10,6 +10,7 @@ export type DepartmentId =
   | "developer"
   | "creative"
   | "documents"
+  | "opportunities"
   | "hub"
   | "workspace"
   | "settings";
@@ -146,6 +147,13 @@ export const DEPARTMENTS: Department[] = [
     expertise:
       "You read uploaded documents and produce summaries, extractions, drafts and slide outlines.",
     suggestions: ["Summarise this PDF into one page", "Turn this report into a 10-slide outline"],
+  },
+  {
+    id: "opportunities",
+    name: "Opportunity Map",
+    path: "/app/opportunities",
+    icon: "Map",
+    tagline: "Africa's mapped problems, research and submissions — analysed by Nuru.",
   },
   {
     id: "hub",
