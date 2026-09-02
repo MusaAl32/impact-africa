@@ -14,8 +14,8 @@
     "tools": [
       {
         "name": "list_problems",
-        "title": "List mapped problems",
-        "description": "Search the Africa Opportunity Map problem database. Returns published problems with country, category, severity and opportunity score.",
+        "title": "List public problems and opportunities",
+        "description": "Search the Africa Opportunity Hub's published problem/opportunity records. Read-only and public data only: no submissions, contact details or unpublished records. Supports country, category, keyword, status and pagination filters.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -26,29 +26,42 @@
           "type": "object",
           "properties": {
             "query": {
-              "description": "Free-text match on title or summary.",
+              "description": "Free-text match on title or description.",
               "type": "string",
               "minLength": 1,
               "maxLength": 120
             },
             "country": {
-              "description": "Filter by country name, e.g. Kenya.",
+              "description": "Country name, e.g. Kenya.",
               "type": "string",
               "minLength": 2,
               "maxLength": 60
             },
             "category": {
-              "description": "Filter by category, e.g. Agriculture.",
+              "description": "Sector/category, e.g. Agriculture.",
               "type": "string",
               "minLength": 2,
               "maxLength": 60
             },
+            "status": {
+              "default": "published",
+              "description": "Only 'published' records are exposed publicly.",
+              "type": "string",
+              "const": "published"
+            },
             "limit": {
               "default": 10,
-              "description": "Maximum number of problems to return.",
+              "description": "Maximum rows to return (1-50, default 10).",
               "type": "integer",
               "minimum": 1,
               "maximum": 50
+            },
+            "offset": {
+              "default": 0,
+              "description": "Rows to skip for pagination (0-5000, default 0).",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5000
             }
           }
         },
@@ -60,15 +73,152 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "propertyNames": {
-                  "type": "string"
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "description": {
+                    "type": "string"
+                  },
+                  "category": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "region": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "status": {
+                    "type": "string"
+                  },
+                  "severity": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "opportunityScore": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "evidence": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "publishedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "updatedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "sourceUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "publicUrl": {
+                    "type": "string"
+                  }
                 },
-                "additionalProperties": {}
+                "required": [
+                  "id",
+                  "title",
+                  "description",
+                  "category",
+                  "country",
+                  "region",
+                  "status",
+                  "severity",
+                  "opportunityScore",
+                  "evidence",
+                  "publishedAt",
+                  "updatedAt",
+                  "sourceUrl",
+                  "publicUrl"
+                ]
               }
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "returned": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "hasMore": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "limit",
+                "offset",
+                "returned",
+                "hasMore"
+              ]
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "invalid_request",
+                        "not_found",
+                        "no_results",
+                        "rate_limited",
+                        "internal_error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
-            "problems"
+            "problems",
+            "pagination",
+            "error"
           ]
         }
       },
