@@ -52,7 +52,25 @@
             }
           }
         },
-        "outputSchema": null
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "problems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "problems"
+          ]
+        }
       },
       {
         "name": "list_research",
@@ -94,7 +112,25 @@
             }
           }
         },
-        "outputSchema": null
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "research": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "research"
+          ]
+        }
       },
       {
         "name": "analyze_entry",
@@ -143,7 +179,26 @@
             "itemId"
           ]
         },
-        "outputSchema": null
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "department": {
+              "type": "string"
+            },
+            "analysis": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "department",
+            "analysis"
+          ]
+        }
       }
     ]
   }

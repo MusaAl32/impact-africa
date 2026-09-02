@@ -26,6 +26,7 @@ export default defineTool({
       .default("business")
       .describe("Which Nuru AI department should analyse the entry."),
   },
+  outputSchema: { title: z.string(), department: z.string(), analysis: z.string() },
   annotations: { readOnlyHint: true, openWorldHint: false },
   handler: async ({ itemType, itemId, department }) => {
     const db = supabaseAnon();

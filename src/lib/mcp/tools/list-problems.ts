@@ -13,6 +13,7 @@ export default defineTool({
     category: z.string().trim().min(2).max(60).optional().describe("Filter by category, e.g. Agriculture."),
     limit: z.number().int().min(1).max(50).default(10).describe("Maximum number of problems to return."),
   },
+  outputSchema: { problems: z.array(z.record(z.string(), z.unknown())) },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
   handler: async ({ query, country, category, limit }) => {
     let request = supabaseAnon()
