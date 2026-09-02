@@ -1,0 +1,205 @@
+{
+  "version": 1,
+  "sdk_version": "1.0.0",
+  "path": "/mcp",
+  "auth": {
+    "type": "none"
+  },
+  "mcp": {
+    "server": {
+      "name": "africa-opportunity-hub",
+      "version": "0.1.0",
+      "title": "Africa Opportunity Hub"
+    },
+    "tools": [
+      {
+        "name": "list_problems",
+        "title": "List mapped problems",
+        "description": "Search the Africa Opportunity Map problem database. Returns published problems with country, category, severity and opportunity score.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Free-text match on title or summary.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "country": {
+              "description": "Filter by country name, e.g. Kenya.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            },
+            "category": {
+              "description": "Filter by category, e.g. Agriculture.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum number of problems to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "problems": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "problems"
+          ]
+        }
+      },
+      {
+        "name": "list_research",
+        "title": "List research entries",
+        "description": "Search the Africa Opportunity Map research library of abstracts, sources and publication years.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "query": {
+              "description": "Free-text match on title or abstract.",
+              "type": "string",
+              "minLength": 1,
+              "maxLength": 120
+            },
+            "country": {
+              "description": "Filter by country or scope.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            },
+            "category": {
+              "description": "Filter by category.",
+              "type": "string",
+              "minLength": 2,
+              "maxLength": 60
+            },
+            "limit": {
+              "default": 10,
+              "description": "Maximum number of entries to return.",
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 50
+            }
+          }
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "research": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "propertyNames": {
+                  "type": "string"
+                },
+                "additionalProperties": {}
+              }
+            }
+          },
+          "required": [
+            "research"
+          ]
+        }
+      },
+      {
+        "name": "analyze_entry",
+        "title": "Analyse an entry with Nuru AI",
+        "description": "Run a Nuru AI specialist analysis on a problem or research entry: context, root drivers, opportunity, who should build it, and a first-90-days plan.",
+        "annotations": {
+          "readOnlyHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "itemType": {
+              "type": "string",
+              "enum": [
+                "problem",
+                "research"
+              ],
+              "description": "Which table the entry lives in."
+            },
+            "itemId": {
+              "type": "string",
+              "format": "uuid",
+              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
+              "description": "The entry id from list_problems or list_research."
+            },
+            "department": {
+              "default": "business",
+              "description": "Which Nuru AI department should analyse the entry.",
+              "type": "string",
+              "enum": [
+                "platform",
+                "business",
+                "agriculture",
+                "research",
+                "education",
+                "developer",
+                "creative",
+                "documents"
+              ]
+            }
+          },
+          "required": [
+            "itemType",
+            "itemId"
+          ]
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "title": {
+              "type": "string"
+            },
+            "department": {
+              "type": "string"
+            },
+            "analysis": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "title",
+            "department",
+            "analysis"
+          ]
+        }
+      }
+    ]
+  }
+}

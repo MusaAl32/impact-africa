@@ -1,0 +1,1 @@
+- Fix MCP typecheck errors (done)
