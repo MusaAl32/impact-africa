@@ -77,15 +77,19 @@ export default defineTool({
   handler: async ({ itemType, itemId, department }) => {
     const dept = department ?? "business";
 
+    const limited = checkRateLimit("analyze_entry", RATE_LIMITS.analysis);
+    if (limited)
+      return {
+        ...limited,
+        structuredContent: { ...limited.structuredContent, source: null, analysis: null },
+      };
+
     if (!UUID_RE.test(itemId)) {
       return toolError("invalid_request", "itemId must be a UUID returned by a list tool.", {
         source: null,
         analysis: null,
       });
     }
-
-    const limited = checkRateLimit("analyze_entry", RATE_LIMITS.analysis);
-    if (limited) return { ...limited, structuredContent: { ...limited.structuredContent, source: null, analysis: null } };
 
     try {
       const db = supabaseAnon();
