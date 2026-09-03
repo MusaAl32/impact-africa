@@ -410,8 +410,8 @@
       },
       {
         "name": "analyze_entry",
-        "title": "Analyse an entry with Nuru AI",
-        "description": "Run a Nuru AI specialist analysis on a problem or research entry: context, root drivers, opportunity, who should build it, and a first-90-days plan.",
+        "title": "Nuru AI analysis of a public entry",
+        "description": "Request a Nuru AI specialist analysis of one published problem or public research entry. Returns the public source record alongside clearly-labelled AI analysis, assumptions, uncertainties and recommendations. Read-only: nothing is created or modified.",
         "annotations": {
           "readOnlyHint": true,
           "openWorldHint": false
@@ -426,13 +426,13 @@
                 "problem",
                 "research"
               ],
-              "description": "Which table the entry lives in."
+              "description": "Whether the id refers to a problem or a research entry."
             },
             "itemId": {
               "type": "string",
-              "format": "uuid",
-              "pattern": "^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$",
-              "description": "The entry id from list_problems or list_research."
+              "minLength": 1,
+              "maxLength": 64,
+              "description": "The entry id returned by list_problems or list_research (UUID)."
             },
             "department": {
               "default": "business",
@@ -459,20 +459,127 @@
           "$schema": "http://json-schema.org/draft-07/schema#",
           "type": "object",
           "properties": {
-            "title": {
-              "type": "string"
-            },
-            "department": {
-              "type": "string"
+            "source": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "type": {
+                      "type": "string"
+                    },
+                    "title": {
+                      "type": "string"
+                    },
+                    "summary": {
+                      "type": "string"
+                    },
+                    "category": {
+                      "type": "string"
+                    },
+                    "country": {
+                      "type": "string"
+                    },
+                    "sourceUrl": {
+                      "type": [
+                        "string",
+                        "null"
+                      ]
+                    },
+                    "publicUrl": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "id",
+                    "type",
+                    "title",
+                    "summary",
+                    "category",
+                    "country",
+                    "sourceUrl",
+                    "publicUrl"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             },
             "analysis": {
-              "type": "string"
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "department": {
+                      "type": "string"
+                    },
+                    "generatedAt": {
+                      "type": "string"
+                    },
+                    "markdown": {
+                      "type": "string"
+                    },
+                    "disclaimer": {
+                      "type": "string"
+                    },
+                    "isAiGenerated": {
+                      "type": "boolean"
+                    },
+                    "verified": {
+                      "type": "boolean"
+                    }
+                  },
+                  "required": [
+                    "department",
+                    "generatedAt",
+                    "markdown",
+                    "disclaimer",
+                    "isAiGenerated",
+                    "verified"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "invalid_request",
+                        "not_found",
+                        "no_results",
+                        "rate_limited",
+                        "internal_error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
-            "title",
-            "department",
-            "analysis"
+            "source",
+            "analysis",
+            "error"
           ]
         }
       }
