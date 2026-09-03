@@ -81,7 +81,7 @@ export default defineTool({
       let request = supabaseAnon()
         .from("aom_problems")
         .select(
-          "id, title, summary, category, country, region, severity, evidence, opportunity_score, status, created_at, updated_at",
+          "id, title, summary, category, country, region, severity, evidence, opportunity_score, source_url, status, created_at, updated_at",
         )
         .eq("status", "published")
         .order("opportunity_score", { ascending: false })
