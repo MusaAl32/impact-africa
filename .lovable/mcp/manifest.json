@@ -224,8 +224,8 @@
       },
       {
         "name": "list_research",
-        "title": "List research entries",
-        "description": "Search the Africa Opportunity Map research library of abstracts, sources and publication years.",
+        "title": "Search the public research library",
+        "description": "Search the Africa Opportunity Hub's public research library (titles, summaries, sources, publication years). Read-only; only entries published in the public library are returned.",
         "annotations": {
           "readOnlyHint": true,
           "idempotentHint": true,
@@ -236,29 +236,36 @@
           "type": "object",
           "properties": {
             "query": {
-              "description": "Free-text match on title or abstract.",
+              "description": "Free-text match on title or summary.",
               "type": "string",
               "minLength": 1,
               "maxLength": 120
             },
             "country": {
-              "description": "Filter by country or scope.",
+              "description": "Country or regional scope.",
               "type": "string",
               "minLength": 2,
               "maxLength": 60
             },
             "category": {
-              "description": "Filter by category.",
+              "description": "Topic/category filter.",
               "type": "string",
               "minLength": 2,
               "maxLength": 60
             },
             "limit": {
               "default": 10,
-              "description": "Maximum number of entries to return.",
+              "description": "Maximum rows to return (1-50, default 10).",
               "type": "integer",
               "minimum": 1,
               "maximum": 50
+            },
+            "offset": {
+              "default": 0,
+              "description": "Rows to skip for pagination (0-5000, default 0).",
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5000
             }
           }
         },
@@ -270,15 +277,134 @@
               "type": "array",
               "items": {
                 "type": "object",
-                "propertyNames": {
-                  "type": "string"
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "title": {
+                    "type": "string"
+                  },
+                  "summary": {
+                    "type": "string"
+                  },
+                  "topic": {
+                    "type": "string"
+                  },
+                  "country": {
+                    "type": "string"
+                  },
+                  "source": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "year": {
+                    "type": [
+                      "number",
+                      "null"
+                    ]
+                  },
+                  "publishedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "updatedAt": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "sourceUrl": {
+                    "type": [
+                      "string",
+                      "null"
+                    ]
+                  },
+                  "publicUrl": {
+                    "type": "string"
+                  }
                 },
-                "additionalProperties": {}
+                "required": [
+                  "id",
+                  "title",
+                  "summary",
+                  "topic",
+                  "country",
+                  "source",
+                  "year",
+                  "publishedAt",
+                  "updatedAt",
+                  "sourceUrl",
+                  "publicUrl"
+                ]
               }
+            },
+            "pagination": {
+              "type": "object",
+              "properties": {
+                "limit": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "offset": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "returned": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "hasMore": {
+                  "type": "boolean"
+                }
+              },
+              "required": [
+                "limit",
+                "offset",
+                "returned",
+                "hasMore"
+              ]
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "invalid_request",
+                        "not_found",
+                        "no_results",
+                        "rate_limited",
+                        "internal_error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
             }
           },
           "required": [
-            "research"
+            "research",
+            "pagination",
+            "error"
           ]
         }
       },
