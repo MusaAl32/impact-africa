@@ -1,1 +1,2 @@
 - Fix MCP typecheck errors (done)
+- Harden public MCP server (done: pagination, structured errors, sanitisation, rate limits, docs/mcp.md)
