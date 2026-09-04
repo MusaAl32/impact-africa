@@ -8,10 +8,350 @@
   "mcp": {
     "server": {
       "name": "africa-opportunity-hub",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "title": "Africa Opportunity Hub"
     },
     "tools": [
+      {
+        "name": "get_ecosystem",
+        "title": "Nuru AI ecosystem status (real time)",
+        "description": "Describe the live Nuru AI / Africa Opportunity Hub ecosystem: the AI departments and what each does, supported African languages and their capabilities, the Business Hub sectors and trade corridors, and real-time public counts of mapped problems and research (with top countries, categories and the newest published entries). Read-only and public data only.",
+        "annotations": {
+          "readOnlyHint": true,
+          "idempotentHint": true,
+          "openWorldHint": false
+        },
+        "inputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "section": {
+              "default": "overview",
+              "description": "Which slice to return: 'overview' (everything, summarised), 'departments', 'languages', 'sectors' or 'stats' (live counts only).",
+              "type": "string",
+              "enum": [
+                "overview",
+                "departments",
+                "languages",
+                "sectors",
+                "stats"
+              ]
+            }
+          }
+        },
+        "outputSchema": {
+          "$schema": "http://json-schema.org/draft-07/schema#",
+          "type": "object",
+          "properties": {
+            "platform": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string"
+                },
+                "tagline": {
+                  "type": "string"
+                },
+                "description": {
+                  "type": "string"
+                },
+                "publicHubUrl": {
+                  "type": "string"
+                },
+                "generatedAt": {
+                  "type": "string"
+                }
+              },
+              "required": [
+                "name",
+                "tagline",
+                "description",
+                "publicHubUrl",
+                "generatedAt"
+              ]
+            },
+            "departments": {
+              "type": "array",
+              "items": {
+                "type": "object",
+                "properties": {
+                  "id": {
+                    "type": "string"
+                  },
+                  "name": {
+                    "type": "string"
+                  },
+                  "path": {
+                    "type": "string"
+                  },
+                  "tagline": {
+                    "type": "string"
+                  }
+                },
+                "required": [
+                  "id",
+                  "name",
+                  "path",
+                  "tagline"
+                ]
+              }
+            },
+            "languages": {
+              "type": "object",
+              "properties": {
+                "total": {
+                  "type": "integer",
+                  "minimum": -9007199254740991,
+                  "maximum": 9007199254740991
+                },
+                "regions": {
+                  "type": "array",
+                  "items": {
+                    "type": "string"
+                  }
+                },
+                "items": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "code": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "nativeName": {
+                        "type": "string"
+                      },
+                      "region": {
+                        "type": "string"
+                      },
+                      "status": {
+                        "type": "string"
+                      },
+                      "capabilities": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "code",
+                      "name",
+                      "nativeName",
+                      "region",
+                      "status",
+                      "capabilities"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "total",
+                "regions",
+                "items"
+              ]
+            },
+            "hub": {
+              "type": "object",
+              "properties": {
+                "sectors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "id": {
+                        "type": "string"
+                      },
+                      "name": {
+                        "type": "string"
+                      },
+                      "summary": {
+                        "type": "string"
+                      },
+                      "markets": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      },
+                      "signals": {
+                        "type": "array",
+                        "items": {
+                          "type": "string"
+                        }
+                      }
+                    },
+                    "required": [
+                      "id",
+                      "name",
+                      "summary",
+                      "markets",
+                      "signals"
+                    ]
+                  }
+                },
+                "corridors": {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "properties": {
+                      "route": {
+                        "type": "string"
+                      },
+                      "note": {
+                        "type": "string"
+                      }
+                    },
+                    "required": [
+                      "route",
+                      "note"
+                    ]
+                  }
+                }
+              },
+              "required": [
+                "sectors",
+                "corridors"
+              ]
+            },
+            "stats": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "publishedProblems": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "publicResearch": {
+                      "type": "integer",
+                      "minimum": -9007199254740991,
+                      "maximum": 9007199254740991
+                    },
+                    "topCountries": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "country": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "country",
+                          "count"
+                        ]
+                      }
+                    },
+                    "topCategories": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "category": {
+                            "type": "string"
+                          },
+                          "count": {
+                            "type": "integer",
+                            "minimum": -9007199254740991,
+                            "maximum": 9007199254740991
+                          }
+                        },
+                        "required": [
+                          "category",
+                          "count"
+                        ]
+                      }
+                    },
+                    "latestProblems": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "title": {
+                            "type": "string"
+                          },
+                          "country": {
+                            "type": "string"
+                          },
+                          "publicUrl": {
+                            "type": "string"
+                          }
+                        },
+                        "required": [
+                          "id",
+                          "title",
+                          "country",
+                          "publicUrl"
+                        ]
+                      }
+                    }
+                  },
+                  "required": [
+                    "publishedProblems",
+                    "publicResearch",
+                    "topCountries",
+                    "topCategories",
+                    "latestProblems"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "error": {
+              "anyOf": [
+                {
+                  "type": "object",
+                  "properties": {
+                    "code": {
+                      "type": "string",
+                      "enum": [
+                        "invalid_request",
+                        "not_found",
+                        "no_results",
+                        "rate_limited",
+                        "internal_error"
+                      ]
+                    },
+                    "message": {
+                      "type": "string"
+                    }
+                  },
+                  "required": [
+                    "code",
+                    "message"
+                  ]
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "required": [
+            "platform",
+            "departments",
+            "languages",
+            "hub",
+            "stats",
+            "error"
+          ]
+        }
+      },
       {
         "name": "list_problems",
         "title": "List public problems and opportunities",
