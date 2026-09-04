@@ -69,7 +69,7 @@ export default defineTool({
     }),
     hub: z.object({
       sectors: z.array(sectorSchema),
-      corridors: z.array(z.object({ id: z.string(), name: z.string(), summary: z.string() })),
+      corridors: z.array(z.object({ route: z.string(), note: z.string() })),
     }),
     stats: z
       .object({
@@ -137,9 +137,8 @@ export default defineTool({
               signals: [...s.signals],
             })),
             corridors: CORRIDORS.map((c) => ({
-              id: c.id,
-              name: c.name,
-              summary: sanitizeText(c.summary, 600),
+              route: c.route,
+              note: sanitizeText(c.note, 600),
             })),
           }
         : { sectors: [], corridors: [] };
