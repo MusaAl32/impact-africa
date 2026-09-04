@@ -22,6 +22,25 @@ prompt-injection payloads before being returned or sent to the model.
 
 ## Tools
 
+### `get_ecosystem`
+
+Real-time snapshot of the Nuru AI ecosystem.
+
+| Input | Type | Notes |
+| --- | --- | --- |
+| `section` | `"overview" \| "departments" \| "languages" \| "sectors" \| "stats"` | default `overview` |
+
+Output: `platform` (name, tagline, description, public hub URL, `generatedAt`),
+`departments[]` (id, name, path, tagline), `languages` (total, regions, items with
+code/name/nativeName/region/status/capabilities), `hub` (sectors, trade corridors),
+`stats` (live `publishedProblems`, `publicResearch`, `topCountries`, `topCategories`,
+`latestProblems`) or `null` when the section excludes stats, plus `error`.
+
+Counts are read live from the public database on every call. Rate limit: shared
+read bucket (60 calls/minute per instance).
+
+
+
 ### `list_problems`
 
 Search published problems/opportunities.
