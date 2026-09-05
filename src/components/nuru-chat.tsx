@@ -243,6 +243,23 @@ export function NuruChat({
                 type="button"
                 size="icon"
                 variant="ghost"
+                aria-label={webAccess ? "Turn off web sources" : "Turn on web sources"}
+                aria-pressed={webAccess}
+                title={
+                  webAccess
+                    ? "Web sources on — Nuru checks the live web and cites links"
+                    : "Web sources off — Nuru answers from general knowledge"
+                }
+                onClick={() => setWebAccess((v) => !v)}
+                className={cn(webAccess ? "text-primary" : "text-muted-foreground")}
+              >
+                <Globe className="size-4" />
+              </Button>
+
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
                 aria-label={speech.listening ? "Stop voice input" : "Start voice input"}
                 disabled={!speech.supported}
                 title={speech.supported ? "Voice input" : "Voice input is not supported in this browser"}
