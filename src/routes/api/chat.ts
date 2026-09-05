@@ -9,7 +9,9 @@ import {
   requireLovableApiKey,
 } from "@/lib/ai-gateway.server";
 import { buildSystemPrompt } from "@/lib/prompts";
+import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
+
 
 export const Route = createFileRoute("/api/chat")({
   server: {
