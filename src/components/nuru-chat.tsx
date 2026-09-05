@@ -123,11 +123,13 @@ export function NuruChat({
       {
         body: {
           department,
+          webAccess,
           ...(language ? { language } : {}),
           ...(projectContext ? { projectContext } : {}),
         },
       },
     );
+
     setInput("");
     setAttachments([]);
   }
