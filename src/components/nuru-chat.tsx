@@ -3,6 +3,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   ArrowUp,
   Copy,
+  Globe,
   Loader2,
   Mic,
   MicOff,
@@ -12,6 +13,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
