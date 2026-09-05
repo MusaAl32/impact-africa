@@ -3,6 +3,7 @@ import { DefaultChatTransport, type UIMessage } from "ai";
 import {
   ArrowUp,
   Copy,
+  Globe,
   Loader2,
   Mic,
   MicOff,
@@ -12,6 +13,7 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
+
 import { useEffect, useMemo, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import { toast } from "sonner";
@@ -67,9 +69,11 @@ export function NuruChat({
 
   const [input, setInput] = useState(initialPrompt ?? "");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [webAccess, setWebAccess] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const speech = useSpeechRecognition();
+
 
   const busy = status === "submitted" || status === "streaming";
 
@@ -119,11 +123,13 @@ export function NuruChat({
       {
         body: {
           department,
+          webAccess,
           ...(language ? { language } : {}),
           ...(projectContext ? { projectContext } : {}),
         },
       },
     );
+
     setInput("");
     setAttachments([]);
   }
@@ -237,6 +243,23 @@ export function NuruChat({
                 type="button"
                 size="icon"
                 variant="ghost"
+                aria-label={webAccess ? "Turn off web sources" : "Turn on web sources"}
+                aria-pressed={webAccess}
+                title={
+                  webAccess
+                    ? "Web sources on — Nuru checks the live web and cites links"
+                    : "Web sources off — Nuru answers from general knowledge"
+                }
+                onClick={() => setWebAccess((v) => !v)}
+                className={cn(webAccess ? "text-primary" : "text-muted-foreground")}
+              >
+                <Globe className="size-4" />
+              </Button>
+
+              <Button
+                type="button"
+                size="icon"
+                variant="ghost"
                 aria-label={speech.listening ? "Stop voice input" : "Start voice input"}
                 disabled={!speech.supported}
                 title={speech.supported ? "Voice input" : "Voice input is not supported in this browser"}
@@ -326,7 +349,68 @@ function MessageBubble({ message }: { message: UIMessage }) {
             </div>
           );
         }
+        if (part.type === "tool-search_web") {
+          const p = part as {
+            state?: string;
+            input?: { query?: string };
+            output?: {
+              query?: string;
+              error?: string;
+              sources?: {
+                title: string;
+                url: string;
+                snippet: string;
+                domain: string;
+                publishedDate: string | null;
+              }[];
+            };
+          };
+          const query = p.output?.query ?? p.input?.query ?? "";
+          const sources = p.output?.sources ?? [];
+          const done = p.state === "output-available";
+
+          return (
+            <div key={i} className="w-full rounded-xl border border-border bg-card/60 p-3">
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                <Globe className="size-3.5" />
+                {done ? `Sources checked${query ? ` · “${query}”` : ""}` : "Searching the web…"}
+              </p>
+              {done && p.output?.error && (
+                <p className="mt-2 text-xs text-muted-foreground">{p.output.error}</p>
+              )}
+              {done && !p.output?.error && sources.length === 0 && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  No usable public sources were found for this search.
+                </p>
+              )}
+              {sources.length > 0 && (
+                <ol className="mt-2 space-y-2">
+                  {sources.map((s, idx) => (
+                    <li key={s.url} className="text-xs">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="font-medium text-primary hover:underline"
+                      >
+                        [{idx + 1}] {s.title}
+                      </a>
+                      <span className="ml-1.5 text-muted-foreground">
+                        {s.domain}
+                        {s.publishedDate ? ` · ${s.publishedDate}` : ""}
+                      </span>
+                      {s.snippet && (
+                        <p className="mt-0.5 line-clamp-2 text-muted-foreground">{s.snippet}</p>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          );
+        }
         return null;
+
       })}
 
       {text && (
