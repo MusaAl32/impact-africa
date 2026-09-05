@@ -22,7 +22,9 @@ export const Route = createFileRoute("/api/chat")({
           department?: DepartmentId;
           language?: string;
           projectContext?: string;
+          webAccess?: boolean;
         };
+
         try {
           body = await request.json();
         } catch {
