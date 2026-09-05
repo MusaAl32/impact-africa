@@ -349,7 +349,68 @@ function MessageBubble({ message }: { message: UIMessage }) {
             </div>
           );
         }
+        if (part.type === "tool-search_web") {
+          const p = part as {
+            state?: string;
+            input?: { query?: string };
+            output?: {
+              query?: string;
+              error?: string;
+              sources?: {
+                title: string;
+                url: string;
+                snippet: string;
+                domain: string;
+                publishedDate: string | null;
+              }[];
+            };
+          };
+          const query = p.output?.query ?? p.input?.query ?? "";
+          const sources = p.output?.sources ?? [];
+          const done = p.state === "output-available";
+
+          return (
+            <div key={i} className="w-full rounded-xl border border-border bg-card/60 p-3">
+              <p className="flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-wider text-primary">
+                <Globe className="size-3.5" />
+                {done ? `Sources checked${query ? ` · “${query}”` : ""}` : "Searching the web…"}
+              </p>
+              {done && p.output?.error && (
+                <p className="mt-2 text-xs text-muted-foreground">{p.output.error}</p>
+              )}
+              {done && !p.output?.error && sources.length === 0 && (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  No usable public sources were found for this search.
+                </p>
+              )}
+              {sources.length > 0 && (
+                <ol className="mt-2 space-y-2">
+                  {sources.map((s, idx) => (
+                    <li key={s.url} className="text-xs">
+                      <a
+                        href={s.url}
+                        target="_blank"
+                        rel="noopener noreferrer nofollow"
+                        className="font-medium text-primary hover:underline"
+                      >
+                        [{idx + 1}] {s.title}
+                      </a>
+                      <span className="ml-1.5 text-muted-foreground">
+                        {s.domain}
+                        {s.publishedDate ? ` · ${s.publishedDate}` : ""}
+                      </span>
+                      {s.snippet && (
+                        <p className="mt-0.5 line-clamp-2 text-muted-foreground">{s.snippet}</p>
+                      )}
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </div>
+          );
+        }
         return null;
+
       })}
 
       {text && (
