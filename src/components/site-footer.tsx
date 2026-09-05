@@ -55,12 +55,24 @@ export function SiteFooter() {
                 Settings
               </Link>
             </li>
+            <li>
+              <Link to="/privacy" className="text-muted-foreground hover:text-foreground">
+                Privacy Policy
+              </Link>
+            </li>
+            <li>
+              <Link to="/terms" className="text-muted-foreground hover:text-foreground">
+                Terms of Use
+              </Link>
+            </li>
           </ul>
         </div>
       </div>
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Nuru AI — built for Africa, connected to the world.
+        © {new Date().getFullYear()} Nuru AI by Africa Opportunity Hub — built for Africa,
+        connected to the world.
       </div>
+
     </footer>
   );
 }
