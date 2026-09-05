@@ -69,9 +69,11 @@ export function NuruChat({
 
   const [input, setInput] = useState(initialPrompt ?? "");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
+  const [webAccess, setWebAccess] = useState(true);
   const fileRef = useRef<HTMLInputElement>(null);
   const endRef = useRef<HTMLDivElement>(null);
   const speech = useSpeechRecognition();
+
 
   const busy = status === "submitted" || status === "streaming";
 
