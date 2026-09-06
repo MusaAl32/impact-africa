@@ -12,6 +12,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { speak, useSpeechVoices } from "@/hooks/use-speech";
 import { AFRICAN_LANGUAGES } from "@/lib/languages";
 import {
   DEFAULT_PREFERENCES,
