@@ -98,6 +98,46 @@ function SettingsPage() {
           </Select>
         </div>
 
+        <div className="space-y-2">
+          <Label htmlFor="voice">Reading voice</Label>
+          <Select
+            value={prefs.voiceURI || "device"}
+            onValueChange={(v) => setPrefs({ ...prefs, voiceURI: v === "device" ? "" : v })}
+          >
+            <SelectTrigger id="voice">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value="device">Device default</SelectItem>
+              {voices.map((v) => (
+                <SelectItem key={v.voiceURI} value={v.voiceURI}>
+                  {v.name} · {v.lang}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          <p className="text-xs text-muted-foreground">
+            {voices.length === 0
+              ? "This device has not offered any reading voices yet."
+              : "Used when Nuru reads an answer aloud."}
+          </p>
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="rate">Reading speed · {prefs.voiceRate.toFixed(1)}x</Label>
+          <input
+            id="rate"
+            type="range"
+            min={0.6}
+            max={1.6}
+            step={0.1}
+            value={prefs.voiceRate}
+            onChange={(e) => setPrefs({ ...prefs, voiceRate: Number(e.target.value) })}
+            className="w-full accent-[hsl(var(--primary))]"
+          />
+        </div>
+
+        <div className="flex gap-2">
         <Button
           onClick={() => {
             savePreferences(prefs);
