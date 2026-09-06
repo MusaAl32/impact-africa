@@ -455,7 +455,7 @@ function MessageBubble({
   onBranch,
 }: {
   message: UIMessage;
-  language?: string;
+  language?: string | undefined;
   voiceURI: string;
   voiceRate: number;
   streaming: boolean;
