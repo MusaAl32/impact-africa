@@ -39,6 +39,7 @@ export const Route = createFileRoute("/app/settings")({
 
 function SettingsPage() {
   const [prefs, setPrefs] = useState<NuruPreferences>(DEFAULT_PREFERENCES);
+  const voices = useSpeechVoices();
 
   useEffect(() => {
     setPrefs(loadPreferences());
