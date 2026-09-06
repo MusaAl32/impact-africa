@@ -146,6 +146,19 @@ function SettingsPage() {
         >
           Save preferences
         </Button>
+        <Button
+          variant="outline"
+          onClick={() => {
+            const ok = speak("Muli bwanji. This is how Nuru will read answers to you.", prefs.language, {
+              voiceURI: prefs.voiceURI,
+              rate: prefs.voiceRate,
+            });
+            if (!ok) toast.error("Reading aloud is not supported in this browser.");
+          }}
+        >
+          Test voice
+        </Button>
+        </div>
       </div>
     </div>
   );
