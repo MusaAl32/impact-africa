@@ -10,6 +10,10 @@ export type NuruPreferences = {
   language: string;
   country: string;
   tone: "concise" | "balanced" | "detailed";
+  /** Read-aloud voice, chosen from the voices this device supports. "" = device default. */
+  voiceURI: string;
+  /** Read-aloud speed. */
+  voiceRate: number;
 };
 
 const ITEMS_KEY = "nuru.workspace.items";
@@ -19,6 +23,8 @@ export const DEFAULT_PREFERENCES: NuruPreferences = {
   language: "en",
   country: "",
   tone: "balanced",
+  voiceURI: "",
+  voiceRate: 1,
 };
 
 function read<T>(key: string, fallback: T): T {
