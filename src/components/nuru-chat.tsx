@@ -70,6 +70,7 @@ export function NuruChat({
   className,
   accept = "image/*,application/pdf,.txt,.md,.csv",
   heading,
+  persist = false,
 }: {
   department: DepartmentId;
   placeholder?: string;
@@ -80,11 +81,25 @@ export function NuruChat({
   className?: string;
   accept?: string;
   heading?: string;
+  /** Save this conversation to the signed-in person's account. */
+  persist?: boolean;
 }) {
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   const { messages, sendMessage, status, error, stop, regenerate, setMessages } = useChat({
     transport,
+    onFinish: ({ message }) => {
+      if (!persist) return;
+      void saveMessage({
+        data: {
+          clientMessageId: message.id,
+          role: "assistant",
+          parts: message.parts as unknown[],
+          department,
+        },
+      }).catch((e) => console.error("Could not save Nuru's reply", e));
+    },
   });
+
 
   const [input, setInput] = useState(initialPrompt ?? "");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
