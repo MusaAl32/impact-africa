@@ -202,7 +202,9 @@ export const branchConversation = createServerFn({ method: "POST" })
     const all = messages ?? [];
     // The message may not be persisted yet (e.g. still streaming). Branching then
     // copies everything saved so far instead of failing.
-    const found = all.findIndex((message) => message.client_message_id === data.throughClientMessageId);
+    const found = data.throughClientMessageId
+      ? all.findIndex((message) => message.client_message_id === data.throughClientMessageId)
+      : -1;
     const index = found < 0 ? all.length - 1 : found;
     if (index < 0) throw new Error("There is nothing to branch yet.");
 
