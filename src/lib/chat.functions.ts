@@ -198,8 +198,12 @@ export const branchConversation = createServerFn({ method: "POST" })
       .order("created_at", { ascending: true })
       .limit(400);
     if (loadError) throw new Error("Could not branch this conversation.");
-    const index = (messages ?? []).findIndex((message) => message.client_message_id === data.throughClientMessageId);
-    if (index < 0) throw new Error("Message not found.");
+    const all = messages ?? [];
+    // The message may not be persisted yet (e.g. still streaming). Branching then
+    // copies everything saved so far instead of failing.
+    const found = all.findIndex((message) => message.client_message_id === data.throughClientMessageId);
+    const index = found < 0 ? all.length - 1 : found;
+    if (index < 0) throw new Error("There is nothing to branch yet.");
 
     const { data: branch, error: createError } = await context.supabase
       .from("conversations")
