@@ -1,4 +1,4 @@
-import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
 import type { UIMessage } from "ai";
 import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -14,10 +14,30 @@ import { getDepartment } from "@/lib/departments";
 
 export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")({
   staticData: { sitemap: false },
-  loader: ({ params }) => getConversation({ data: { conversationId: params.conversationId } }),
+  loader: async ({ params }) => {
+    try {
+      return await getConversation({ data: { conversationId: params.conversationId } });
+    } catch {
+      throw notFound();
+    }
+  },
   head: () => ({ meta: [{ title: "Conversation — Nuru AI" }] }),
   component: ConversationPage,
+  notFoundComponent: MissingConversation,
+  errorComponent: MissingConversation,
 });
+
+function MissingConversation() {
+  return (
+    <div className="mx-auto flex w-full max-w-md flex-1 flex-col items-center justify-center gap-3 px-4 py-16 text-center">
+      <h1 className="text-lg font-semibold">This conversation isn&apos;t available</h1>
+      <p className="text-sm text-muted-foreground">
+        It may have been removed, or it belongs to another account. Your own conversations are safe.
+      </p>
+      <Button asChild className="min-h-11"><Link to="/app">Back to Nuru</Link></Button>
+    </div>
+  );
+}
 
 function ConversationPage() {
   const { conversationId } = Route.useParams();
