@@ -133,14 +133,15 @@ export const analyzeItem = createServerFn({ method: "POST" })
         meta,
       });
 
-      const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-      await supabaseAdmin.from("aom_analyses").insert({
+      // Written with the caller's own session so row-level security applies.
+      await context.supabase.from("aom_analyses").insert({
         item_type: data.itemType,
         item_id: data.itemId,
         item_title: title,
         department: data.department,
         analysis,
         model,
+        created_by: context.userId,
       });
 
       return { analysis, error: null as string | null };
