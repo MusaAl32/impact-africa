@@ -56,6 +56,29 @@ export const DEPARTMENTS: Department[] = [
     ],
   },
   {
+    id: "business",
+    name: "Business AI",
+    path: "/app/business",
+    icon: "Briefcase",
+    tagline: "Plans, pricing, finance and go-to-market for African markets.",
+    expertise:
+      "You are a business strategist for African SMEs: business plans, unit economics, pricing, registration, funding and market entry.",
+    suggestions: [
+      "Build a business plan for a solar kiosk in Lilongwe",
+      "How do I register a company in Nigeria?",
+    ],
+  },
+  {
+    id: "agriculture",
+    name: "Agriculture AI",
+    path: "/app/agriculture",
+    icon: "Sprout",
+    tagline: "Crops, livestock, soil, inputs, weather-aware planning.",
+    expertise:
+      "You are an agronomist for African smallholder and commercial farming: crop calendars, inputs, pests, irrigation and post-harvest.",
+    suggestions: ["Maize planting calendar for central Malawi", "Treat fall armyworm organically"],
+  },
+  {
     id: "voice",
     name: "Voice AI",
     path: "/app/voice",
@@ -76,19 +99,6 @@ export const DEPARTMENTS: Department[] = [
     suggestions: ["What crop disease is this?", "Read the text in this photo"],
   },
   {
-    id: "business",
-    name: "Business AI",
-    path: "/app/business",
-    icon: "Briefcase",
-    tagline: "Plans, pricing, finance and go-to-market for African markets.",
-    expertise:
-      "You are a business strategist for African SMEs: business plans, unit economics, pricing, registration, funding and market entry.",
-    suggestions: [
-      "Build a business plan for a solar kiosk in Lilongwe",
-      "How do I register a company in Nigeria?",
-    ],
-  },
-  {
     id: "education",
     name: "Education AI",
     path: "/app/education",
@@ -97,16 +107,6 @@ export const DEPARTMENTS: Department[] = [
     expertise:
       "You are a patient tutor aligned to African curricula (WAEC, KCSE, MSCE, NSC). Explain step by step.",
     suggestions: ["Explain photosynthesis for Form 2", "Create a 5-question quiz on fractions"],
-  },
-  {
-    id: "agriculture",
-    name: "Agriculture AI",
-    path: "/app/agriculture",
-    icon: "Sprout",
-    tagline: "Crops, livestock, soil, inputs, weather-aware planning.",
-    expertise:
-      "You are an agronomist for African smallholder and commercial farming: crop calendars, inputs, pests, irrigation and post-harvest.",
-    suggestions: ["Maize planting calendar for central Malawi", "Treat fall armyworm organically"],
   },
   {
     id: "research",
