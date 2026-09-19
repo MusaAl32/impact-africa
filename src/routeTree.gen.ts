@@ -29,6 +29,7 @@ import { Route as AuthenticatedAppLanguagesRouteImport } from './routes/_authent
 import { Route as AuthenticatedAppOpportunitiesRouteImport } from './routes/_authenticated/app.opportunities'
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppWorkspaceRouteImport } from './routes/_authenticated/app.workspace'
+import { Route as AuthenticatedAppChatConversationIdRouteImport } from './routes/_authenticated/app.chat.$conversationId'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -135,6 +136,12 @@ const AuthenticatedAppWorkspaceRoute =
     path: '/workspace',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppChatConversationIdRoute =
+  AuthenticatedAppChatConversationIdRouteImport.update({
+    id: '/chat/$conversationId',
+    path: '/chat/$conversationId',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -156,6 +163,7 @@ export interface FileRoutesByFullPath {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app/': typeof AuthenticatedAppIndexRoute
+  '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -176,6 +184,7 @@ export interface FileRoutesByTo {
   '/app/settings': typeof AuthenticatedAppSettingsRoute
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app': typeof AuthenticatedAppIndexRoute
+  '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -199,6 +208,7 @@ export interface FileRoutesById {
   '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
   '/_authenticated/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
+  '/_authenticated/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -222,6 +232,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/workspace'
     | '/app/'
+    | '/app/chat/$conversationId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -242,6 +253,7 @@ export interface FileRouteTypes {
     | '/app/settings'
     | '/app/workspace'
     | '/app'
+    | '/app/chat/$conversationId'
   id:
     | '__root__'
     | '/'
@@ -264,6 +276,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/settings'
     | '/_authenticated/app/workspace'
     | '/_authenticated/app/'
+    | '/_authenticated/app/chat/$conversationId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -422,6 +435,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppWorkspaceRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/chat/$conversationId': {
+      id: '/_authenticated/app/chat/$conversationId'
+      path: '/chat/$conversationId'
+      fullPath: '/app/chat/$conversationId'
+      preLoaderRoute: typeof AuthenticatedAppChatConversationIdRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
   }
 }
 
@@ -434,6 +454,7 @@ interface AuthenticatedAppRouteChildren {
   AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
   AuthenticatedAppWorkspaceRoute: typeof AuthenticatedAppWorkspaceRoute
   AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
+  AuthenticatedAppChatConversationIdRoute: typeof AuthenticatedAppChatConversationIdRoute
 }
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
@@ -445,6 +466,8 @@ const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
   AuthenticatedAppWorkspaceRoute: AuthenticatedAppWorkspaceRoute,
   AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
+  AuthenticatedAppChatConversationIdRoute:
+    AuthenticatedAppChatConversationIdRoute,
 }
 
 const AuthenticatedAppRouteWithChildren =

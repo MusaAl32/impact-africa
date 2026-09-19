@@ -6,11 +6,12 @@ import { AccountMenu } from "@/components/account-menu";
 import { NuruWordmark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 
-const LINKS = [
+const LINKS: Array<{ label: string; hash?: string; to?: "/company" }> = [
   { label: "Platform", hash: "#platform" },
   { label: "Departments", hash: "#departments" },
   { label: "Languages", hash: "#languages" },
   { label: "Business Hub", hash: "#hub" },
+  { label: "About", to: "/company" },
 ];
 
 export function SiteHeader() {
@@ -24,14 +25,10 @@ export function SiteHeader() {
         </Link>
 
         <nav className="hidden items-center gap-7 md:flex" aria-label="Main">
-          {LINKS.map((l) => (
-            <a
-              key={l.label}
-              href={l.hash}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {l.label}
-            </a>
+          {LINKS.map((l) => l.to ? (
+            <Link key={l.label} to={l.to} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{l.label}</Link>
+          ) : (
+            <a key={l.label} href={l.hash} className="text-sm text-muted-foreground transition-colors hover:text-foreground">{l.label}</a>
           ))}
         </nav>
 
@@ -55,15 +52,10 @@ export function SiteHeader() {
       {open && (
         <div className="border-t border-border bg-background md:hidden">
           <nav className="mx-auto flex max-w-6xl flex-col p-4" aria-label="Mobile">
-            {LINKS.map((l) => (
-              <a
-                key={l.label}
-                href={l.hash}
-                onClick={() => setOpen(false)}
-                className="py-2.5 text-sm text-muted-foreground"
-              >
-                {l.label}
-              </a>
+            {LINKS.map((l) => l.to ? (
+              <Link key={l.label} to={l.to} onClick={() => setOpen(false)} className="flex min-h-11 items-center text-sm text-muted-foreground">{l.label}</Link>
+            ) : (
+              <a key={l.label} href={l.hash} onClick={() => setOpen(false)} className="flex min-h-11 items-center text-sm text-muted-foreground">{l.label}</a>
             ))}
             <Button asChild className="mt-3">
               <Link to="/app" onClick={() => setOpen(false)}>

@@ -246,7 +246,7 @@ function LanguageSelect({
 }) {
   return (
     <Select value={value} onValueChange={onChange}>
-      <SelectTrigger className="w-[190px]" aria-label={label}>
+      <SelectTrigger className="w-full sm:w-[190px]" aria-label={label}>
         <SelectValue placeholder={label} />
       </SelectTrigger>
       <SelectContent className="max-h-72">
@@ -288,7 +288,7 @@ function LanguageRegistry() {
           className="max-w-xs"
         />
         <Select value={region} onValueChange={setRegion}>
-          <SelectTrigger className="w-[180px]" aria-label="Filter by region">
+          <SelectTrigger className="w-full sm:w-[180px]" aria-label="Filter by region">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
