@@ -5,4 +5,4 @@
 - [x] Audit and fix mobile layout, touch targets, spacing, animations, and contrast across all app pages
 - [x] Add About to primary navigation; omit usage figures unless a safe real aggregate is available
 - [ ] Verify links, two-thread persistence, chat streaming, mobile/desktop layouts, and diagnostics
-- [ ] Fix the latest build failure blocking publishing
+- [x] Fix the latest build failure blocking publishing
