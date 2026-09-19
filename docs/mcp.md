@@ -82,32 +82,12 @@ Search the public research library. Inputs mirror `list_problems` (no `status`).
 Each item: `id`, `title`, `summary`, `topic`, `country`, `source`, `year`, `publishedAt`,
 `updatedAt`, `sourceUrl`, `publicUrl`, plus the same `pagination` and `error` fields.
 
-### `analyze_entry`
+### Removed: `analyze_entry`
 
-Nuru AI specialist analysis of one public entry.
-
-| Input | Type | Notes |
-| --- | --- | --- |
-| `itemType` | `"problem"` \| `"research"` | required |
-| `itemId` | UUID string | required, from a list tool |
-| `department` | one of `platform, business, agriculture, research, education, developer, creative, documents` | default `business` |
-
-Output separates the verified source record from the AI output:
-
-```json
-{
-  "source": { "id": "…", "type": "problem", "title": "…", "summary": "…",
-              "category": "…", "country": "…", "sourceUrl": null, "publicUrl": "…" },
-  "analysis": { "department": "business", "generatedAt": "ISO",
-                "markdown": "…", "disclaimer": "AI-generated analysis…",
-                "isAiGenerated": true, "verified": false },
-  "error": null
-}
-```
-
-The analysis includes **Assumptions**, **Uncertainty and evidence gaps**, and
-**Recommendations (unverified)** sections. When an entry lacks enough public detail, the tool
-returns `no_results` instead of speculating. AI output is never verified fact.
+The AI analysis tool was removed from this server. Running a Nuru AI analysis is a metered,
+credit-consuming operation, so it is no longer reachable from the MCP surface at all;
+analyses are run only by signed-in people inside the Nuru AI app, and are recorded against
+their account.
 
 ## Errors
 
