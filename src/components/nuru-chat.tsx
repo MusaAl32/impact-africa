@@ -1,6 +1,6 @@
 import { useChat } from "@ai-sdk/react";
 import type { FileUIPart, UIMessage } from "ai";
-import { DefaultChatTransport } from "ai";
+import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
   Check, ChevronDown, Copy, ExternalLink, Flag, Globe2, Mic, MicOff, MoreHorizontal,
   RefreshCcw, Share2, Sparkles, ThumbsDown, ThumbsUp, Volume2, VolumeX,
@@ -21,6 +21,7 @@ import {
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
+import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { NuruMark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -29,7 +30,7 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { saveMessage } from "@/lib/chat.functions";
+import { branchConversation, saveMessage } from "@/lib/chat.functions";
 import { cn } from "@/lib/utils";
 import { loadPreferences } from "@/lib/workspace";
 import { speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
@@ -166,6 +167,18 @@ export function NuruChat({
     await copy(text);
   }
 
+  async function branch(messageId: string) {
+    if (!conversationId) {
+      toast.error("Open a saved conversation before creating a branch.");
+      return;
+    }
+    try {
+      const next = await branchConversation({ data: { conversationId, throughClientMessageId: messageId } });
+      window.dispatchEvent(new Event("nuru-history-changed"));
+      window.location.assign(`/app/chat/${next.conversationId}`);
+    } catch { toast.error("Nuru could not create that branch. Please try again."); }
+  }
+
   function readAloud(id: string, text: string) {
     if (speakingId === id) {
       stopSpeaking();
@@ -224,6 +237,16 @@ export function NuruChat({
                       className="break-words [&_a]:break-all [&_a]:text-primary [&_pre]:max-w-full [&_pre]:overflow-x-auto [&_table]:block [&_table]:max-w-full [&_table]:overflow-x-auto">
                       {part.text}
                     </MessageResponse>
+                  ) : part.type === "reasoning" ? (
+                    <Collapsible key={`${message.id}-${index}`} className="rounded-xl border border-border/70 bg-card/40">
+                      <CollapsibleTrigger className="flex min-h-11 w-full items-center justify-between px-3 text-xs font-medium text-muted-foreground">Thinking summary <ChevronDown className="size-4" /></CollapsibleTrigger>
+                      <CollapsibleContent className="border-t border-border px-3 py-3 text-sm text-muted-foreground"><MessageResponse>{part.text}</MessageResponse></CollapsibleContent>
+                    </Collapsible>
+                  ) : isToolUIPart(part) ? (
+                    <Tool key={`${message.id}-${index}`} defaultOpen={false}>
+                      {part.type === "dynamic-tool" ? <ToolHeader type={part.type} state={part.state} toolName={part.toolName} /> : <ToolHeader type={part.type} state={part.state} />}
+                      <ToolContent><ToolInput input={part.input} /><ToolOutput output={part.output} errorText={part.errorText} /></ToolContent>
+                    </Tool>
                   ) : null)}
                 </MessageContent>
                 {assistant && text && (
@@ -248,7 +271,7 @@ export function NuruChat({
                         <DropdownMenuContent align="start">
                           <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, webAccess, conversationId } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => toast.info("Branching starts a new chat from this response in the next step.")}><Sparkles /> Branch</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => void copy(text)}><Copy /> Copy</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => void share(text)}><Share2 /> Share</DropdownMenuItem>
@@ -282,11 +305,11 @@ export function NuruChat({
       <div className="sticky bottom-0 z-20 bg-gradient-to-t from-background via-background to-transparent px-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-5">
         <div className="mx-auto max-w-3xl">
           <PromptInput
-            accept={accept}
+            {...(accept ? { accept } : {})}
             multiple
             maxFiles={5}
             maxFileSize={10 * 1024 * 1024}
-            onError={({ message }) => toast.error(message)}
+            onError={({ message }) => { toast.error(message); }}
             onSubmit={({ text, files }) => submit(text, files)}
             className="rounded-3xl shadow-[0_16px_50px_-20px_rgba(0,0,0,.85)] [&_[data-slot=input-group]]:rounded-3xl [&_[data-slot=input-group]]:border-border/80 [&_[data-slot=input-group]]:bg-card"
           >
@@ -310,7 +333,7 @@ export function NuruChat({
                   {listening ? <MicOff /> : <Mic />}
                 </PromptInputButton>}
               </PromptInputTools>
-              <PromptInputSubmit className="size-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" status={status} onStop={stop} disabled={!busy && false} />
+              <PromptInputSubmit className="size-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" status={status} onStop={stop} />
             </PromptInputFooter>
           </PromptInput>
           <p className="mt-2 px-2 text-center text-[11px] leading-relaxed text-muted-foreground">

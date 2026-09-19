@@ -27,7 +27,7 @@ function ConversationPage() {
   const department = data.messages.at(-1)?.department ?? "platform";
   const dept = getDepartment(department as Parameters<typeof getDepartment>[0]);
   const initialMessages = useMemo<UIMessage[]>(() => data.messages.map((message) => ({
-    id: message.client_message_id,
+    id: message.client_message_id ?? `saved-${message.created_at}`,
     role: message.role as UIMessage["role"],
     parts: message.parts as UIMessage["parts"],
   })), [data.messages]);

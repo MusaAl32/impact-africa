@@ -15,6 +15,8 @@ export function NuruLogo({ className = "size-8" }: { className?: string }) {
   );
 }
 
+export const NuruMark = NuruLogo;
+
 export function NuruWordmark({ compact = false }: { compact?: boolean }) {
   return (
     <span className="flex items-center gap-2.5">

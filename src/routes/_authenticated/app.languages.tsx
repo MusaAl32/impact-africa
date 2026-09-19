@@ -180,7 +180,7 @@ function Translator() {
                 variant="ghost"
                 aria-label={speech.listening ? "Stop dictation" : "Dictate text"}
                 disabled={!speech.supported}
-                onClick={() => (speech.listening ? speech.stop() : speech.start(sourceLocale))}
+                onClick={() => (speech.listening ? speech.stop() : speech.start(setText, sourceLocale))}
                 className={cn(speech.listening && "text-primary")}
               >
                 {speech.listening ? <MicOff className="size-4" /> : <Mic className="size-4" />}
