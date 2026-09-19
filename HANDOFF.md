@@ -10,6 +10,8 @@ over to an external developer working in VS Code.
 
 ## 1. Connect the GitHub repository (you must do this step)
 
+**Target repository:** `https://github.com/MusaAl32/impact-africa.git`
+
 Connecting GitHub requires your GitHub account, so it has to be done from the
 Lovable interface — it cannot be done from chat.
 
@@ -19,7 +21,9 @@ Lovable interface — it cannot be done from chat.
 3. Authorize the Lovable GitHub App.
 4. Pick the GitHub account or organisation that should **own** the repository.
    Choose an organisation if the repo should outlive your personal account.
-5. Click **Create Repository**.
+5. Click **Create Repository**. If the `impact-africa` repository already exists,
+   make sure it is empty first so Lovable can populate it cleanly; otherwise the
+   connection may fail or overwrite existing files.
 
 After this, the sync is two-way and continuous:
 
