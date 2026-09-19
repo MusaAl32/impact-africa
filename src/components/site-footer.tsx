@@ -62,7 +62,12 @@ export function SiteFooter() {
             </li>
             <li>
               <Link to="/terms" className="text-muted-foreground hover:text-foreground">
-                Terms of Use
+                Terms of Service
+              </Link>
+            </li>
+            <li>
+              <Link to="/company" className="text-muted-foreground hover:text-foreground">
+                Company Profile
               </Link>
             </li>
           </ul>
