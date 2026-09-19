@@ -1,4 +1,5 @@
 import { createOpenAICompatible } from "@ai-sdk/openai-compatible";
+import { createOpenAI } from "@ai-sdk/openai";
 
 const LOVABLE_AIG_RUN_ID_HEADER = "X-Lovable-AIG-Run-ID";
 
@@ -59,6 +60,25 @@ export function createLovableAiGatewayProvider(lovableApiKey: string, initialRun
   });
 }
 
+export function createLovableResponsesProvider(lovableApiKey: string, initialRunId?: string) {
+  const runIdFetch = createLovableAiGatewayRunIdFetch(initialRunId);
+  const provider = createOpenAI({
+    name: "lovable-responses",
+    baseURL: "https://ai.gateway.lovable.dev/v1",
+    apiKey: lovableApiKey,
+    headers: {
+      "Lovable-API-Key": lovableApiKey,
+      "X-Lovable-AIG-SDK": "vercel-ai-sdk",
+    },
+    fetch: runIdFetch.fetch as typeof fetch,
+  });
+
+  return Object.assign(provider, {
+    getRunId: runIdFetch.getRunId,
+    waitForRunId: runIdFetch.waitForRunId,
+  });
+}
+
 export function getLovableAiGatewayRunId(request: Request) {
   return request.headers.get(LOVABLE_AIG_RUN_ID_HEADER)?.trim() || undefined;
 }
@@ -69,4 +89,4 @@ export function requireLovableApiKey() {
   return key;
 }
 
-export const NURU_MODEL = "google/gemini-3.7-flash";
+export const NURU_MODEL = "openai/gpt-6-astra";
