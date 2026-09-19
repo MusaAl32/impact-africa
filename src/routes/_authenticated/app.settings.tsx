@@ -98,6 +98,28 @@ function SettingsPage() {
         Your preferences are saved to your account and shape how Nuru answers you.
       </p>
 
+      <section id="account" className="mt-6 rounded-2xl border border-border bg-card p-5">
+        <h2 className="text-sm font-semibold tracking-tight">Account</h2>
+        <dl className="mt-3 space-y-2 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Email</dt>
+            <dd className="break-all font-medium">{account?.email ?? "…"}</dd>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Email confirmed</dt>
+            <dd className="font-medium">{account ? (account.verified ? "Yes" : "Not yet") : "…"}</dd>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Account ID</dt>
+            <dd className="break-all font-mono text-xs text-muted-foreground">{account?.id ?? "…"}</dd>
+          </div>
+        </dl>
+        <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={() => void handleSignOut()}>
+          <LogOut className="mr-2 size-4" /> Log out
+        </Button>
+      </section>
+
+
       <div className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-5">
         <div className="space-y-2">
           <Label htmlFor="display-name">Your name</Label>
