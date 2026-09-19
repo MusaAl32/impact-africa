@@ -103,13 +103,12 @@ Unexpected failures are logged server-side and returned as a generic `internal_e
 ## Limits
 
 - `limit` max 50, `offset` max 5000; oversized or malformed inputs are rejected by schema validation.
-- Best-effort rate limiting per server instance: 60 list calls/minute, 6 analysis calls/minute.
-  Exceeding it returns `rate_limited` with `retryAfterSeconds`. This is per-instance, not a
-  distributed guarantee.
+- Best-effort rate limiting per server instance: 60 list calls/minute. Exceeding it returns
+  `rate_limited` with `retryAfterSeconds`. This is per-instance, not a distributed guarantee.
+- No metered/AI-credit-consuming tool is exposed.
 - `publicUrl` is a site-relative path to the Opportunity Hub view.
 
 ## Limitations
 
 - No write, subscribe or admin tools; no MCP resources or prompts are advertised.
-- No per-caller identity, so rate limiting is global per instance rather than per client.
-- Analysis latency depends on the AI gateway; very long entries are truncated at 4,000 characters.
+- Rate limiting is per server instance rather than distributed.
