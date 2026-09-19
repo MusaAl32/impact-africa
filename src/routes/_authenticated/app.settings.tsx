@@ -47,8 +47,29 @@ export const Route = createFileRoute("/_authenticated/app/settings")({
 function SettingsPage() {
   const [prefs, setPrefs] = useState<NuruPreferences>(DEFAULT_PREFERENCES);
   const [displayName, setDisplayName] = useState("");
+  const [account, setAccount] = useState<{ id: string; email: string; verified: boolean } | null>(null);
   const voices = useSpeechVoices();
   const { locale, setLocale, machine, t } = useI18n();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      setAccount({
+        id: data.user.id,
+        email: data.user.email ?? "",
+        verified: Boolean(data.user.email_confirmed_at),
+      });
+    });
+  }, []);
 
   useEffect(() => {
     setPrefs(loadPreferences());
