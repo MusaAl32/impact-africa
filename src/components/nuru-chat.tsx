@@ -168,7 +168,10 @@ export function NuruChat({
   }
 
   async function branch(messageId: string) {
-    if (!conversationId) return toast.error("Open a saved conversation before creating a branch.");
+    if (!conversationId) {
+      toast.error("Open a saved conversation before creating a branch.");
+      return;
+    }
     try {
       const next = await branchConversation({ data: { conversationId, throughClientMessageId: messageId } });
       window.dispatchEvent(new Event("nuru-history-changed"));
