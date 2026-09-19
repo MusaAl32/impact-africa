@@ -50,9 +50,12 @@ export const updateProfile = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => ProfileInput.parse(input))
   .handler(async ({ data, context }) => {
+    const patch = Object.fromEntries(
+      Object.entries(data).filter(([, value]) => value !== undefined),
+    );
     const { error } = await context.supabase
       .from("profiles")
-      .upsert({ id: context.userId, ...data }, { onConflict: "id" });
+      .upsert({ id: context.userId, ...patch }, { onConflict: "id" });
     if (error) throw new Error(error.message);
     return { ok: true };
   });
