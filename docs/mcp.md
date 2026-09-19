@@ -1,10 +1,12 @@
 # Africa Opportunity Hub — MCP server
 
-Public, **read-only** Model Context Protocol server exposing the Africa Opportunity Hub's
-published problem database, public research library, and Nuru AI analysis of those entries.
+**Read-only** Model Context Protocol server exposing the Africa Opportunity Hub's
+published problem database, public research library and live ecosystem status.
 
 - Endpoint: `/mcp` (Streamable HTTP)
-- Auth: **none** — anyone with the URL can call these tools once the app is published
+- Auth: **OAuth required** — callers must present a valid Nuru AI (Supabase) access token
+  (`aud: authenticated`). Unauthenticated calls return `401` with the protected-resource
+  metadata pointer.
 - Metadata: `/.well-known/oauth-protected-resource`
 - Server name: `africa-opportunity-hub`
 
@@ -80,32 +82,12 @@ Search the public research library. Inputs mirror `list_problems` (no `status`).
 Each item: `id`, `title`, `summary`, `topic`, `country`, `source`, `year`, `publishedAt`,
 `updatedAt`, `sourceUrl`, `publicUrl`, plus the same `pagination` and `error` fields.
 
-### `analyze_entry`
+### Removed: `analyze_entry`
 
-Nuru AI specialist analysis of one public entry.
-
-| Input | Type | Notes |
-| --- | --- | --- |
-| `itemType` | `"problem"` \| `"research"` | required |
-| `itemId` | UUID string | required, from a list tool |
-| `department` | one of `platform, business, agriculture, research, education, developer, creative, documents` | default `business` |
-
-Output separates the verified source record from the AI output:
-
-```json
-{
-  "source": { "id": "…", "type": "problem", "title": "…", "summary": "…",
-              "category": "…", "country": "…", "sourceUrl": null, "publicUrl": "…" },
-  "analysis": { "department": "business", "generatedAt": "ISO",
-                "markdown": "…", "disclaimer": "AI-generated analysis…",
-                "isAiGenerated": true, "verified": false },
-  "error": null
-}
-```
-
-The analysis includes **Assumptions**, **Uncertainty and evidence gaps**, and
-**Recommendations (unverified)** sections. When an entry lacks enough public detail, the tool
-returns `no_results` instead of speculating. AI output is never verified fact.
+The AI analysis tool was removed from this server. Running a Nuru AI analysis is a metered,
+credit-consuming operation, so it is no longer reachable from the MCP surface at all;
+analyses are run only by signed-in people inside the Nuru AI app, and are recorded against
+their account.
 
 ## Errors
 
@@ -121,13 +103,12 @@ Unexpected failures are logged server-side and returned as a generic `internal_e
 ## Limits
 
 - `limit` max 50, `offset` max 5000; oversized or malformed inputs are rejected by schema validation.
-- Best-effort rate limiting per server instance: 60 list calls/minute, 6 analysis calls/minute.
-  Exceeding it returns `rate_limited` with `retryAfterSeconds`. This is per-instance, not a
-  distributed guarantee.
+- Best-effort rate limiting per server instance: 60 list calls/minute. Exceeding it returns
+  `rate_limited` with `retryAfterSeconds`. This is per-instance, not a distributed guarantee.
+- No metered/AI-credit-consuming tool is exposed.
 - `publicUrl` is a site-relative path to the Opportunity Hub view.
 
 ## Limitations
 
 - No write, subscribe or admin tools; no MCP resources or prompts are advertised.
-- No per-caller identity, so rate limiting is global per instance rather than per client.
-- Analysis latency depends on the AI gateway; very long entries are truncated at 4,000 characters.
+- Rate limiting is per server instance rather than distributed.
