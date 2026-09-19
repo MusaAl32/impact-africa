@@ -16,7 +16,8 @@ const messageSchema = z.object({
 const renameSchema = conversationIdSchema.extend({ title: z.string().trim().min(1).max(80) });
 const branchSchema = z.object({
   conversationId: z.string().uuid(),
-  throughClientMessageId: z.string().min(1).max(160),
+  // May be empty when the reply has no saved id yet — we then branch from everything saved.
+  throughClientMessageId: z.string().max(160).optional().default(""),
 });
 
 async function verifyOwnedConversation(
@@ -201,7 +202,9 @@ export const branchConversation = createServerFn({ method: "POST" })
     const all = messages ?? [];
     // The message may not be persisted yet (e.g. still streaming). Branching then
     // copies everything saved so far instead of failing.
-    const found = all.findIndex((message) => message.client_message_id === data.throughClientMessageId);
+    const found = data.throughClientMessageId
+      ? all.findIndex((message) => message.client_message_id === data.throughClientMessageId)
+      : -1;
     const index = found < 0 ? all.length - 1 : found;
     if (index < 0) throw new Error("There is nothing to branch yet.");
 

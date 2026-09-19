@@ -67,6 +67,11 @@ export function AccountMenu({ compact = false }: { compact?: boolean }) {
         <div className="truncate px-2 py-1.5 text-xs text-muted-foreground">{email}</div>
         <DropdownMenuSeparator />
         <DropdownMenuItem asChild>
+          <Link to="/app/settings" hash="account">
+            <User className="mr-2 size-4" /> Account
+          </Link>
+        </DropdownMenuItem>
+        <DropdownMenuItem asChild>
           <Link to="/app/settings">
             <Settings className="mr-2 size-4" /> {t("nav.settings")}
           </Link>

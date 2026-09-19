@@ -1,6 +1,10 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
+import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { LogOut } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+
+import { supabase } from "@/integrations/supabase/client";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -43,8 +47,29 @@ export const Route = createFileRoute("/_authenticated/app/settings")({
 function SettingsPage() {
   const [prefs, setPrefs] = useState<NuruPreferences>(DEFAULT_PREFERENCES);
   const [displayName, setDisplayName] = useState("");
+  const [account, setAccount] = useState<{ id: string; email: string; verified: boolean } | null>(null);
   const voices = useSpeechVoices();
   const { locale, setLocale, machine, t } = useI18n();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
+  async function handleSignOut() {
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/auth", replace: true });
+  }
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      if (!data.user) return;
+      setAccount({
+        id: data.user.id,
+        email: data.user.email ?? "",
+        verified: Boolean(data.user.email_confirmed_at),
+      });
+    });
+  }, []);
 
   useEffect(() => {
     setPrefs(loadPreferences());
@@ -72,6 +97,28 @@ function SettingsPage() {
       <p className="mt-1 text-sm text-muted-foreground">
         Your preferences are saved to your account and shape how Nuru answers you.
       </p>
+
+      <section id="account" className="mt-6 rounded-2xl border border-border bg-card p-5">
+        <h2 className="text-sm font-semibold tracking-tight">Account</h2>
+        <dl className="mt-3 space-y-2 text-sm">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Email</dt>
+            <dd className="break-all font-medium">{account?.email ?? "…"}</dd>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Email confirmed</dt>
+            <dd className="font-medium">{account ? (account.verified ? "Yes" : "Not yet") : "…"}</dd>
+          </div>
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <dt className="text-muted-foreground">Account ID</dt>
+            <dd className="break-all font-mono text-xs text-muted-foreground">{account?.id ?? "…"}</dd>
+          </div>
+        </dl>
+        <Button variant="outline" className="mt-4 w-full sm:w-auto" onClick={() => void handleSignOut()}>
+          <LogOut className="mr-2 size-4" /> Log out
+        </Button>
+      </section>
+
 
       <div className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-5">
         <div className="space-y-2">

@@ -179,7 +179,9 @@ export function NuruChat({
       return;
     }
     try {
-      const next = await branchConversation({ data: { conversationId, throughClientMessageId: messageId } });
+      const next = await branchConversation({
+        data: { conversationId, throughClientMessageId: messageId ?? "" },
+      });
       window.dispatchEvent(new Event("nuru-history-changed"));
       window.location.assign(`/app/chat/${next.conversationId}`);
     } catch { toast.error("Nuru could not create that branch. Please try again."); }
