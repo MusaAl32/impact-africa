@@ -1,0 +1,55 @@
+/** English is the source of truth for the interface. Keys are stable; values are translated. */
+export const UI_STRINGS = {
+  "nav.platform": "Platform",
+  "nav.departments": "Departments",
+  "nav.languages": "Languages",
+  "nav.hub": "Business Hub",
+  "nav.workspace": "Workspace",
+  "nav.opportunities": "Opportunities",
+  "nav.settings": "Settings",
+  "nav.openNuru": "Open Nuru",
+  "nav.signIn": "Sign in",
+  "nav.signOut": "Sign out",
+  "nav.account": "Account",
+
+  "dash.greeting": "Hello",
+  "dash.question": "What do you want to accomplish today?",
+  "dash.continue": "Continue where you left off",
+  "dash.startFresh": "Start fresh",
+  "dash.agents": "Your specialist agents",
+
+  "chat.placeholder": "Ask Nuru anything",
+  "chat.thinking": "Nuru is thinking…",
+  "chat.send": "Send message",
+  "chat.stop": "Stop generating",
+  "chat.sources": "Sources",
+  "chat.readAloud": "Read aloud",
+  "chat.copy": "Copy",
+  "chat.share": "Share",
+  "chat.regenerate": "Regenerate",
+  "chat.webSearch": "Web search",
+  "chat.disclaimer": "Nuru can make mistakes. Verify local prices, laws and health guidance.",
+  "chat.saved": "Saved to your account",
+
+  "settings.title": "Settings",
+  "settings.country": "Country or market",
+  "settings.language": "Preferred answer language",
+  "settings.uiLanguage": "Interface language",
+  "settings.tone": "Answer style",
+  "settings.voice": "Reading voice",
+  "settings.speed": "Reading speed",
+  "settings.save": "Save preferences",
+  "settings.saved": "Preferences saved",
+  "settings.testVoice": "Test voice",
+  "settings.machineNote": "This language was translated automatically and may read imperfectly.",
+
+  "auth.signIn": "Sign in",
+  "auth.createAccount": "Create account",
+  "auth.email": "Email",
+  "auth.password": "Password",
+  "auth.forgot": "Forgot your password?",
+  "auth.google": "Continue with Google",
+} as const;
+
+export type UiKey = keyof typeof UI_STRINGS;
+export const UI_KEYS = Object.keys(UI_STRINGS) as UiKey[];
