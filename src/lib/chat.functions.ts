@@ -14,6 +14,10 @@ const messageSchema = z.object({
   department: z.string().min(1).max(64),
 });
 const renameSchema = conversationIdSchema.extend({ title: z.string().trim().min(1).max(80) });
+const branchSchema = z.object({
+  conversationId: z.string().uuid(),
+  throughClientMessageId: z.string().min(1).max(160),
+});
 
 async function verifyOwnedConversation(
   supabase: SupabaseClient<Database>,
@@ -172,6 +176,47 @@ export const saveMessage = createServerFn({ method: "POST" })
       .eq("user_id", context.userId);
     if (touchError) throw new Error("This conversation could not be updated.");
     return { ok: true, title };
+  });
+
+export const branchConversation = createServerFn({ method: "POST" })
+  .inputValidator(branchSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const source = await verifyOwnedConversation(context.supabase, context.userId, data.conversationId);
+    const { data: messages, error: loadError } = await context.supabase
+      .from("messages")
+      .select("client_message_id, role, parts, department, created_at")
+      .eq("conversation_id", data.conversationId)
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: true })
+      .limit(400);
+    if (loadError) throw new Error("Could not branch this conversation.");
+    const index = (messages ?? []).findIndex((message) => message.client_message_id === data.throughClientMessageId);
+    if (index < 0) throw new Error("Message not found.");
+
+    const { data: branch, error: createError } = await context.supabase
+      .from("conversations")
+      .insert({ user_id: context.userId, title: `${source.title} — branch`.slice(0, 80) })
+      .select("id")
+      .single();
+    if (createError || !branch) throw new Error("Could not create the branch.");
+
+    const rows = (messages ?? []).slice(0, index + 1).map((message) => ({
+      conversation_id: branch.id,
+      user_id: context.userId,
+      client_message_id: message.client_message_id ?? crypto.randomUUID(),
+      role: message.role,
+      parts: message.parts,
+      department: message.department,
+    }));
+    if (rows.length > 0) {
+      const { error: copyError } = await context.supabase.from("messages").insert(rows);
+      if (copyError) {
+        await context.supabase.from("conversations").delete().eq("id", branch.id).eq("user_id", context.userId);
+        throw new Error("Could not copy the conversation into a branch.");
+      }
+    }
+    return { conversationId: branch.id };
   });
 
 /** Compatibility wrapper retained for older callers. */
