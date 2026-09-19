@@ -16,7 +16,8 @@ const messageSchema = z.object({
 const renameSchema = conversationIdSchema.extend({ title: z.string().trim().min(1).max(80) });
 const branchSchema = z.object({
   conversationId: z.string().uuid(),
-  throughClientMessageId: z.string().min(1).max(160),
+  // May be empty when the reply has no saved id yet — we then branch from everything saved.
+  throughClientMessageId: z.string().max(160).optional().default(""),
 });
 
 async function verifyOwnedConversation(
