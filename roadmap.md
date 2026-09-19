@@ -1,2 +1,7 @@
-- Fix MCP typecheck errors (done)
-- Harden public MCP server (done: pagination, structured errors, sanitisation, rate limits, docs/mcp.md)
+- [ ] Upgrade the chat surface using AI Elements while preserving Nuru tools, voice, attachments, and web sources
+- [ ] Add secure threaded conversation history with dedicated URLs and sidebar navigation
+- [ ] Reduce primary departments and add an Explore more disclosure
+- [ ] Add first-message prompt cards, WhatsApp sharing, polished errors, and exact trust disclaimer
+- [ ] Audit and fix mobile layout, touch targets, spacing, animations, and contrast across all app pages
+- [ ] Add About to primary navigation and privacy-safe real usage aggregates when data exists
+- [ ] Verify links, two-thread persistence, chat streaming, mobile/desktop layouts, and diagnostics
