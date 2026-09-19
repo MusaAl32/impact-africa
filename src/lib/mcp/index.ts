@@ -13,7 +13,6 @@ export default defineMcp({
     issuer: `${SUPABASE_URL}/auth/v1`,
     jwksUri: `${SUPABASE_URL}/auth/v1/.well-known/jwks.json`,
     acceptedAudiences: ["authenticated"],
-    resource: "/mcp",
     resourceName: "Africa Opportunity Hub",
   }),
   instructions:
