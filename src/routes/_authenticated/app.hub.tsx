@@ -5,7 +5,7 @@ import { NuruChat } from "@/components/nuru-chat";
 import { Button } from "@/components/ui/button";
 import { CORRIDORS, SECTORS } from "@/lib/hub";
 
-export const Route = createFileRoute("/app/hub")({
+export const Route = createFileRoute("/_authenticated/app/hub")({
   head: () => ({
     meta: [
       { title: "Africa Business Hub — sector intelligence with Nuru AI" },

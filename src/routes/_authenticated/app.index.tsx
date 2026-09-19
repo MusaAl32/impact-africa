@@ -4,7 +4,7 @@ import { DeptIcon } from "@/components/dept-icon";
 import { NuruChat } from "@/components/nuru-chat";
 import { getDepartment, QUICK_ACTIONS } from "@/lib/departments";
 
-export const Route = createFileRoute("/app/")({
+export const Route = createFileRoute("/_authenticated/app/")({
   head: () => ({
     meta: [
       { title: "Nuru AI Platform — your African AI workspace" },

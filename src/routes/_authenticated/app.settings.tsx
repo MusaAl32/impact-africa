@@ -21,7 +21,7 @@ import {
   type NuruPreferences,
 } from "@/lib/workspace";
 
-export const Route = createFileRoute("/app/settings")({
+export const Route = createFileRoute("/_authenticated/app/settings")({
   head: () => ({
     meta: [
       { title: "Settings — Nuru AI preferences" },
