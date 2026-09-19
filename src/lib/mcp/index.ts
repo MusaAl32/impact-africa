@@ -1,7 +1,6 @@
 import { defineMcp } from "@lovable.dev/mcp-js";
 import listProblemsTool from "./tools/list-problems";
 import listResearchTool from "./tools/list-research";
-import analyzeEntryTool from "./tools/analyze-entry";
 import getEcosystemTool from "./tools/get-ecosystem";
 
 export default defineMcp({
