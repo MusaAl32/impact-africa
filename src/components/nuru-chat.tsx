@@ -174,8 +174,29 @@ export function NuruChat({
     if (!value && attachments.length === 0) return;
     if (busy) return;
 
+    const parts = [
+      ...(value ? [{ type: "text" as const, text: value }] : []),
+      ...attachments.map((a) => ({
+        type: "file" as const,
+        mediaType: a.mediaType,
+        filename: a.filename,
+        url: a.url,
+      })),
+    ];
+    const clientMessageId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `msg-${Date.now()}`;
+
+    if (persist) {
+      void saveMessage({
+        data: { clientMessageId, role: "user", parts, department },
+      }).catch((e) => console.error("Could not save your message", e));
+    }
+
     sendMessage(
       {
+        id: clientMessageId,
         role: "user",
         parts: [
           ...(value ? [{ type: "text" as const, text: value }] : []),
