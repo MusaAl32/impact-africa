@@ -18,7 +18,9 @@ export function LegalPage({
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{intro}</p>
-      <p className="mt-2 text-xs text-muted-foreground">Last updated: {COMPANY.lastUpdated}</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Effective date: {COMPANY.effectiveDate} · Last updated: {COMPANY.lastUpdated}
+      </p>
 
       <div className="mt-10 space-y-10">{children}</div>
 
