@@ -1,7 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
+import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import type { Database } from "@/integrations/supabase/types";
 
 const conversationIdSchema = z.object({ conversationId: z.string().uuid() });
 const messageSchema = z.object({
@@ -14,7 +16,7 @@ const messageSchema = z.object({
 const renameSchema = conversationIdSchema.extend({ title: z.string().trim().min(1).max(80) });
 
 async function verifyOwnedConversation(
-  supabase: Parameters<Parameters<typeof requireSupabaseAuth.server>[0]>[0] extends never ? never : any,
+  supabase: SupabaseClient<Database>,
   userId: string,
   conversationId: string,
 ) {
