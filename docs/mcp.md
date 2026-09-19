@@ -1,10 +1,12 @@
 # Africa Opportunity Hub — MCP server
 
-Public, **read-only** Model Context Protocol server exposing the Africa Opportunity Hub's
-published problem database, public research library, and Nuru AI analysis of those entries.
+**Read-only** Model Context Protocol server exposing the Africa Opportunity Hub's
+published problem database, public research library and live ecosystem status.
 
 - Endpoint: `/mcp` (Streamable HTTP)
-- Auth: **none** — anyone with the URL can call these tools once the app is published
+- Auth: **OAuth required** — callers must present a valid Nuru AI (Supabase) access token
+  (`aud: authenticated`). Unauthenticated calls return `401` with the protected-resource
+  metadata pointer.
 - Metadata: `/.well-known/oauth-protected-resource`
 - Server name: `africa-opportunity-hub`
 
