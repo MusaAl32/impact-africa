@@ -198,15 +198,7 @@ export function NuruChat({
       {
         id: clientMessageId,
         role: "user",
-        parts: [
-          ...(value ? [{ type: "text" as const, text: value }] : []),
-          ...attachments.map((a) => ({
-            type: "file" as const,
-            mediaType: a.mediaType,
-            filename: a.filename,
-            url: a.url,
-          })),
-        ],
+        parts,
       },
       {
         body: {
