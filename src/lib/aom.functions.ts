@@ -157,10 +157,10 @@ export const analyzeItem = createServerFn({ method: "POST" })
   });
 
 export const listAnalyses = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ itemId: z.string().uuid() }).parse(input))
-  .handler(async ({ data }) => {
-    const { publicDb } = await import("./aom.server");
-    const { data: rows } = await publicDb()
+  .handler(async ({ data, context }) => {
+    const { data: rows } = await context.supabase
       .from("aom_analyses")
       .select("id, department, analysis, created_at")
       .eq("item_id", data.itemId)
