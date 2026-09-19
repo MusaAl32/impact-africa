@@ -49,7 +49,7 @@ export const adminOverview = createServerFn({ method: "GET" })
         count("messages"),
       ]);
 
-    const { data: users } = await db.auth.admin.listUsers({ page: 1, perPage: 1 });
+    const { data: users } = await db.auth.admin.listUsers({ page: 1, perPage: 1000 });
     const { count: agentSeats } = await db
       .from("mcp_access")
       .select("id", { count: "exact", head: true })
