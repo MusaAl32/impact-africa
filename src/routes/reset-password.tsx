@@ -17,6 +17,7 @@ export const Route = createFileRoute("/reset-password")({
       { name: "description", content: "Set a new password for your Nuru AI account." },
       { property: "og:title", content: "Choose a new password — Nuru AI" },
       { property: "og:description", content: "Set a new password for your Nuru AI account." },
+      { name: "robots", content: "noindex" },
     ],
   }),
   component: ResetPasswordPage,
