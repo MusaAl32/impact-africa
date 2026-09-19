@@ -64,8 +64,7 @@ export const adminOverview = createServerFn({ method: "GET" })
       conversations,
       messages,
       agentSeats: agentSeats ?? 0,
-      // total is only exposed on the first page of the admin listing
-      accounts: users?.total ?? 0,
+      accounts: users?.users?.length ?? 0,
     };
   });
 
