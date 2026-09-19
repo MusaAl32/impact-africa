@@ -5,10 +5,12 @@ import { COMPANY } from "@/lib/legal";
 export function LegalPage({
   title,
   intro,
+  showStatus = true,
   children,
 }: {
   title: string;
   intro: string;
+  showStatus?: boolean;
   children: ReactNode;
 }) {
   return (
@@ -18,23 +20,27 @@ export function LegalPage({
       </p>
       <h1 className="mt-2 text-3xl font-semibold tracking-tight">{title}</h1>
       <p className="mt-3 text-sm text-muted-foreground">{intro}</p>
-      <p className="mt-2 text-xs text-muted-foreground">Last updated: {COMPANY.lastUpdated}</p>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Effective date: {COMPANY.effectiveDate} · Last updated: {COMPANY.lastUpdated}
+      </p>
 
       <div className="mt-10 space-y-10">{children}</div>
 
-      <div className="mt-12 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-        <p className="font-medium text-foreground">Company status</p>
-        <p className="mt-2">
-          {COMPANY.status} Planned jurisdiction: {COMPANY.plannedJurisdiction}. Target market:{" "}
-          {COMPANY.market}. We publish no registration number, legal address or certification
-          because none has been issued yet.
-        </p>
-        <p className="mt-3">
-          General: <a href={`mailto:${COMPANY.generalEmail}`}>{COMPANY.generalEmail}</a> · Support:{" "}
-          <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a> · Legal:{" "}
-          <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a>
-        </p>
-      </div>
+      {showStatus && (
+        <div className="mt-12 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
+          <p className="font-medium text-foreground">Company status</p>
+          <p className="mt-2">
+            {COMPANY.status} Planned jurisdiction: {COMPANY.plannedJurisdiction}. Target market:{" "}
+            {COMPANY.market}. We publish no registration number, legal address or certification
+            because none has been issued yet.
+          </p>
+          <p className="mt-3">
+            General: <a href={`mailto:${COMPANY.generalEmail}`}>{COMPANY.generalEmail}</a> · Support:{" "}
+            <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a> · Legal:{" "}
+            <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a>
+          </p>
+        </div>
+      )}
     </main>
   );
 }
