@@ -1,9 +1,11 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
 import { lovable } from "@/integrations/lovable";
 import { NuruWordmark } from "@/components/nuru-logo";
+import { PasswordField } from "@/components/password-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -32,14 +34,28 @@ export const Route = createFileRoute("/auth")({
 
 type Mode = "signin" | "signup" | "forgot";
 
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function friendlyAuthError(message: string) {
+  const m = message.toLowerCase();
+  if (m.includes("invalid login credentials")) return "That email and password don't match an account.";
+  if (m.includes("email not confirmed")) return "Confirm your email address first — check your inbox.";
+  if (m.includes("already registered")) return "An account with this email already exists. Try signing in.";
+  if (m.includes("rate limit") || m.includes("too many"))
+    return "Too many attempts right now. Please wait a moment and try again.";
+  return message;
+}
+
 function AuthPage() {
   const navigate = useNavigate();
   const [mode, setMode] = useState<Mode>("signin");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [name, setName] = useState("");
   const [busy, setBusy] = useState(false);
   const [sent, setSent] = useState<string | null>(null);
+  const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string }>({});
 
   useEffect(() => {
     let cancelled = false;
@@ -55,36 +71,55 @@ function AuthPage() {
     };
   }, [navigate]);
 
+  function switchMode(next: Mode) {
+    setMode(next);
+    setSent(null);
+    setErrors({});
+    setConfirm("");
+  }
+
+  function validate() {
+    const next: typeof errors = {};
+    if (!EMAIL_RE.test(email.trim())) next.email = "Enter a valid email address.";
+    if (mode !== "forgot") {
+      if (password.length < 8) next.password = "Use at least 8 characters.";
+      if (mode === "signup" && confirm !== password) next.confirm = "The two passwords don't match.";
+    }
+    setErrors(next);
+    return Object.keys(next).length === 0;
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (busy) return;
+    if (!validate()) return;
     setBusy(true);
     try {
       if (mode === "forgot") {
-        const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
           redirectTo: `${window.location.origin}/reset-password`,
         });
         if (error) throw error;
         setSent("We sent you a link to set a new password. Check your inbox.");
       } else if (mode === "signup") {
         const { data, error } = await supabase.auth.signUp({
-          email,
+          email: email.trim(),
           password,
           options: {
-            emailRedirectTo: window.location.origin,
+            emailRedirectTo: `${window.location.origin}/app`,
             data: { display_name: name || email.split("@")[0] },
           },
         });
         if (error) throw error;
         if (!data.session) {
-          setSent("Almost there — confirm your email address to finish creating your account.");
+          navigate({ to: "/verify-email", search: { email: email.trim() }, replace: true });
         }
       } else {
-        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        const { error } = await supabase.auth.signInWithPassword({ email: email.trim(), password });
         if (error) throw error;
       }
     } catch (error) {
-      toast.error((error as Error).message);
+      toast.error(friendlyAuthError((error as Error).message));
     } finally {
       setBusy(false);
     }
@@ -130,7 +165,7 @@ function AuthPage() {
           <p className="mt-6 rounded-xl border border-primary/30 bg-primary/10 p-4 text-sm">{sent}</p>
         ) : (
           <>
-            <form onSubmit={handleSubmit} className="mt-6 space-y-4">
+            <form onSubmit={handleSubmit} noValidate className="mt-6 space-y-4">
               {mode === "signup" && (
                 <div className="space-y-2">
                   <Label htmlFor="name">Your name</Label>
@@ -153,23 +188,38 @@ function AuthPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
                   autoComplete="email"
+                  aria-invalid={errors.email ? true : undefined}
+                  aria-describedby={errors.email ? "email-error" : undefined}
                 />
+                {errors.email && (
+                  <p id="email-error" className="text-xs text-destructive">
+                    {errors.email}
+                  </p>
+                )}
               </div>
               {mode !== "forgot" && (
-                <div className="space-y-2">
-                  <Label htmlFor="password">Password</Label>
-                  <Input
-                    id="password"
-                    type="password"
-                    required
-                    minLength={8}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    autoComplete={mode === "signup" ? "new-password" : "current-password"}
-                  />
-                </div>
+                <PasswordField
+                  id="password"
+                  label="Password"
+                  value={password}
+                  onChange={setPassword}
+                  autoComplete={mode === "signup" ? "new-password" : "current-password"}
+                  error={errors.password ?? null}
+                  {...(mode === "signup" ? { hint: "At least 8 characters." } : {})}
+                />
+              )}
+              {mode === "signup" && (
+                <PasswordField
+                  id="confirm-password"
+                  label="Confirm password"
+                  value={confirm}
+                  onChange={setConfirm}
+                  autoComplete="new-password"
+                  error={errors.confirm ?? null}
+                />
               )}
               <Button type="submit" className="w-full" disabled={busy}>
+                {busy && <Loader2 className="mr-2 size-4 animate-spin" />}
                 {mode === "signup" ? "Create account" : mode === "forgot" ? "Send reset link" : "Sign in"}
               </Button>
             </form>
@@ -195,17 +245,17 @@ function AuthPage() {
         <div className="mt-6 space-y-2 text-sm text-muted-foreground">
           {mode === "signin" && (
             <>
-              <button type="button" className="hover:text-foreground" onClick={() => { setMode("signup"); setSent(null); }}>
+              <button type="button" className="hover:text-foreground" onClick={() => switchMode("signup")}>
                 New to Nuru? <span className="text-primary">Create an account</span>
               </button>
               <br />
-              <button type="button" className="hover:text-foreground" onClick={() => { setMode("forgot"); setSent(null); }}>
+              <button type="button" className="hover:text-foreground" onClick={() => switchMode("forgot")}>
                 Forgot your password?
               </button>
             </>
           )}
           {mode !== "signin" && (
-            <button type="button" className="hover:text-foreground" onClick={() => { setMode("signin"); setSent(null); }}>
+            <button type="button" className="hover:text-foreground" onClick={() => switchMode("signin")}>
               Back to <span className="text-primary">sign in</span>
             </button>
           )}
