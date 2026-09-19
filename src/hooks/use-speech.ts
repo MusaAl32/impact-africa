@@ -32,7 +32,9 @@ export function useSpeechRecognition() {
     return () => ref.current?.stop();
   }, []);
 
-  const start = useCallback((locale?: string) => {
+  const callbackRef = useRef<((text: string) => void) | undefined>(undefined);
+
+  const start = useCallback((onResult?: ((text: string) => void), locale?: string) => {
     const Ctor = getRecognitionCtor();
     if (!Ctor) return;
     const recognition = new Ctor();
@@ -42,11 +44,16 @@ export function useSpeechRecognition() {
     recognition.onresult = (event) => {
       const result = event.results[event.results.length - 1];
       const text = result?.[0]?.transcript ?? "";
-      if (text) setTranscript(text.trim());
+      if (text) {
+        const clean = text.trim();
+        setTranscript(clean);
+        callbackRef.current?.(clean);
+      }
     };
     recognition.onerror = () => setListening(false);
     recognition.onend = () => setListening(false);
     ref.current = recognition;
+    callbackRef.current = onResult;
     setTranscript("");
     recognition.start();
     setListening(true);
