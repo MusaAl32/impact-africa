@@ -11,10 +11,9 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
  * browser). Privileged writes use the service-role client only AFTER that
  * check passes.
  */
-async function requireAdmin(context: {
-  supabase: { rpc: (fn: string, args: Record<string, unknown>) => Promise<{ data: unknown }> };
-  userId: string;
-}) {
+type AuthedContext = { supabase: SupabaseClient<Database>; userId: string };
+
+async function requireAdmin(context: AuthedContext) {
   const { data } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
