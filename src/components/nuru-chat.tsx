@@ -354,6 +354,11 @@ export function NuruChat({
                     onSelect={() => {
                       setMessages([]);
                       stopSpeaking();
+                      if (persist) {
+                        void startFreshConversation()
+                          .then(() => toast.success("Started a fresh conversation."))
+                          .catch((e) => console.error("Could not start a fresh conversation", e));
+                      }
                     }}
                   >
                     <Sparkles className="mr-2 size-4" /> Start a new chat
