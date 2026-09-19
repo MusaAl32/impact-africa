@@ -3,8 +3,6 @@ import { z } from "zod";
 import { supabaseAnon } from "../supabase";
 import { guardToolCall } from "../guard";
 import {
-  RATE_LIMITS,
-  checkRateLimit,
   errorSchema,
   publicUrl,
   safeFailure,
