@@ -38,6 +38,21 @@ function AppLayout() {
           </Link>
         );
       })}
+      {isAdmin && (
+        <Link
+          to="/app/admin"
+          onClick={() => setOpen(false)}
+          className={cn(
+            "mt-1 flex items-center gap-2.5 rounded-lg border border-border/60 px-3 py-2 text-sm transition-colors",
+            pathname.startsWith("/app/admin")
+              ? "bg-primary/12 font-medium text-primary"
+              : "text-muted-foreground hover:bg-secondary hover:text-foreground",
+          )}
+        >
+          <ShieldCheck className="size-4 shrink-0" />
+          <span className="truncate">Admin</span>
+        </Link>
+      )}
     </nav>
   );
 
