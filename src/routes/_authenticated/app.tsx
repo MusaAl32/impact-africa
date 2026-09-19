@@ -58,14 +58,17 @@ function AppLayout() {
           <Link to="/" aria-label="Nuru AI home">
             <NuruWordmark />
           </Link>
-          <Button
-            size="icon"
-            variant="ghost"
-            aria-label={open ? "Close navigation" : "Open navigation"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+          <div className="flex items-center gap-1">
+            <AccountMenu compact />
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={open ? "Close navigation" : "Open navigation"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </Button>
+          </div>
         </header>
 
         {open && (
