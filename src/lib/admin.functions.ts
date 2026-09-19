@@ -16,12 +16,23 @@ import type { Database } from "@/integrations/supabase/types";
  */
 type AuthedContext = { supabase: SupabaseClient<Database>; userId: string };
 
+/**
+ * Check the caller's own admin role by reading the roles table with their own
+ * session (RLS allows everyone to read their own rows). Never trusts a
+ * client-supplied id or role claim.
+ */
+async function callerIsAdmin(context: AuthedContext) {
+  const { data } = await context.supabase
+    .from("user_roles")
+    .select("id")
+    .eq("user_id", context.userId)
+    .eq("role", "admin")
+    .maybeSingle();
+  return data !== null;
+}
+
 async function requireAdmin(context: AuthedContext) {
-  const { data } = await context.supabase.rpc("has_role", {
-    _user_id: context.userId,
-    _role: "admin",
-  });
-  if (data !== true) throw new Error("Forbidden");
+  if (!(await callerIsAdmin(context))) throw new Error("Forbidden");
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   return supabaseAdmin;
 }
@@ -276,9 +287,5 @@ export const adminSetAgentAccess = createServerFn({ method: "POST" })
 export const isCurrentUserAdmin = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
-    const { data } = await context.supabase.rpc("has_role", {
-      _user_id: context.userId,
-      _role: "admin",
-    });
-    return { admin: data === true };
+    return { admin: await callerIsAdmin(context) };
   });
