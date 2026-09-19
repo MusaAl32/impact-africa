@@ -39,20 +39,66 @@ export const Route = createFileRoute("/_authenticated/app/settings")({
 
 function SettingsPage() {
   const [prefs, setPrefs] = useState<NuruPreferences>(DEFAULT_PREFERENCES);
+  const [displayName, setDisplayName] = useState("");
   const voices = useSpeechVoices();
+  const { locale, setLocale, machine, t } = useI18n();
 
   useEffect(() => {
     setPrefs(loadPreferences());
+    getProfile()
+      .then((profile) => {
+        if (!profile) return;
+        setDisplayName(profile.display_name ?? "");
+        setPrefs((prev) => ({
+          ...prev,
+          country: profile.country || prev.country,
+          language: profile.language || prev.language,
+          tone: (profile.tone as NuruPreferences["tone"]) || prev.tone,
+          voiceURI: profile.voice_uri || prev.voiceURI,
+          voiceRate: Number(profile.voice_rate) || prev.voiceRate,
+        }));
+      })
+      .catch(() => {
+        /* fall back to this device's saved preferences */
+      });
   }, []);
 
   return (
     <div className="mx-auto w-full max-w-xl px-4 py-6">
-      <h1 className="text-xl font-semibold tracking-tight">Settings</h1>
+      <h1 className="text-xl font-semibold tracking-tight">{t("settings.title")}</h1>
       <p className="mt-1 text-sm text-muted-foreground">
-        Preferences are stored on this device and shape how Nuru answers you.
+        Your preferences are saved to your account and shape how Nuru answers you.
       </p>
 
       <div className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-5">
+        <div className="space-y-2">
+          <Label htmlFor="display-name">Your name</Label>
+          <Input
+            id="display-name"
+            value={displayName}
+            onChange={(e) => setDisplayName(e.target.value)}
+            placeholder="e.g. Amina"
+          />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="ui-language">{t("settings.uiLanguage")}</Label>
+          <Select value={locale} onValueChange={setLocale}>
+            <SelectTrigger id="ui-language">
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="max-h-72">
+              <SelectItem value="en">English</SelectItem>
+              {AFRICAN_LANGUAGES.map((l) => (
+                <SelectItem key={l.code} value={l.code}>
+                  {l.name} · {l.nativeName}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+          {machine && <p className="text-xs text-muted-foreground">{t("settings.machineNote")}</p>}
+        </div>
+
         <div className="space-y-2">
           <Label htmlFor="country">Country or market</Label>
           <Input
