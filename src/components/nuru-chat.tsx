@@ -5,7 +5,7 @@ import {
   Check, ChevronDown, Copy, ExternalLink, Flag, Globe2, Mic, MicOff, MoreHorizontal,
   RefreshCcw, Share2, Sparkles, ThumbsDown, ThumbsUp, Volume2, VolumeX,
 } from "lucide-react";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
 
 import {
@@ -118,7 +118,13 @@ export function NuruChat({
   });
   const busy = status === "submitted" || status === "streaming";
 
-  useEffect(() => setMessages(initialMessages), [conversationId, initialMessages, setMessages]);
+  // Reset the thread only when the conversation actually changes. `initialMessages`
+  // is a fresh array on every render, so depending on it here loops forever.
+  const initialMessagesRef = useRef(initialMessages);
+  initialMessagesRef.current = initialMessages;
+  useEffect(() => {
+    setMessages(initialMessagesRef.current);
+  }, [conversationId, setMessages]);
 
   const submit = useCallback(async (text: string, files: FileUIPart[] = []) => {
     const clean = text.trim();
