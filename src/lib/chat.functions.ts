@@ -3,7 +3,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Database } from "@/integrations/supabase/types";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 const conversationIdSchema = z.object({ conversationId: z.string().uuid() });
 const messageSchema = z.object({
@@ -137,7 +137,7 @@ export const saveMessage = createServerFn({ method: "POST" })
       user_id: context.userId,
       client_message_id: data.clientMessageId,
       role: data.role,
-      parts: data.parts,
+      parts: data.parts as Json,
       department: data.department,
     };
     const { error } = await context.supabase

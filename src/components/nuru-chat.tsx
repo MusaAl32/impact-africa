@@ -282,11 +282,11 @@ export function NuruChat({
       <div className="sticky bottom-0 z-20 bg-gradient-to-t from-background via-background to-transparent px-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-5">
         <div className="mx-auto max-w-3xl">
           <PromptInput
-            accept={accept}
+            {...(accept ? { accept } : {})}
             multiple
             maxFiles={5}
             maxFileSize={10 * 1024 * 1024}
-            onError={({ message }) => toast.error(message)}
+            onError={({ message }) => { toast.error(message); }}
             onSubmit={({ text, files }) => submit(text, files)}
             className="rounded-3xl shadow-[0_16px_50px_-20px_rgba(0,0,0,.85)] [&_[data-slot=input-group]]:rounded-3xl [&_[data-slot=input-group]]:border-border/80 [&_[data-slot=input-group]]:bg-card"
           >
@@ -310,7 +310,7 @@ export function NuruChat({
                   {listening ? <MicOff /> : <Mic />}
                 </PromptInputButton>}
               </PromptInputTools>
-              <PromptInputSubmit className="size-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" status={status} onStop={stop} disabled={!busy && false} />
+              <PromptInputSubmit className="size-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" status={status} onStop={stop} />
             </PromptInputFooter>
           </PromptInput>
           <p className="mt-2 px-2 text-center text-[11px] leading-relaxed text-muted-foreground">

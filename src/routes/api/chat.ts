@@ -99,8 +99,16 @@ export const Route = createFileRoute("/api/chat")({
             messages: await convertToModelMessages(body.messages),
             stopWhen: stepCountIs(webEnabled ? 8 : 6),
             abortSignal: request.signal,
-            timeout: { totalMs: 90_000 },
             experimental_transform: smoothStream({ chunking: "word" }),
+            providerOptions: {
+              openai: {
+                forceReasoning: true,
+                reasoningEffort: "medium",
+                reasoningSummary: "auto",
+                store: false,
+                include: ["reasoning.encrypted_content"],
+              },
+            },
             tools: {
               activate_agents: tool({
                 description:
@@ -156,6 +164,7 @@ export const Route = createFileRoute("/api/chat")({
 
           return result.toUIMessageStreamResponse({
             originalMessages: body.messages,
+            sendReasoning: true,
             onFinish: async ({ responseMessage, isAborted }) => {
               if (isAborted || !body.conversationId) return;
               const { error: messageError } = await userDb.from("messages").upsert({
