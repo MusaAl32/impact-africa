@@ -182,6 +182,143 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          archived: boolean
+          created_at: string
+          id: string
+          title: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          id?: string
+          title?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      messages: {
+        Row: {
+          client_message_id: string | null
+          conversation_id: string
+          created_at: string
+          department: string | null
+          id: string
+          parts: Json
+          role: string
+          user_id: string
+        }
+        Insert: {
+          client_message_id?: string | null
+          conversation_id: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          parts?: Json
+          role: string
+          user_id: string
+        }
+        Update: {
+          client_message_id?: string | null
+          conversation_id?: string
+          created_at?: string
+          department?: string | null
+          id?: string
+          parts?: Json
+          role?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          country: string
+          created_at: string
+          display_name: string | null
+          id: string
+          language: string
+          tone: string
+          ui_language: string
+          updated_at: string
+          voice_rate: number
+          voice_uri: string
+        }
+        Insert: {
+          country?: string
+          created_at?: string
+          display_name?: string | null
+          id: string
+          language?: string
+          tone?: string
+          ui_language?: string
+          updated_at?: string
+          voice_rate?: number
+          voice_uri?: string
+        }
+        Update: {
+          country?: string
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          language?: string
+          tone?: string
+          ui_language?: string
+          updated_at?: string
+          voice_rate?: number
+          voice_uri?: string
+        }
+        Relationships: []
+      }
+      ui_translations: {
+        Row: {
+          created_at: string
+          id: string
+          key: string
+          locale: string
+          machine: boolean
+          text: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          key: string
+          locale: string
+          machine?: boolean
+          text: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          key?: string
+          locale?: string
+          machine?: boolean
+          text?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never

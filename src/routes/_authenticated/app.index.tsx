@@ -1,10 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
 
 import { DeptIcon } from "@/components/dept-icon";
 import { NuruChat } from "@/components/nuru-chat";
+import { getProfile } from "@/lib/account.functions";
 import { getDepartment, QUICK_ACTIONS } from "@/lib/departments";
+import { useI18n } from "@/lib/i18n";
 
-export const Route = createFileRoute("/app/")({
+export const Route = createFileRoute("/_authenticated/app/")({
   head: () => ({
     meta: [
       { title: "Nuru AI Platform — your African AI workspace" },
@@ -25,6 +28,25 @@ export const Route = createFileRoute("/app/")({
 
 function PlatformPage() {
   const dept = getDepartment("platform");
+  const { t } = useI18n();
+  const [name, setName] = useState<string | null>(null);
+  const [language, setLanguage] = useState<string | undefined>(undefined);
+
+  useEffect(() => {
+    let cancelled = false;
+    getProfile()
+      .then((profile) => {
+        if (cancelled || !profile) return;
+        setName(profile.display_name);
+        if (profile.language && profile.language !== "en") setLanguage(profile.language);
+      })
+      .catch(() => {
+        /* the chat still works without the profile */
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="mx-auto flex w-full max-w-3xl flex-1 flex-col px-4 py-6">
@@ -43,7 +65,9 @@ function PlatformPage() {
 
       <NuruChat
         department="platform"
-        heading="What do you want to accomplish today?"
+        persist
+        {...(language ? { language } : {})}
+        heading={name ? `${t("dash.greeting")} ${name}. ${t("dash.question")}` : t("dash.question")}
         placeholder="Ask Nuru anything — in English, Kiswahili, Hausa, Chichewa…"
         suggestions={dept.suggestions ?? []}
       />

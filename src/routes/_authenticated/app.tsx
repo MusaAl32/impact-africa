@@ -2,13 +2,14 @@ import { createFileRoute, Link, Outlet, useRouterState } from "@tanstack/react-r
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
+import { AccountMenu } from "@/components/account-menu";
 import { DeptIcon } from "@/components/dept-icon";
 import { NuruWordmark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 import { DEPARTMENTS } from "@/lib/departments";
 
-export const Route = createFileRoute("/app")({
+export const Route = createFileRoute("/_authenticated/app")({
   component: AppLayout,
 });
 
@@ -43,10 +44,11 @@ function AppLayout() {
   return (
     <div className="flex min-h-screen">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card/40 lg:flex">
-        <div className="flex h-16 items-center border-b border-border px-4">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <Link to="/" aria-label="Nuru AI home">
             <NuruWordmark />
           </Link>
+          <AccountMenu compact />
         </div>
         <div className="flex-1 overflow-y-auto">{nav}</div>
       </aside>
@@ -56,14 +58,17 @@ function AppLayout() {
           <Link to="/" aria-label="Nuru AI home">
             <NuruWordmark />
           </Link>
-          <Button
-            size="icon"
-            variant="ghost"
-            aria-label={open ? "Close navigation" : "Open navigation"}
-            onClick={() => setOpen((v) => !v)}
-          >
-            {open ? <X className="size-5" /> : <Menu className="size-5" />}
-          </Button>
+          <div className="flex items-center gap-1">
+            <AccountMenu compact />
+            <Button
+              size="icon"
+              variant="ghost"
+              aria-label={open ? "Close navigation" : "Open navigation"}
+              onClick={() => setOpen((v) => !v)}
+            >
+              {open ? <X className="size-5" /> : <Menu className="size-5" />}
+            </Button>
+          </div>
         </header>
 
         {open && (

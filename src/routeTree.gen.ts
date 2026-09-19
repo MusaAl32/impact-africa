@@ -10,28 +10,35 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AppRouteImport } from './routes/app'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } from './routes/[.well-known]/oauth-protected-resource'
+import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/app'
 import { Route as ApiChatRouteImport } from './routes/api/chat'
-import { Route as AppIndexRouteImport } from './routes/app.index'
-import { Route as AppDepartmentRouteImport } from './routes/app.$department'
-import { Route as AppHubRouteImport } from './routes/app.hub'
-import { Route as AppLanguagesRouteImport } from './routes/app.languages'
-import { Route as AppOpportunitiesRouteImport } from './routes/app.opportunities'
-import { Route as AppSettingsRouteImport } from './routes/app.settings'
-import { Route as AppWorkspaceRouteImport } from './routes/app.workspace'
+import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
+import { Route as AuthenticatedAppDepartmentRouteImport } from './routes/_authenticated/app.$department'
+import { Route as AuthenticatedAppHubRouteImport } from './routes/_authenticated/app.hub'
+import { Route as AuthenticatedAppLanguagesRouteImport } from './routes/_authenticated/app.languages'
+import { Route as AuthenticatedAppOpportunitiesRouteImport } from './routes/_authenticated/app.opportunities'
+import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
+import { Route as AuthenticatedAppWorkspaceRouteImport } from './routes/_authenticated/app.workspace'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppRoute = AppRouteImport.update({
-  id: '/app',
-  path: '/app',
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
 const McpRoute = McpRouteImport.update({
@@ -42,6 +49,11 @@ const McpRoute = McpRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TermsRoute = TermsRouteImport.update({
@@ -55,104 +67,123 @@ const Char91DotwellKnownChar93OauthProtectedResourceRoute =
     path: '/.well-known/oauth-protected-resource',
     getParentRoute: () => rootRouteImport,
   } as any)
+const AuthenticatedAppRoute = AuthenticatedAppRouteImport.update({
+  id: '/app',
+  path: '/app',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ApiChatRoute = ApiChatRouteImport.update({
   id: '/api/chat',
   path: '/api/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
-const AppIndexRoute = AppIndexRouteImport.update({
+const AuthenticatedAppIndexRoute = AuthenticatedAppIndexRouteImport.update({
   id: '/',
   path: '/',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AppDepartmentRoute = AppDepartmentRouteImport.update({
-  id: '/$department',
-  path: '/$department',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppHubRoute = AppHubRouteImport.update({
+const AuthenticatedAppDepartmentRoute =
+  AuthenticatedAppDepartmentRouteImport.update({
+    id: '/$department',
+    path: '/$department',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppHubRoute = AuthenticatedAppHubRouteImport.update({
   id: '/hub',
   path: '/hub',
-  getParentRoute: () => AppRoute,
+  getParentRoute: () => AuthenticatedAppRoute,
 } as any)
-const AppLanguagesRoute = AppLanguagesRouteImport.update({
-  id: '/languages',
-  path: '/languages',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppOpportunitiesRoute = AppOpportunitiesRouteImport.update({
-  id: '/opportunities',
-  path: '/opportunities',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppSettingsRoute = AppSettingsRouteImport.update({
-  id: '/settings',
-  path: '/settings',
-  getParentRoute: () => AppRoute,
-} as any)
-const AppWorkspaceRoute = AppWorkspaceRouteImport.update({
-  id: '/workspace',
-  path: '/workspace',
-  getParentRoute: () => AppRoute,
-} as any)
+const AuthenticatedAppLanguagesRoute =
+  AuthenticatedAppLanguagesRouteImport.update({
+    id: '/languages',
+    path: '/languages',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppOpportunitiesRoute =
+  AuthenticatedAppOpportunitiesRouteImport.update({
+    id: '/opportunities',
+    path: '/opportunities',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppSettingsRoute =
+  AuthenticatedAppSettingsRouteImport.update({
+    id: '/settings',
+    path: '/settings',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
+const AuthenticatedAppWorkspaceRoute =
+  AuthenticatedAppWorkspaceRouteImport.update({
+    id: '/workspace',
+    path: '/workspace',
+    getParentRoute: () => AuthenticatedAppRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
+  '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/app': typeof AuthenticatedAppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
-  '/app/$department': typeof AppDepartmentRoute
-  '/app/hub': typeof AppHubRoute
-  '/app/languages': typeof AppLanguagesRoute
-  '/app/opportunities': typeof AppOpportunitiesRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/workspace': typeof AppWorkspaceRoute
-  '/app/': typeof AppIndexRoute
+  '/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/app/hub': typeof AuthenticatedAppHubRoute
+  '/app/languages': typeof AuthenticatedAppLanguagesRoute
+  '/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
+  '/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
-  '/app/$department': typeof AppDepartmentRoute
-  '/app/hub': typeof AppHubRoute
-  '/app/languages': typeof AppLanguagesRoute
-  '/app/opportunities': typeof AppOpportunitiesRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/workspace': typeof AppWorkspaceRoute
-  '/app': typeof AppIndexRoute
+  '/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/app/hub': typeof AuthenticatedAppHubRoute
+  '/app/languages': typeof AuthenticatedAppLanguagesRoute
+  '/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
+  '/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
+  '/app': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/app': typeof AppRouteWithChildren
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
   '/mcp': typeof McpRoute
   '/privacy': typeof PrivacyRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/terms': typeof TermsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
+  '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
-  '/app/$department': typeof AppDepartmentRoute
-  '/app/hub': typeof AppHubRoute
-  '/app/languages': typeof AppLanguagesRoute
-  '/app/opportunities': typeof AppOpportunitiesRoute
-  '/app/settings': typeof AppSettingsRoute
-  '/app/workspace': typeof AppWorkspaceRoute
-  '/app/': typeof AppIndexRoute
+  '/_authenticated/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/_authenticated/app/hub': typeof AuthenticatedAppHubRoute
+  '/_authenticated/app/languages': typeof AuthenticatedAppLanguagesRoute
+  '/_authenticated/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
+  '/_authenticated/app/settings': typeof AuthenticatedAppSettingsRoute
+  '/_authenticated/app/workspace': typeof AuthenticatedAppWorkspaceRoute
+  '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/app'
+    | '/auth'
     | '/mcp'
     | '/privacy'
+    | '/reset-password'
     | '/terms'
     | '/.well-known/oauth-protected-resource'
+    | '/app'
     | '/api/chat'
     | '/app/$department'
     | '/app/hub'
@@ -164,8 +195,10 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/auth'
     | '/mcp'
     | '/privacy'
+    | '/reset-password'
     | '/terms'
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
@@ -179,26 +212,31 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
-    | '/app'
+    | '/_authenticated'
+    | '/auth'
     | '/mcp'
     | '/privacy'
+    | '/reset-password'
     | '/terms'
     | '/.well-known/oauth-protected-resource'
+    | '/_authenticated/app'
     | '/api/chat'
-    | '/app/$department'
-    | '/app/hub'
-    | '/app/languages'
-    | '/app/opportunities'
-    | '/app/settings'
-    | '/app/workspace'
-    | '/app/'
+    | '/_authenticated/app/$department'
+    | '/_authenticated/app/hub'
+    | '/_authenticated/app/languages'
+    | '/_authenticated/app/opportunities'
+    | '/_authenticated/app/settings'
+    | '/_authenticated/app/workspace'
+    | '/_authenticated/app/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  AppRoute: typeof AppRouteWithChildren
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
   McpRoute: typeof McpRoute
   PrivacyRoute: typeof PrivacyRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   TermsRoute: typeof TermsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
@@ -213,11 +251,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app': {
-      id: '/app'
-      path: '/app'
-      fullPath: '/app'
-      preLoaderRoute: typeof AppRouteImport
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/mcp': {
@@ -234,6 +279,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PrivacyRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/terms': {
       id: '/terms'
       path: '/terms'
@@ -248,6 +300,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/app': {
+      id: '/_authenticated/app'
+      path: '/app'
+      fullPath: '/app'
+      preLoaderRoute: typeof AuthenticatedAppRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/api/chat': {
       id: '/api/chat'
       path: '/api/chat'
@@ -255,85 +314,99 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiChatRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/app/': {
-      id: '/app/'
+    '/_authenticated/app/': {
+      id: '/_authenticated/app/'
       path: '/'
       fullPath: '/app/'
-      preLoaderRoute: typeof AppIndexRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppIndexRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/$department': {
-      id: '/app/$department'
+    '/_authenticated/app/$department': {
+      id: '/_authenticated/app/$department'
       path: '/$department'
       fullPath: '/app/$department'
-      preLoaderRoute: typeof AppDepartmentRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppDepartmentRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/hub': {
-      id: '/app/hub'
+    '/_authenticated/app/hub': {
+      id: '/_authenticated/app/hub'
       path: '/hub'
       fullPath: '/app/hub'
-      preLoaderRoute: typeof AppHubRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppHubRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/languages': {
-      id: '/app/languages'
+    '/_authenticated/app/languages': {
+      id: '/_authenticated/app/languages'
       path: '/languages'
       fullPath: '/app/languages'
-      preLoaderRoute: typeof AppLanguagesRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppLanguagesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/opportunities': {
-      id: '/app/opportunities'
+    '/_authenticated/app/opportunities': {
+      id: '/_authenticated/app/opportunities'
       path: '/opportunities'
       fullPath: '/app/opportunities'
-      preLoaderRoute: typeof AppOpportunitiesRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppOpportunitiesRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/settings': {
-      id: '/app/settings'
+    '/_authenticated/app/settings': {
+      id: '/_authenticated/app/settings'
       path: '/settings'
       fullPath: '/app/settings'
-      preLoaderRoute: typeof AppSettingsRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppSettingsRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
-    '/app/workspace': {
-      id: '/app/workspace'
+    '/_authenticated/app/workspace': {
+      id: '/_authenticated/app/workspace'
       path: '/workspace'
       fullPath: '/app/workspace'
-      preLoaderRoute: typeof AppWorkspaceRouteImport
-      parentRoute: typeof AppRoute
+      preLoaderRoute: typeof AuthenticatedAppWorkspaceRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
     }
   }
 }
 
-interface AppRouteChildren {
-  AppDepartmentRoute: typeof AppDepartmentRoute
-  AppHubRoute: typeof AppHubRoute
-  AppLanguagesRoute: typeof AppLanguagesRoute
-  AppOpportunitiesRoute: typeof AppOpportunitiesRoute
-  AppSettingsRoute: typeof AppSettingsRoute
-  AppWorkspaceRoute: typeof AppWorkspaceRoute
-  AppIndexRoute: typeof AppIndexRoute
+interface AuthenticatedAppRouteChildren {
+  AuthenticatedAppDepartmentRoute: typeof AuthenticatedAppDepartmentRoute
+  AuthenticatedAppHubRoute: typeof AuthenticatedAppHubRoute
+  AuthenticatedAppLanguagesRoute: typeof AuthenticatedAppLanguagesRoute
+  AuthenticatedAppOpportunitiesRoute: typeof AuthenticatedAppOpportunitiesRoute
+  AuthenticatedAppSettingsRoute: typeof AuthenticatedAppSettingsRoute
+  AuthenticatedAppWorkspaceRoute: typeof AuthenticatedAppWorkspaceRoute
+  AuthenticatedAppIndexRoute: typeof AuthenticatedAppIndexRoute
 }
 
-const AppRouteChildren: AppRouteChildren = {
-  AppDepartmentRoute: AppDepartmentRoute,
-  AppHubRoute: AppHubRoute,
-  AppLanguagesRoute: AppLanguagesRoute,
-  AppOpportunitiesRoute: AppOpportunitiesRoute,
-  AppSettingsRoute: AppSettingsRoute,
-  AppWorkspaceRoute: AppWorkspaceRoute,
-  AppIndexRoute: AppIndexRoute,
+const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
+  AuthenticatedAppDepartmentRoute: AuthenticatedAppDepartmentRoute,
+  AuthenticatedAppHubRoute: AuthenticatedAppHubRoute,
+  AuthenticatedAppLanguagesRoute: AuthenticatedAppLanguagesRoute,
+  AuthenticatedAppOpportunitiesRoute: AuthenticatedAppOpportunitiesRoute,
+  AuthenticatedAppSettingsRoute: AuthenticatedAppSettingsRoute,
+  AuthenticatedAppWorkspaceRoute: AuthenticatedAppWorkspaceRoute,
+  AuthenticatedAppIndexRoute: AuthenticatedAppIndexRoute,
 }
 
-const AppRouteWithChildren = AppRoute._addFileChildren(AppRouteChildren)
+const AuthenticatedAppRouteWithChildren =
+  AuthenticatedAppRoute._addFileChildren(AuthenticatedAppRouteChildren)
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAppRoute: typeof AuthenticatedAppRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAppRoute: AuthenticatedAppRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  AppRoute: AppRouteWithChildren,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
   McpRoute: McpRoute,
   PrivacyRoute: PrivacyRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   TermsRoute: TermsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

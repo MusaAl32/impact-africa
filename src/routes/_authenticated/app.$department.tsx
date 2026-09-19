@@ -6,7 +6,7 @@ import { AGENT_DEPARTMENTS, type DepartmentId } from "@/lib/departments";
 
 const CHAT_DEPARTMENTS = AGENT_DEPARTMENTS.filter((d) => d.id !== "platform");
 
-export const Route = createFileRoute("/app/$department")({
+export const Route = createFileRoute("/_authenticated/app/$department")({
   loader: ({ params }) => {
     const dept = CHAT_DEPARTMENTS.find((d) => d.id === params.department);
     if (!dept) throw notFound();

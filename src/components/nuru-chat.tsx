@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import type { DepartmentId } from "@/lib/departments";
 import { speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
 import { DEFAULT_PREFERENCES, loadPreferences } from "@/lib/workspace";
+import { getConversation, saveMessage, startFreshConversation } from "@/lib/chat.functions";
 
 type Attachment = { filename: string; mediaType: string; url: string };
 
@@ -69,6 +70,7 @@ export function NuruChat({
   className,
   accept = "image/*,application/pdf,.txt,.md,.csv",
   heading,
+  persist = false,
 }: {
   department: DepartmentId;
   placeholder?: string;
@@ -79,11 +81,25 @@ export function NuruChat({
   className?: string;
   accept?: string;
   heading?: string;
+  /** Save this conversation to the signed-in person's account. */
+  persist?: boolean;
 }) {
   const transport = useMemo(() => new DefaultChatTransport({ api: "/api/chat" }), []);
   const { messages, sendMessage, status, error, stop, regenerate, setMessages } = useChat({
     transport,
+    onFinish: ({ message }) => {
+      if (!persist) return;
+      void saveMessage({
+        data: {
+          clientMessageId: message.id,
+          role: "assistant",
+          parts: message.parts as unknown[],
+          department,
+        },
+      }).catch((e) => console.error("Could not save Nuru's reply", e));
+    },
   });
+
 
   const [input, setInput] = useState(initialPrompt ?? "");
   const [attachments, setAttachments] = useState<Attachment[]>([]);
@@ -99,6 +115,27 @@ export function NuruChat({
   useEffect(() => {
     setVoicePrefs(loadPreferences());
   }, []);
+
+  // Restore the saved conversation for signed-in people.
+  useEffect(() => {
+    if (!persist) return;
+    let cancelled = false;
+    getConversation()
+      .then((result) => {
+        if (cancelled || result.messages.length === 0) return;
+        setMessages(
+          result.messages.map((m) => ({
+            id: m.id,
+            role: m.role,
+            parts: m.parts,
+          })) as UIMessage[],
+        );
+      })
+      .catch((e) => console.error("Could not load your saved conversation", e));
+    return () => {
+      cancelled = true;
+    };
+  }, [persist, setMessages]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
@@ -137,18 +174,31 @@ export function NuruChat({
     if (!value && attachments.length === 0) return;
     if (busy) return;
 
+    const parts = [
+      ...(value ? [{ type: "text" as const, text: value }] : []),
+      ...attachments.map((a) => ({
+        type: "file" as const,
+        mediaType: a.mediaType,
+        filename: a.filename,
+        url: a.url,
+      })),
+    ];
+    const clientMessageId =
+      typeof crypto !== "undefined" && "randomUUID" in crypto
+        ? crypto.randomUUID()
+        : `msg-${Date.now()}`;
+
+    if (persist) {
+      void saveMessage({
+        data: { clientMessageId, role: "user", parts, department },
+      }).catch((e) => console.error("Could not save your message", e));
+    }
+
     sendMessage(
       {
+        id: clientMessageId,
         role: "user",
-        parts: [
-          ...(value ? [{ type: "text" as const, text: value }] : []),
-          ...attachments.map((a) => ({
-            type: "file" as const,
-            mediaType: a.mediaType,
-            filename: a.filename,
-            url: a.url,
-          })),
-        ],
+        parts,
       },
       {
         body: {
@@ -304,6 +354,11 @@ export function NuruChat({
                     onSelect={() => {
                       setMessages([]);
                       stopSpeaking();
+                      if (persist) {
+                        void startFreshConversation()
+                          .then(() => toast.success("Started a fresh conversation."))
+                          .catch((e) => console.error("Could not start a fresh conversation", e));
+                      }
                     }}
                   >
                     <Sparkles className="mr-2 size-4" /> Start a new chat

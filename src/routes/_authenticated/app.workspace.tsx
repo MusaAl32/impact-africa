@@ -16,7 +16,7 @@ import {
   type WorkspaceItem,
 } from "@/lib/workspace";
 
-export const Route = createFileRoute("/app/workspace")({
+export const Route = createFileRoute("/_authenticated/app/workspace")({
   head: () => ({
     meta: [
       { title: "My Workspace — projects and context in Nuru AI" },

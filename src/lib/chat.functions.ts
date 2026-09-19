@@ -1,0 +1,122 @@
+import { createServerFn } from "@tanstack/react-start";
+import { z } from "zod";
+
+import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+export type MessagePart = { [key: string]: Json };
+
+export type StoredMessage = {
+  id: string;
+  role: "user" | "assistant";
+  parts: MessagePart[];
+  department: string | null;
+};
+
+async function activeConversationId(
+  supabase: { from: (t: string) => any },
+  userId: string,
+): Promise<string> {
+  const { data, error } = await supabase
+    .from("conversations")
+    .select("id")
+    .eq("user_id", userId)
+    .eq("archived", false)
+    .order("updated_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) throw new Error(error.message);
+  if (data?.id) return data.id as string;
+
+  const { data: created, error: insertError } = await supabase
+    .from("conversations")
+    .insert({ user_id: userId })
+    .select("id")
+    .single();
+
+  if (insertError) throw new Error(insertError.message);
+  return created.id as string;
+}
+
+/** The signed-in person's saved conversation with Nuru. */
+export const getConversation = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const conversationId = await activeConversationId(context.supabase as never, context.userId);
+
+    const { data, error } = await context.supabase
+      .from("messages")
+      .select("id, client_message_id, role, parts, department")
+      .eq("conversation_id", conversationId)
+      .order("created_at", { ascending: true })
+      .limit(400);
+
+    if (error) throw new Error(error.message);
+
+    const messages: StoredMessage[] = (data ?? []).map((row) => ({
+      id: (row.client_message_id as string | null) ?? (row.id as string),
+      role: row.role === "assistant" ? "assistant" : "user",
+      parts: Array.isArray(row.parts) ? (row.parts as MessagePart[]) : [],
+      department: (row.department as string | null) ?? null,
+    }));
+
+    return { conversationId, messages };
+  });
+
+const SaveInput = z.object({
+  clientMessageId: z.string().min(1).max(120),
+  role: z.enum(["user", "assistant"]),
+  parts: z.array(z.record(z.string(), z.any())).max(200) as unknown as z.ZodType<MessagePart[]>,
+  department: z.string().max(60).optional(),
+});
+
+export const saveMessage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => SaveInput.parse(input))
+  .handler(async ({ data, context }) => {
+    const conversationId = await activeConversationId(context.supabase as never, context.userId);
+
+    const row = {
+      conversation_id: conversationId,
+      user_id: context.userId,
+      client_message_id: data.clientMessageId,
+      role: data.role,
+      parts: data.parts as never,
+      department: data.department ?? null,
+    };
+
+    const { error } = await context.supabase
+      .from("messages")
+      .upsert(row, { onConflict: "conversation_id,client_message_id" });
+
+    if (error) {
+      // Older databases may lack the unique index the upsert relies on.
+      console.error("saveMessage upsert failed, falling back to insert", error.message);
+      const { error: insertError } = await context.supabase.from("messages").insert(row);
+      if (insertError) return { ok: false as const, conversationId };
+    }
+
+
+    await context.supabase
+      .from("conversations")
+      .update({ updated_at: new Date().toISOString() })
+      .eq("id", conversationId);
+
+    return { ok: true, conversationId };
+  });
+
+/** Archive the current conversation and start an empty one. */
+export const startFreshConversation = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { error } = await context.supabase
+      .from("conversations")
+      .update({ archived: true })
+      .eq("user_id", context.userId)
+      .eq("archived", false);
+    if (error) throw new Error(error.message);
+
+    const conversationId = await activeConversationId(context.supabase as never, context.userId);
+    return { conversationId };
+  });
