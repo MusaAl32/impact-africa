@@ -2,6 +2,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 import { useState } from "react";
 
+import { AccountMenu } from "@/components/account-menu";
 import { NuruWordmark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 
@@ -38,6 +39,7 @@ export function SiteHeader() {
           <Button asChild size="sm" className="hidden md:inline-flex">
             <Link to="/app">Open Nuru</Link>
           </Button>
+          <AccountMenu />
           <Button
             size="icon"
             variant="ghost"
