@@ -1,16 +1,18 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { convertToModelMessages, streamText, stepCountIs, tool, type UIMessage } from "ai";
+import { convertToModelMessages, smoothStream, streamText, stepCountIs, tool, type UIMessage } from "ai";
+import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
 import {
   NURU_MODEL,
-  createLovableAiGatewayProvider,
+  createLovableResponsesProvider,
   getLovableAiGatewayRunId,
   requireLovableApiKey,
 } from "@/lib/ai-gateway.server";
 import { buildSystemPrompt } from "@/lib/prompts";
 import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
+import type { Database, Json } from "@/integrations/supabase/types";
 
 
 export const Route = createFileRoute("/api/chat")({
@@ -24,6 +26,7 @@ export const Route = createFileRoute("/api/chat")({
           language?: string;
           projectContext?: string;
           webAccess?: boolean;
+          conversationId?: string;
         };
 
         try {
@@ -36,6 +39,33 @@ export const Route = createFileRoute("/api/chat")({
           return new Response("No messages provided", { status: 400 });
         }
 
+        const authHeader = request.headers.get("authorization");
+        if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401 });
+        const token = authHeader.slice(7);
+        const url = process.env["SUPABASE_URL"];
+        const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
+        if (!url || !key) return new Response("Service unavailable", { status: 503 });
+        const userDb = createClient<Database>(url, key, {
+          global: { headers: { Authorization: `Bearer ${token}` } },
+          auth: { persistSession: false, autoRefreshToken: false },
+        });
+        const { data: claims, error: claimsError } = await userDb.auth.getClaims(token);
+        const userId = claims?.claims?.sub;
+        if (claimsError || !userId) return new Response("Unauthorized", { status: 401 });
+
+        if (body.conversationId) {
+          const parsed = z.string().uuid().safeParse(body.conversationId);
+          if (!parsed.success) return new Response("Invalid conversation", { status: 400 });
+          const { data: owned } = await userDb
+            .from("conversations")
+            .select("id")
+            .eq("id", body.conversationId)
+            .eq("user_id", userId)
+            .eq("archived", false)
+            .maybeSingle();
+          if (!owned) return new Response("Conversation not found", { status: 404 });
+        }
+
         let apiKey: string;
         try {
           apiKey = requireLovableApiKey();
@@ -43,13 +73,13 @@ export const Route = createFileRoute("/api/chat")({
           return new Response((error as Error).message, { status: 500 });
         }
 
-        const gateway = createLovableAiGatewayProvider(apiKey, getLovableAiGatewayRunId(request));
+        const gateway = createLovableResponsesProvider(apiKey, getLovableAiGatewayRunId(request));
 
         const webEnabled = body.webAccess !== false && webSearchConfigured();
 
         try {
           const result = streamText({
-            model: gateway(NURU_MODEL),
+            model: gateway.responses(NURU_MODEL),
             system: [
               buildSystemPrompt({
                 department: body.department ?? "platform",
@@ -69,6 +99,8 @@ export const Route = createFileRoute("/api/chat")({
             messages: await convertToModelMessages(body.messages),
             stopWhen: stepCountIs(webEnabled ? 8 : 6),
             abortSignal: request.signal,
+            timeout: { totalMs: 90_000 },
+            experimental_transform: smoothStream({ chunking: "word" }),
             tools: {
               activate_agents: tool({
                 description:
@@ -122,7 +154,26 @@ export const Route = createFileRoute("/api/chat")({
           });
 
 
-          return result.toUIMessageStreamResponse();
+          return result.toUIMessageStreamResponse({
+            originalMessages: body.messages,
+            onFinish: async ({ responseMessage, isAborted }) => {
+              if (isAborted || !body.conversationId) return;
+              const { error: messageError } = await userDb.from("messages").upsert({
+                conversation_id: body.conversationId,
+                user_id: userId,
+                client_message_id: responseMessage.id,
+                role: "assistant",
+                parts: responseMessage.parts as unknown as Json,
+                department: body.department ?? "platform",
+              }, { onConflict: "conversation_id,client_message_id" });
+              if (messageError) console.error("Nuru assistant persistence failed");
+              await userDb
+                .from("conversations")
+                .update({ updated_at: new Date().toISOString() })
+                .eq("id", body.conversationId)
+                .eq("user_id", userId);
+            },
+          });
         } catch (error) {
           if ((error as Error)?.name === "AbortError") {
             return new Response(null, { status: 499 });

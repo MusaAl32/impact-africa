@@ -174,7 +174,11 @@ export function NuruChat({
     }
     const prefs = loadPreferences();
     setSpeakingId(id);
-    speak(text, prefs.voiceURI, prefs.voiceRate, () => setSpeakingId(null));
+    speak(text, language, {
+      voiceURI: prefs.voiceURI,
+      rate: prefs.voiceRate,
+      onEnd: () => setSpeakingId(null),
+    });
   }
 
   const promptCards = (suggestions.length >= 4 ? suggestions : DEFAULT_PROMPTS).slice(0, 6);
