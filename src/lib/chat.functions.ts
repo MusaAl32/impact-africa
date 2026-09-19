@@ -89,11 +89,18 @@ export const getConversation = createServerFn({ method: "GET" })
   .inputValidator(conversationIdSchema)
   .middleware([requireSupabaseAuth])
   .handler(async ({ data, context }) => {
-    const conversation = await verifyOwnedConversation(
-      context.supabase,
-      context.userId,
-      data.conversationId,
-    );
+    // Returns a plain "not found" result instead of throwing: a conversation the
+    // caller does not own is an expected outcome, not a server error.
+    const { data: conversation, error: lookupError } = await context.supabase
+      .from("conversations")
+      .select("id, title, updated_at")
+      .eq("id", data.conversationId)
+      .eq("user_id", context.userId)
+      .eq("archived", false)
+      .maybeSingle();
+    if (lookupError) throw new Error("Could not open this conversation.");
+    if (!conversation) return { conversation: null, messages: [] };
+
     const { data: messages, error } = await context.supabase
       .from("messages")
       .select("client_message_id, role, parts, department, created_at")
