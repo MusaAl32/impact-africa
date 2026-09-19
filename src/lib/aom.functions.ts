@@ -90,8 +90,9 @@ const AnalyzeInput = z.object({
 });
 
 export const analyzeItem = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => AnalyzeInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { publicDb, runItemAnalysis } = await import("./aom.server");
     const db = publicDb();
 
