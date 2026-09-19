@@ -15,11 +15,10 @@ import { getDepartment } from "@/lib/departments";
 export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")({
   staticData: { sitemap: false },
   loader: async ({ params }) => {
-    try {
-      return await getConversation({ data: { conversationId: params.conversationId } });
-    } catch {
-      throw notFound();
-    }
+    const result = await getConversation({ data: { conversationId: params.conversationId } })
+      .catch(() => null);
+    if (!result?.conversation) throw notFound();
+    return { conversation: result.conversation, messages: result.messages };
   },
   head: () => ({ meta: [{ title: "Conversation — Nuru AI" }] }),
   component: ConversationPage,
