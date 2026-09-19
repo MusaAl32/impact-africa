@@ -4,6 +4,7 @@ import { COMPANY } from "@/lib/legal";
 import { LegalPage, LegalSection } from "@/components/legal-page";
 
 export const Route = createFileRoute("/privacy")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: `Privacy Policy — ${COMPANY.product}` },

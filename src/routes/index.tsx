@@ -9,6 +9,7 @@ import { AGENT_DEPARTMENTS, DEPARTMENTS } from "@/lib/departments";
 import { AFRICAN_LANGUAGES } from "@/lib/languages";
 
 export const Route = createFileRoute("/")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: "Nuru AI — One AI. Built for Africa. Connected to the world." },

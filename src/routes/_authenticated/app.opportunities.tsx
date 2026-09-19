@@ -10,6 +10,7 @@ import { Button } from "@/components/ui/button";
 import { analyzeItem, listProblems, listResearch, submitProblem } from "@/lib/aom.functions";
 
 export const Route = createFileRoute("/_authenticated/app/opportunities")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Opportunity Map — African problems analysed by Nuru AI" },

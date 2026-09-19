@@ -26,6 +26,7 @@ import {
 } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/app/admin")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Admin control room — Nuru AI" },

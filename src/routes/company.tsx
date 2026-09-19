@@ -4,6 +4,7 @@ import { COMPANY } from "@/lib/legal";
 import { LegalPage, LegalSection } from "@/components/legal-page";
 
 export const Route = createFileRoute("/company")({
+  staticData: { sitemap: true },
   head: () => ({
     meta: [
       { title: `Company Profile — ${COMPANY.product}` },
