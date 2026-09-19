@@ -116,6 +116,27 @@ export function NuruChat({
     setVoicePrefs(loadPreferences());
   }, []);
 
+  // Restore the saved conversation for signed-in people.
+  useEffect(() => {
+    if (!persist) return;
+    let cancelled = false;
+    getConversation()
+      .then((result) => {
+        if (cancelled || result.messages.length === 0) return;
+        setMessages(
+          result.messages.map((m) => ({
+            id: m.id,
+            role: m.role,
+            parts: m.parts,
+          })) as UIMessage[],
+        );
+      })
+      .catch((e) => console.error("Could not load your saved conversation", e));
+    return () => {
+      cancelled = true;
+    };
+  }, [persist, setMessages]);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, status]);
