@@ -61,7 +61,10 @@ export const submitProblem = createServerFn({ method: "POST" })
       aiSummary = null;
     }
 
-    const { data: row, error } = await publicDb()
+    // Server-side insert so the generated summary is stored by the system, not
+    // accepted from the browser (the database rejects client-supplied summaries).
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: row, error } = await supabaseAdmin
       .from("aom_submissions")
       .insert({
         title: data.title,
@@ -71,6 +74,7 @@ export const submitProblem = createServerFn({ method: "POST" })
         evidence_url: data.evidenceUrl || null,
         contact_email: data.contactEmail || null,
         ai_summary: aiSummary,
+        status: "pending",
       })
       .select("id")
       .single();
