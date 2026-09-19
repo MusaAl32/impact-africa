@@ -12,6 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { Toaster } from "@/components/ui/sonner";
+import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -142,12 +143,14 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <I18nProvider>
-        <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/25">
-          {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-          <Outlet />
-        </div>
-      </I18nProvider>
+      <TooltipProvider>
+        <I18nProvider>
+          <div className="min-h-screen bg-background font-sans text-foreground selection:bg-primary/25">
+            {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
+            <Outlet />
+          </div>
+        </I18nProvider>
+      </TooltipProvider>
       <Toaster position="top-center" />
     </QueryClientProvider>
   );
