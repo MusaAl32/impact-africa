@@ -30,6 +30,7 @@ function CompanyProfilePage() {
     <LegalPage
       title="Company Profile"
       intro={`${COMPANY.product} is an advanced artificial intelligence platform owned and operated by ${COMPANY.name}.`}
+      showStatus={false}
     >
       <LegalSection title="What we build">
         <p>
