@@ -1,6 +1,7 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 import { supabaseAnon } from "../supabase";
+import { guardToolCall } from "../guard";
 import {
   RATE_LIMITS,
   checkRateLimit,
@@ -55,11 +56,11 @@ export default defineTool({
     error: errorSchema,
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async ({ query, country, category, limit, offset }) => {
+  handler: async ({ query, country, category, limit, offset }, ctx) => {
     const take = limit ?? 10;
     const skip = offset ?? 0;
 
-    const limited = checkRateLimit("list_research", RATE_LIMITS.read);
+    const limited = await guardToolCall("list_research", ctx);
     if (limited) return limited;
 
     const emptyPagination = { limit: take, offset: skip, returned: 0, hasMore: false };
