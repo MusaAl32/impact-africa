@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { speak, useSpeechVoices } from "@/hooks/use-speech";
+import { getProfile, updateProfile } from "@/lib/account.functions";
+import { useI18n } from "@/lib/i18n";
 import { AFRICAN_LANGUAGES } from "@/lib/languages";
 import {
   DEFAULT_PREFERENCES,
@@ -189,10 +191,22 @@ function SettingsPage() {
         <Button
           onClick={() => {
             savePreferences(prefs);
-            toast.success("Preferences saved");
+            updateProfile({
+              data: {
+                display_name: displayName,
+                country: prefs.country,
+                language: prefs.language,
+                ui_language: locale,
+                tone: prefs.tone,
+                voice_uri: prefs.voiceURI,
+                voice_rate: prefs.voiceRate,
+              },
+            })
+              .then(() => toast.success(t("settings.saved")))
+              .catch(() => toast.error("Saved on this device, but we could not reach your account."));
           }}
         >
-          Save preferences
+          {t("settings.save")}
         </Button>
         <Button
           variant="outline"
