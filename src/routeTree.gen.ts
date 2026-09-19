@@ -22,6 +22,7 @@ import { Route as AuthenticatedAppRouteImport } from './routes/_authenticated/ap
 import { Route as ApiChatRouteImport } from './routes/api/chat'
 import { Route as AuthenticatedAppIndexRouteImport } from './routes/_authenticated/app.index'
 import { Route as AuthenticatedAppDepartmentRouteImport } from './routes/_authenticated/app.$department'
+import { Route as AuthenticatedAppAdminRouteImport } from './routes/_authenticated/app.admin'
 import { Route as AuthenticatedAppHubRouteImport } from './routes/_authenticated/app.hub'
 import { Route as AuthenticatedAppLanguagesRouteImport } from './routes/_authenticated/app.languages'
 import { Route as AuthenticatedAppOpportunitiesRouteImport } from './routes/_authenticated/app.opportunities'
@@ -94,6 +95,11 @@ const AuthenticatedAppDepartmentRoute =
     path: '/$department',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const AuthenticatedAppAdminRoute = AuthenticatedAppAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedAppRoute,
+} as any)
 const AuthenticatedAppHubRoute = AuthenticatedAppHubRouteImport.update({
   id: '/hub',
   path: '/hub',
@@ -136,6 +142,7 @@ export interface FileRoutesByFullPath {
   '/app': typeof AuthenticatedAppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/app/admin': typeof AuthenticatedAppAdminRoute
   '/app/hub': typeof AuthenticatedAppHubRoute
   '/app/languages': typeof AuthenticatedAppLanguagesRoute
   '/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
@@ -154,6 +161,7 @@ export interface FileRoutesByTo {
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/api/chat': typeof ApiChatRoute
   '/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/app/admin': typeof AuthenticatedAppAdminRoute
   '/app/hub': typeof AuthenticatedAppHubRoute
   '/app/languages': typeof AuthenticatedAppLanguagesRoute
   '/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
@@ -175,6 +183,7 @@ export interface FileRoutesById {
   '/_authenticated/app': typeof AuthenticatedAppRouteWithChildren
   '/api/chat': typeof ApiChatRoute
   '/_authenticated/app/$department': typeof AuthenticatedAppDepartmentRoute
+  '/_authenticated/app/admin': typeof AuthenticatedAppAdminRoute
   '/_authenticated/app/hub': typeof AuthenticatedAppHubRoute
   '/_authenticated/app/languages': typeof AuthenticatedAppLanguagesRoute
   '/_authenticated/app/opportunities': typeof AuthenticatedAppOpportunitiesRoute
@@ -196,6 +205,7 @@ export interface FileRouteTypes {
     | '/app'
     | '/api/chat'
     | '/app/$department'
+    | '/app/admin'
     | '/app/hub'
     | '/app/languages'
     | '/app/opportunities'
@@ -214,6 +224,7 @@ export interface FileRouteTypes {
     | '/.well-known/oauth-protected-resource'
     | '/api/chat'
     | '/app/$department'
+    | '/app/admin'
     | '/app/hub'
     | '/app/languages'
     | '/app/opportunities'
@@ -234,6 +245,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app'
     | '/api/chat'
     | '/_authenticated/app/$department'
+    | '/_authenticated/app/admin'
     | '/_authenticated/app/hub'
     | '/_authenticated/app/languages'
     | '/_authenticated/app/opportunities'
@@ -348,6 +360,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppDepartmentRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/_authenticated/app/admin': {
+      id: '/_authenticated/app/admin'
+      path: '/admin'
+      fullPath: '/app/admin'
+      preLoaderRoute: typeof AuthenticatedAppAdminRouteImport
+      parentRoute: typeof AuthenticatedAppRoute
+    }
     '/_authenticated/app/hub': {
       id: '/_authenticated/app/hub'
       path: '/hub'
@@ -388,6 +407,7 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedAppRouteChildren {
   AuthenticatedAppDepartmentRoute: typeof AuthenticatedAppDepartmentRoute
+  AuthenticatedAppAdminRoute: typeof AuthenticatedAppAdminRoute
   AuthenticatedAppHubRoute: typeof AuthenticatedAppHubRoute
   AuthenticatedAppLanguagesRoute: typeof AuthenticatedAppLanguagesRoute
   AuthenticatedAppOpportunitiesRoute: typeof AuthenticatedAppOpportunitiesRoute
@@ -398,6 +418,7 @@ interface AuthenticatedAppRouteChildren {
 
 const AuthenticatedAppRouteChildren: AuthenticatedAppRouteChildren = {
   AuthenticatedAppDepartmentRoute: AuthenticatedAppDepartmentRoute,
+  AuthenticatedAppAdminRoute: AuthenticatedAppAdminRoute,
   AuthenticatedAppHubRoute: AuthenticatedAppHubRoute,
   AuthenticatedAppLanguagesRoute: AuthenticatedAppLanguagesRoute,
   AuthenticatedAppOpportunitiesRoute: AuthenticatedAppOpportunitiesRoute,

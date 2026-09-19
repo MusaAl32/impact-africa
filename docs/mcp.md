@@ -7,6 +7,13 @@ published problem database, public research library and live ecosystem status.
 - Auth: **OAuth required** — callers must present a valid Nuru AI (Supabase) access token
   (`aud: authenticated`). Unauthenticated calls return `401` with the protected-resource
   metadata pointer.
+- Authorisation: **admin-granted allow-list.** A valid token is not enough. Every tool call
+  re-checks that the caller has an active row in `public.mcp_access` (granted in the app's
+  admin control room, revocable at any time). Callers without a grant receive a structured
+  `invalid_request` denial and no data. Access is verified per call with the caller's own
+  token, so row-level security applies; no service-role key exists anywhere in the MCP code.
+- Rate limiting is applied **per authenticated user** (60 tool calls/minute per instance),
+  not per shared bucket.
 - Metadata: `/.well-known/oauth-protected-resource`
 - Server name: `africa-opportunity-hub`
 

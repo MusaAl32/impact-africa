@@ -1,9 +1,8 @@
 import { defineTool } from "@lovable.dev/mcp-js";
 import { z } from "zod";
 import { supabaseAnon } from "../supabase";
+import { guardToolCall } from "../guard";
 import {
-  RATE_LIMITS,
-  checkRateLimit,
   errorSchema,
   publicUrl,
   safeFailure,
@@ -85,10 +84,10 @@ export default defineTool({
     error: errorSchema,
   },
   annotations: { readOnlyHint: true, idempotentHint: true, openWorldHint: false },
-  handler: async ({ section }) => {
+  handler: async ({ section }, ctx) => {
     const slice = section ?? "overview";
 
-    const limited = checkRateLimit("get_ecosystem", RATE_LIMITS.read);
+    const limited = await guardToolCall("get_ecosystem", ctx);
     if (limited) return limited;
 
     const wants = (name: (typeof SECTIONS)[number]) => slice === "overview" || slice === name;
