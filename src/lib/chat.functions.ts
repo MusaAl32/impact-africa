@@ -77,19 +77,26 @@ export const saveMessage = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const conversationId = await activeConversationId(context.supabase as never, context.userId);
 
-    const { error } = await context.supabase.from("messages").upsert(
-      {
-        conversation_id: conversationId,
-        user_id: context.userId,
-        client_message_id: data.clientMessageId,
-        role: data.role,
-        parts: data.parts as never,
-        department: data.department ?? null,
-      },
-      { onConflict: "conversation_id,client_message_id" },
-    );
+    const row = {
+      conversation_id: conversationId,
+      user_id: context.userId,
+      client_message_id: data.clientMessageId,
+      role: data.role,
+      parts: data.parts as never,
+      department: data.department ?? null,
+    };
 
-    if (error) throw new Error(error.message);
+    const { error } = await context.supabase
+      .from("messages")
+      .upsert(row, { onConflict: "conversation_id,client_message_id" });
+
+    if (error) {
+      // Older databases may lack the unique index the upsert relies on.
+      console.error("saveMessage upsert failed, falling back to insert", error.message);
+      const { error: insertError } = await context.supabase.from("messages").insert(row);
+      if (insertError) return { ok: false as const, conversationId };
+    }
+
 
     await context.supabase
       .from("conversations")
