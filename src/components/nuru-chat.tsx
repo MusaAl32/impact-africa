@@ -121,7 +121,7 @@ export function NuruChat({
     if (!persist) return;
     let cancelled = false;
     getConversation()
-      .then((result: { messages: { id: string; role: "user" | "assistant"; parts: unknown[] }[] }) => {
+      .then((result) => {
         if (cancelled || result.messages.length === 0) return;
         setMessages(
           result.messages.map((m) => ({

@@ -3,7 +3,8 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-export type MessagePart = Record<string, unknown>;
+export type Json = string | number | boolean | null | Json[] | { [key: string]: Json };
+export type MessagePart = { [key: string]: Json };
 
 export type StoredMessage = {
   id: string;
@@ -66,7 +67,7 @@ export const getConversation = createServerFn({ method: "GET" })
 const SaveInput = z.object({
   clientMessageId: z.string().min(1).max(120),
   role: z.enum(["user", "assistant"]),
-  parts: z.array(z.record(z.string(), z.unknown())).max(200),
+  parts: z.array(z.record(z.string(), z.any())).max(200) as unknown as z.ZodType<MessagePart[]>,
   department: z.string().max(60).optional(),
 });
 
