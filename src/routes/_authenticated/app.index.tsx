@@ -8,6 +8,7 @@ import { getDepartment, QUICK_ACTIONS } from "@/lib/departments";
 import { useI18n } from "@/lib/i18n";
 
 export const Route = createFileRoute("/_authenticated/app/")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Nuru AI Platform — your African AI workspace" },

@@ -11,6 +11,7 @@ import { DEPARTMENTS } from "@/lib/departments";
 import { isCurrentUserAdmin } from "@/lib/admin.functions";
 
 export const Route = createFileRoute("/_authenticated/app")({
+  staticData: { sitemap: false },
   component: AppLayout,
 });
 

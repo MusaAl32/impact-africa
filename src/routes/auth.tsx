@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import "@lovable.dev/cloud-auth-js/styles.css";
 
 export const Route = createFileRoute("/auth")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Sign in — Nuru AI" },

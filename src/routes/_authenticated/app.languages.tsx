@@ -27,6 +27,7 @@ import { detectLanguage, translateText } from "@/lib/translate.functions";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/app/languages")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "African Languages — Nuru AI translation and detection" },

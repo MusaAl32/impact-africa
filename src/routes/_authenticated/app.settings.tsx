@@ -24,6 +24,7 @@ import {
 } from "@/lib/workspace";
 
 export const Route = createFileRoute("/_authenticated/app/settings")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Settings — Nuru AI preferences" },

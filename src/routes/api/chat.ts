@@ -14,6 +14,7 @@ import type { DepartmentId } from "@/lib/departments";
 
 
 export const Route = createFileRoute("/api/chat")({
+  staticData: { sitemap: false },
   server: {
     handlers: {
       POST: async ({ request }) => {

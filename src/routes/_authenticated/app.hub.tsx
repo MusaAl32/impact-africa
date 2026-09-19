@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { CORRIDORS, SECTORS } from "@/lib/hub";
 
 export const Route = createFileRoute("/_authenticated/app/hub")({
+  staticData: { sitemap: false },
   head: () => ({
     meta: [
       { title: "Africa Business Hub — sector intelligence with Nuru AI" },
