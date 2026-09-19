@@ -40,6 +40,7 @@ import { cn } from "@/lib/utils";
 import type { DepartmentId } from "@/lib/departments";
 import { speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
 import { DEFAULT_PREFERENCES, loadPreferences } from "@/lib/workspace";
+import { getConversation, saveMessage, startFreshConversation } from "@/lib/chat.functions";
 
 type Attachment = { filename: string; mediaType: string; url: string };
 
