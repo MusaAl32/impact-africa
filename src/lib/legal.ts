@@ -11,5 +11,6 @@ export const COMPANY = {
   generalEmail: "hello@africaopportunityhub.com",
   supportEmail: "support@africaopportunityhub.com",
   legalEmail: "legal@africaopportunityhub.com",
-  lastUpdated: "4 September 2026",
+  effectiveDate: "19 September 2026",
+  lastUpdated: "19 September 2026",
 } as const;
