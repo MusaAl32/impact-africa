@@ -3,7 +3,13 @@
   "sdk_version": "1.0.0",
   "path": "/mcp",
   "auth": {
-    "type": "none"
+    "type": "oauth",
+    "issuer": "https://nxzacvdllwzqayeqkkuo.supabase.co/auth/v1",
+    "resource_name": "Africa Opportunity Hub",
+    "accepted_audiences": [
+      "authenticated"
+    ],
+    "jwks_uri": "https://nxzacvdllwzqayeqkkuo.supabase.co/auth/v1/.well-known/jwks.json"
   },
   "mcp": {
     "server": {
@@ -744,181 +750,6 @@
           "required": [
             "research",
             "pagination",
-            "error"
-          ]
-        }
-      },
-      {
-        "name": "analyze_entry",
-        "title": "Nuru AI analysis of a public entry",
-        "description": "Request a Nuru AI specialist analysis of one published problem or public research entry. Returns the public source record alongside clearly-labelled AI analysis, assumptions, uncertainties and recommendations. Read-only: nothing is created or modified.",
-        "annotations": {
-          "readOnlyHint": true,
-          "openWorldHint": false
-        },
-        "inputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "type": "object",
-          "properties": {
-            "itemType": {
-              "type": "string",
-              "enum": [
-                "problem",
-                "research"
-              ],
-              "description": "Whether the id refers to a problem or a research entry."
-            },
-            "itemId": {
-              "type": "string",
-              "minLength": 1,
-              "maxLength": 64,
-              "description": "The entry id returned by list_problems or list_research (UUID)."
-            },
-            "department": {
-              "default": "business",
-              "description": "Which Nuru AI department should analyse the entry.",
-              "type": "string",
-              "enum": [
-                "platform",
-                "business",
-                "agriculture",
-                "research",
-                "education",
-                "developer",
-                "creative",
-                "documents"
-              ]
-            }
-          },
-          "required": [
-            "itemType",
-            "itemId"
-          ]
-        },
-        "outputSchema": {
-          "$schema": "http://json-schema.org/draft-07/schema#",
-          "type": "object",
-          "properties": {
-            "source": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "id": {
-                      "type": "string"
-                    },
-                    "type": {
-                      "type": "string"
-                    },
-                    "title": {
-                      "type": "string"
-                    },
-                    "summary": {
-                      "type": "string"
-                    },
-                    "category": {
-                      "type": "string"
-                    },
-                    "country": {
-                      "type": "string"
-                    },
-                    "sourceUrl": {
-                      "type": [
-                        "string",
-                        "null"
-                      ]
-                    },
-                    "publicUrl": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "id",
-                    "type",
-                    "title",
-                    "summary",
-                    "category",
-                    "country",
-                    "sourceUrl",
-                    "publicUrl"
-                  ]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "analysis": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "department": {
-                      "type": "string"
-                    },
-                    "generatedAt": {
-                      "type": "string"
-                    },
-                    "markdown": {
-                      "type": "string"
-                    },
-                    "disclaimer": {
-                      "type": "string"
-                    },
-                    "isAiGenerated": {
-                      "type": "boolean"
-                    },
-                    "verified": {
-                      "type": "boolean"
-                    }
-                  },
-                  "required": [
-                    "department",
-                    "generatedAt",
-                    "markdown",
-                    "disclaimer",
-                    "isAiGenerated",
-                    "verified"
-                  ]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            },
-            "error": {
-              "anyOf": [
-                {
-                  "type": "object",
-                  "properties": {
-                    "code": {
-                      "type": "string",
-                      "enum": [
-                        "invalid_request",
-                        "not_found",
-                        "no_results",
-                        "rate_limited",
-                        "internal_error"
-                      ]
-                    },
-                    "message": {
-                      "type": "string"
-                    }
-                  },
-                  "required": [
-                    "code",
-                    "message"
-                  ]
-                },
-                {
-                  "type": "null"
-                }
-              ]
-            }
-          },
-          "required": [
-            "source",
-            "analysis",
             "error"
           ]
         }
