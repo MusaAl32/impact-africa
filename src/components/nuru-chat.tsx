@@ -92,6 +92,7 @@ export function NuruChat({
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
   const [initialSent, setInitialSent] = useState(false);
+  const [liveOpen, setLiveOpen] = useState(false);
   const { listening, supported: speechSupported, start: startListening, stop: stopListening } =
     useSpeechRecognition();
 
@@ -327,6 +328,9 @@ export function NuruChat({
                     <PromptInputActionMenuItem onSelect={() => setWebAccess((value) => !value)}>
                       <Globe2 className="mr-2 size-4" /> {webAccess ? "Turn off web search" : "Search the web"}
                     </PromptInputActionMenuItem>
+                    <PromptInputActionMenuItem onSelect={() => setLiveOpen(true)}>
+                      <Headphones className="mr-2 size-4" /> Start live voice
+                    </PromptInputActionMenuItem>
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
               </PromptInputTools>
@@ -346,6 +350,7 @@ export function NuruChat({
           </p>
         </div>
       </div>
+      <NuruLiveVoice open={liveOpen} onOpenChange={setLiveOpen} onSaved={onHistoryChanged} />
     </section>
   );
 }
