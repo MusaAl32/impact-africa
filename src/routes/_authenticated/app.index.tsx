@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from "@tanstack/react-router";
 
+import { Button } from "@/components/ui/button";
 import { getLatestOrCreateConversation } from "@/lib/chat.functions";
 
 export const Route = createFileRoute("/_authenticated/app/")({
