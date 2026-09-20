@@ -1,4 +1,4 @@
-import { createFileRoute, Link, notFound, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import type { UIMessage } from "ai";
 import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")
   loader: async ({ params }) => {
     const result = await getConversation({ data: { conversationId: params.conversationId } })
       .catch(() => null);
-    if (!result?.conversation) throw notFound();
+    if (!result?.conversation) return { conversation: null, messages: [] };
     return { conversation: result.conversation, messages: result.messages };
   },
   head: () => ({ meta: [{ title: "Conversation — Nuru AI" }] }),
@@ -42,7 +42,7 @@ function ConversationPage() {
   const { conversationId } = Route.useParams();
   const data = Route.useLoaderData();
   const navigate = useNavigate();
-  const [title, setTitle] = useState(data.conversation.title);
+  const [title, setTitle] = useState(data.conversation?.title ?? "Conversation");
   const department = data.messages.at(-1)?.department ?? "platform";
   const dept = getDepartment(department as Parameters<typeof getDepartment>[0]);
   const initialMessages = useMemo<UIMessage[]>(() => data.messages.map((message) => ({
@@ -50,6 +50,8 @@ function ConversationPage() {
     role: message.role as UIMessage["role"],
     parts: message.parts as UIMessage["parts"],
   })), [data.messages]);
+
+  if (!data.conversation) return <MissingConversation />;
 
   async function rename() {
     const next = window.prompt("Rename conversation", title)?.trim();
