@@ -233,5 +233,43 @@ export const branchConversation = createServerFn({ method: "POST" })
     return { conversationId: branch.id };
   });
 
+const liveTranscriptSchema = z.object({
+  turns: z
+    .array(z.object({ role: z.enum(["user", "assistant"]), text: z.string().trim().min(1).max(8000) }))
+    .min(1)
+    .max(300),
+});
+
+/** Saves a finished live voice conversation as a normal Nuru conversation (text only). */
+export const saveLiveTranscript = createServerFn({ method: "POST" })
+  .inputValidator(liveTranscriptSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const firstUser = data.turns.find((turn) => turn.role === "user")?.text ?? "Live voice conversation";
+    const { data: conversation, error: createError } = await context.supabase
+      .from("conversations")
+      .insert({ user_id: context.userId, title: firstUser.slice(0, 64) })
+      .select("id")
+      .single();
+    if (createError || !conversation) throw new Error("Could not save this voice conversation.");
+
+    const base = Date.now();
+    const rows = data.turns.map((turn, index) => ({
+      conversation_id: conversation.id,
+      user_id: context.userId,
+      client_message_id: `live-${base}-${index}`,
+      role: turn.role,
+      parts: [{ type: "text", text: turn.text }] as unknown as Json,
+      department: "voice",
+      created_at: new Date(base + index).toISOString(),
+    }));
+    const { error: insertError } = await context.supabase.from("messages").insert(rows);
+    if (insertError) {
+      await context.supabase.from("conversations").delete().eq("id", conversation.id).eq("user_id", context.userId);
+      throw new Error("Could not save this voice conversation.");
+    }
+    return { conversationId: conversation.id };
+  });
+
 /** Compatibility wrapper retained for older callers. */
 export const startFreshConversation = createConversation;
