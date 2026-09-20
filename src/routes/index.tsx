@@ -84,8 +84,8 @@ function Landing() {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">
-                  <Link to="/app">
-                    Start with Nuru <ArrowRight className="ml-1.5 size-4" />
+                  <Link to="/auth">
+                    Try it free <ArrowRight className="ml-1.5 size-4" />
                   </Link>
                 </Button>
                 <Button asChild size="lg" variant="outline">
