@@ -68,7 +68,11 @@ type LiveSessionHandle = {
 /** Real-time two-way voice conversation with Nuru AI over the Gemini Live API. */
 export function useGeminiLive(options: { systemInstruction: string; languageHint?: string | undefined }) {
   const { systemInstruction, languageHint } = options;
-  const [status, setStatus] = useState<LiveStatus>("idle");
+  const [status, setStatusState] = useState<LiveStatus>("idle");
+  const mountedRef = useRef(true);
+  const setStatus: typeof setStatusState = (value) => {
+    if (mountedRef.current) setStatusState(value);
+  };
   const [error, setError] = useState<string | null>(null);
   const [muted, setMuted] = useState(false);
   const [turns, setTurns] = useState<LiveTurn[]>([]);
@@ -299,7 +303,13 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
     });
   }, []);
 
-  useEffect(() => () => cleanup(), [cleanup]);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      cleanup();
+    };
+  }, [cleanup]);
 
   return { status, error, muted, turns, start, stop, toggleMute, active: status !== "idle" && status !== "error" };
 }
