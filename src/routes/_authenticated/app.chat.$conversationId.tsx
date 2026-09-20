@@ -51,6 +51,8 @@ function ConversationPage() {
     parts: message.parts as UIMessage["parts"],
   })), [data.messages]);
 
+  if (!data.conversation) return <MissingConversation />;
+
   async function rename() {
     const next = window.prompt("Rename conversation", title)?.trim();
     if (!next || next === title) return;
