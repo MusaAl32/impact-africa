@@ -42,7 +42,7 @@ function ConversationPage() {
   const { conversationId } = Route.useParams();
   const data = Route.useLoaderData();
   const navigate = useNavigate();
-  const [title, setTitle] = useState(data.conversation.title);
+  const [title, setTitle] = useState(data.conversation?.title ?? "Conversation");
   const department = data.messages.at(-1)?.department ?? "platform";
   const dept = getDepartment(department as Parameters<typeof getDepartment>[0]);
   const initialMessages = useMemo<UIMessage[]>(() => data.messages.map((message) => ({
