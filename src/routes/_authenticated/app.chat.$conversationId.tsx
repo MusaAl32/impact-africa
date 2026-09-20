@@ -73,7 +73,7 @@ function ConversationPage() {
   }
 
   return (
-    <div className="chat-workspace mx-auto flex min-h-[calc(100dvh-3.5rem)] w-full max-w-4xl flex-1 flex-col bg-background px-0 lg:min-h-screen lg:px-4 lg:py-5">
+    <div className="chat-workspace mx-auto flex h-[calc(100dvh-3.5rem)] min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden bg-background px-0 lg:h-screen lg:px-4 lg:py-5">
       <header className="mb-2 hidden min-h-11 items-center justify-between gap-3 lg:flex">
         <div className="flex min-w-0 items-center gap-2">
           <Button asChild size="icon" variant="ghost" className="size-11 lg:hidden">

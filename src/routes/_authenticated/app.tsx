@@ -154,7 +154,7 @@ function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="chat-workspace sticky top-0 z-40 grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center border-b border-border bg-background px-2 lg:hidden">
+        <header className="chat-workspace sticky top-0 z-40 flex h-14 items-center justify-between border-b border-border bg-background px-2 text-foreground lg:hidden">
           <Button
             size="icon"
             variant="ghost"
@@ -164,7 +164,6 @@ function AppLayout() {
           >
             {open ? <X className="size-5" /> : <Menu className="size-5" />}
           </Button>
-          <span className="truncate text-center text-sm font-semibold">Nuru AI</span>
           <Button size="icon" variant="ghost" className="size-11" onClick={() => void newChat()} aria-label="New chat">
             <MessageSquarePlus className="size-5" />
           </Button>
@@ -178,7 +177,7 @@ function AppLayout() {
         )}
 
         {/* Required: nested routes render here. */}
-        <main className="flex min-w-0 flex-1 animate-fade-up flex-col overflow-x-clip"><Outlet /></main>
+        <main className="flex min-h-0 min-w-0 flex-1 animate-fade-up flex-col overflow-x-clip"><Outlet /></main>
       </div>
     </div>
   );
