@@ -209,7 +209,7 @@ export function NuruChat({
   return (
     <section className={cn("chat-workspace flex min-h-0 flex-1 flex-col overflow-hidden bg-background text-foreground", className)} aria-label="Nuru AI chat">
       <Conversation className="min-h-[44vh]">
-        <ConversationContent className="mx-auto w-full max-w-3xl gap-7 px-4 pb-8 pt-3 sm:px-5">
+        <ConversationContent className="mx-auto w-full max-w-3xl gap-7 px-4 pb-28 pt-3 sm:px-5 lg:pb-8">
           {messages.length === 0 ? (
             <ConversationEmptyState className="min-h-[calc(100dvh-13rem)] justify-end px-0 pb-4 pt-16 sm:min-h-[60vh] sm:justify-center">
               <div className="animate-fade-up w-full max-w-xl">
@@ -308,7 +308,7 @@ export function NuruChat({
         <ConversationScrollButton className="size-11" />
       </Conversation>
 
-      <div className="sticky bottom-0 z-20 bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5">
+      <div className="fixed inset-x-0 bottom-0 z-20 bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5 lg:sticky">
         <div className="mx-auto max-w-3xl">
           <PromptInput
             {...(accept ? { accept } : {})}
