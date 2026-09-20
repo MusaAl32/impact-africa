@@ -2,7 +2,7 @@ import { useChat } from "@ai-sdk/react";
 import type { FileUIPart, UIMessage } from "ai";
 import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
-  AudioLines, Check, ChevronDown, Copy, ExternalLink, Flag, Globe2, Headphones,
+  AudioLines, ChevronDown, Copy, ExternalLink, Flag, Globe2, Headphones,
   Image, Mic, MicOff, MoreHorizontal, PencilLine, RefreshCcw, Share2, Sparkles,
   ThumbsDown, ThumbsUp, Volume2, VolumeX,
 } from "lucide-react";
@@ -17,7 +17,7 @@ import {
 } from "@/components/ai-elements/message";
 import {
   PromptInput, PromptInputActionAddAttachments, PromptInputActionMenu,
-  PromptInputActionMenuContent, PromptInputActionMenuTrigger, PromptInputBody,
+  PromptInputActionMenuContent, PromptInputActionMenuItem, PromptInputActionMenuTrigger,
   PromptInputButton, PromptInputFooter, PromptInputSubmit, PromptInputTextarea,
   PromptInputTools,
 } from "@/components/ai-elements/prompt-input";
@@ -54,15 +54,6 @@ export interface NuruChatProps {
   onHistoryChanged?: () => void;
 }
 
-const DEFAULT_PROMPTS = [
-  "What can you help me with?",
-  "Draft a simple business plan",
-  "Translate a sentence into another language",
-  "Summarise this document for me",
-  "Help me write a certificate of completion",
-  "Help me plan a community project",
-];
-
 const extractText = (message: UIMessage) =>
   message.parts.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
 
@@ -93,7 +84,7 @@ function fileParts(files: FileUIPart[]) {
 }
 
 export function NuruChat({
-  department, placeholder = "Message Nuru", suggestions = [], initialPrompt, language,
+  department, initialPrompt, language,
   projectContext, className, accept, heading = "How can Nuru help?", persist = false,
   conversationId, initialMessages = [], onHistoryChanged,
 }: NuruChatProps) {
@@ -203,7 +194,6 @@ export function NuruChat({
     });
   }
 
-  const promptCards = (suggestions.length >= 4 ? suggestions : DEFAULT_PROMPTS).slice(0, 6);
   const emptyActions = [
     {
       label: "Start a voice chat",
@@ -334,7 +324,12 @@ export function NuruChat({
               <PromptInputTools className="pointer-events-auto absolute left-1.5 top-1/2 -translate-y-1/2">
                 <PromptInputActionMenu>
                   <PromptInputActionMenuTrigger className="size-11 rounded-full" tooltip="Attachments and tools" />
-                  <PromptInputActionMenuContent><PromptInputActionAddAttachments /></PromptInputActionMenuContent>
+                  <PromptInputActionMenuContent>
+                    <PromptInputActionAddAttachments />
+                    <PromptInputActionMenuItem onSelect={() => setWebAccess((value) => !value)}>
+                      <Globe2 className="mr-2 size-4" /> {webAccess ? "Turn off web search" : "Search the web"}
+                    </PromptInputActionMenuItem>
+                  </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
               </PromptInputTools>
               <div className="pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
