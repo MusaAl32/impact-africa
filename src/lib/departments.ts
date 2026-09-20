@@ -36,9 +36,9 @@ export const DEPARTMENTS: Department[] = [
     expertise:
       "You are the universal Nuru assistant. Coordinate specialist knowledge across agriculture, business, research, education, documents and languages.",
     suggestions: [
-      "I want to start a maize farming business in Malawi",
+      "I want to start a small farming business",
       "Draft a 12-month business plan for a poultry farm",
-      "Explain mobile money regulation in Kenya",
+      "Explain how mobile money works",
     ],
   },
   {
@@ -64,8 +64,8 @@ export const DEPARTMENTS: Department[] = [
     expertise:
       "You are a business strategist for African SMEs: business plans, unit economics, pricing, registration, funding and market entry.",
     suggestions: [
-      "Build a business plan for a solar kiosk in Lilongwe",
-      "How do I register a company in Nigeria?",
+      "Build a business plan for a solar kiosk",
+      "What steps do I follow to register a company?",
     ],
   },
   {
@@ -76,7 +76,7 @@ export const DEPARTMENTS: Department[] = [
     tagline: "Crops, livestock, soil, inputs, weather-aware planning.",
     expertise:
       "You are an agronomist for African smallholder and commercial farming: crop calendars, inputs, pests, irrigation and post-harvest.",
-    suggestions: ["Maize planting calendar for central Malawi", "Treat fall armyworm organically"],
+    suggestions: ["Help me plan a maize planting calendar", "Treat fall armyworm organically"],
   },
   {
     id: "voice",

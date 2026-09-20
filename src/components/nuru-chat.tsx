@@ -54,12 +54,12 @@ export interface NuruChatProps {
 }
 
 const DEFAULT_PROMPTS = [
-  "Draft a business plan for a poultry farm in Lagos",
-  "Translate this sentence to Hausa",
-  "What crops suit dry season in Kenya?",
+  "What can you help me with?",
+  "Draft a simple business plan",
+  "Translate a sentence into another language",
   "Summarise this document for me",
-  "Research a market opportunity in Malawi",
-  "Help me plan a community education project",
+  "Help me write a certificate of completion",
+  "Help me plan a community project",
 ];
 
 const extractText = (message: UIMessage) =>

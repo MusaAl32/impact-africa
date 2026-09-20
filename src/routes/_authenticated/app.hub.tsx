@@ -92,8 +92,8 @@ function HubPage() {
           {...(prompt ? { initialPrompt: prompt } : {})}
           placeholder="Ask about a market, sector, licence or corridor…"
           suggestions={[
-            "Which sector fits a $5,000 starting budget in my country?",
-            "Compare exporting to Kenya vs Ghana for processed food",
+            "Which sector fits a $5,000 starting budget?",
+            "How do I compare two export markets for processed food?",
             "What licences do I need to start trading across a border?",
           ]}
         />
