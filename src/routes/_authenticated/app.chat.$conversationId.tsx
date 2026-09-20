@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")
   loader: async ({ params }) => {
     const result = await getConversation({ data: { conversationId: params.conversationId } })
       .catch(() => null);
-    if (!result?.conversation) throw notFound();
+    if (!result?.conversation) return { conversation: null, messages: [] };
     return { conversation: result.conversation, messages: result.messages };
   },
   head: () => ({ meta: [{ title: "Conversation — Nuru AI" }] }),
