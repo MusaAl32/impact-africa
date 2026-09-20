@@ -23,6 +23,7 @@ import {
 } from "@/components/ai-elements/prompt-input";
 import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
+import { NuruLiveVoice } from "@/components/nuru-live-voice";
 import { NuruMark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
@@ -92,6 +93,7 @@ export function NuruChat({
   const [speakingId, setSpeakingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
   const [initialSent, setInitialSent] = useState(false);
+  const [liveOpen, setLiveOpen] = useState(false);
   const { listening, supported: speechSupported, start: startListening, stop: stopListening } =
     useSpeechRecognition();
 
@@ -198,9 +200,7 @@ export function NuruChat({
     {
       label: "Start a voice chat",
       icon: Headphones,
-      action: () => speechSupported
-        ? startListening((text) => void submit(text), language)
-        : toast.error("Voice input is not supported by this browser."),
+      action: () => setLiveOpen(true),
     },
     { label: "Create an image or sticker", icon: Image, action: () => void submit("Create an image or sticker") },
     { label: "Write or edit", icon: PencilLine, action: () => void submit("Help me write or edit") },
@@ -329,6 +329,9 @@ export function NuruChat({
                     <PromptInputActionMenuItem onSelect={() => setWebAccess((value) => !value)}>
                       <Globe2 className="mr-2 size-4" /> {webAccess ? "Turn off web search" : "Search the web"}
                     </PromptInputActionMenuItem>
+                    <PromptInputActionMenuItem onSelect={() => setLiveOpen(true)}>
+                      <Headphones className="mr-2 size-4" /> Start live voice
+                    </PromptInputActionMenuItem>
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
               </PromptInputTools>
@@ -348,6 +351,7 @@ export function NuruChat({
           </p>
         </div>
       </div>
+      <NuruLiveVoice open={liveOpen} onOpenChange={setLiveOpen} onSaved={onHistoryChanged} />
     </section>
   );
 }
