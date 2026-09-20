@@ -198,9 +198,7 @@ export function NuruChat({
     {
       label: "Start a voice chat",
       icon: Headphones,
-      action: () => speechSupported
-        ? startListening((text) => void submit(text), language)
-        : toast.error("Voice input is not supported by this browser."),
+      action: () => setLiveOpen(true),
     },
     { label: "Create an image or sticker", icon: Image, action: () => void submit("Create an image or sticker") },
     { label: "Write or edit", icon: PencilLine, action: () => void submit("Help me write or edit") },
