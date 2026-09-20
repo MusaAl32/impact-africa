@@ -73,8 +73,8 @@ function ConversationPage() {
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-4xl flex-1 flex-col px-4 py-3 lg:min-h-screen lg:py-5">
-      <header className="mb-2 flex min-h-11 items-center justify-between gap-3">
+    <div className="chat-workspace mx-auto flex min-h-[calc(100dvh-3.5rem)] w-full max-w-4xl flex-1 flex-col bg-background px-0 lg:min-h-screen lg:px-4 lg:py-5">
+      <header className="mb-2 hidden min-h-11 items-center justify-between gap-3 lg:flex">
         <div className="flex min-w-0 items-center gap-2">
           <Button asChild size="icon" variant="ghost" className="size-11 lg:hidden">
             <Link to="/app" aria-label="Back to Nuru"><ArrowLeft /></Link>
@@ -98,7 +98,7 @@ function ConversationPage() {
         department={department}
         initialMessages={initialMessages}
         heading="What can I help you work through?"
-        placeholder="Ask Nuru anything — in English, Kiswahili, Hausa, Chichewa…"
+        placeholder="Ask Ascender AI"
         suggestions={dept.suggestions ?? []}
         onHistoryChanged={() => window.dispatchEvent(new Event("nuru-history-changed"))}
       />

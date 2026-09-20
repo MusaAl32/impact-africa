@@ -1,5 +1,5 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
-import { ChevronDown, Menu, MessageSquare, MoreHorizontal, Pencil, Plus, ShieldCheck, Trash2, X } from "lucide-react";
+import { ChevronDown, Menu, MessageSquare, MessageSquarePlus, MoreHorizontal, Pencil, Plus, ShieldCheck, Trash2, X } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
 
@@ -154,25 +154,25 @@ function AppLayout() {
       </aside>
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between gap-3 border-b border-border bg-background/90 px-4 backdrop-blur-xl lg:hidden">
-          <Link to="/" aria-label="Nuru AI home">
-            <NuruWordmark />
-          </Link>
-            <div className="flex items-center gap-2">
-            <AccountMenu compact />
-            <Button
-              size="icon"
-              variant="ghost"
-              aria-label={open ? "Close navigation" : "Open navigation"}
-              onClick={() => setOpen((v) => !v)}
-            >
-              {open ? <X className="size-5" /> : <Menu className="size-5" />}
-            </Button>
-          </div>
+        <header className="chat-workspace sticky top-0 z-40 grid h-14 grid-cols-[auto_minmax(0,1fr)_auto] items-center border-b border-border bg-background px-2 lg:hidden">
+          <Button
+            size="icon"
+            variant="ghost"
+            className="size-11"
+            aria-label={open ? "Close navigation" : "Open navigation"}
+            onClick={() => setOpen((v) => !v)}
+          >
+            {open ? <X className="size-5" /> : <Menu className="size-5" />}
+          </Button>
+          <span className="truncate text-center text-sm font-semibold">Nuru AI</span>
+          <Button size="icon" variant="ghost" className="size-11" onClick={() => void newChat()} aria-label="New chat">
+            <MessageSquarePlus className="size-5" />
+          </Button>
         </header>
 
         {open && (
           <div className="border-b border-border bg-card lg:hidden">
+            <div className="flex items-center justify-end border-b border-border px-3 py-2"><AccountMenu /></div>
             <div className="max-h-[72vh] overflow-y-auto">{nav}{conversations}</div>
           </div>
         )}

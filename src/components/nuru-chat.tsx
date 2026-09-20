@@ -2,8 +2,9 @@ import { useChat } from "@ai-sdk/react";
 import type { FileUIPart, UIMessage } from "ai";
 import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
-  Check, ChevronDown, Copy, ExternalLink, Flag, Globe2, Mic, MicOff, MoreHorizontal,
-  RefreshCcw, Share2, Sparkles, ThumbsDown, ThumbsUp, Volume2, VolumeX,
+  AudioLines, Check, ChevronDown, Copy, ExternalLink, Flag, Globe2, Headphones,
+  Image, Mic, MicOff, MoreHorizontal, PencilLine, RefreshCcw, Share2, Sparkles,
+  ThumbsDown, ThumbsUp, Volume2, VolumeX,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -203,31 +204,38 @@ export function NuruChat({
   }
 
   const promptCards = (suggestions.length >= 4 ? suggestions : DEFAULT_PROMPTS).slice(0, 6);
+  const emptyActions = [
+    {
+      label: "Start a voice chat",
+      icon: Headphones,
+      action: () => speechSupported
+        ? startListening((text) => void submit(text), language)
+        : toast.error("Voice input is not supported by this browser."),
+    },
+    { label: "Create an image or sticker", icon: Image, action: () => void submit("Create an image or sticker") },
+    { label: "Write or edit", icon: PencilLine, action: () => void submit("Help me write or edit") },
+  ];
 
   return (
-    <section className={cn("flex min-h-0 flex-1 flex-col overflow-hidden", className)} aria-label="Nuru AI chat">
+    <section className={cn("chat-workspace flex min-h-0 flex-1 flex-col overflow-hidden bg-background text-foreground", className)} aria-label="Nuru AI chat">
       <Conversation className="min-h-[44vh]">
-        <ConversationContent className="mx-auto w-full max-w-3xl gap-7 px-0 pb-8 pt-3 sm:px-2">
+        <ConversationContent className="mx-auto w-full max-w-3xl gap-7 px-4 pb-8 pt-3 sm:px-5">
           {messages.length === 0 ? (
-            <ConversationEmptyState className="min-h-[48vh] justify-center px-0 py-10">
-              <div className="animate-fade-up w-full text-left">
-                <NuruMark className="mb-5 size-10" />
-                <h1 className="text-balance text-3xl font-semibold tracking-tight sm:text-4xl">{heading}</h1>
-                <p className="mt-3 max-w-xl text-sm leading-relaxed text-muted-foreground">
-                  Ask naturally. Nuru can coordinate specialist departments, search the web, and explain its evidence.
-                </p>
-                <div className="mt-8 grid gap-2 sm:grid-cols-2">
-                  {promptCards.map((prompt, index) => (
-                    <button
-                      key={prompt}
+            <ConversationEmptyState className="min-h-[calc(100dvh-13rem)] justify-end px-0 pb-4 pt-16 sm:min-h-[60vh] sm:justify-center">
+              <div className="animate-fade-up w-full max-w-xl">
+                <h1 className="sr-only">{heading}</h1>
+                <div className="flex flex-col items-start gap-2">
+                  {emptyActions.map(({ label, icon: Icon, action }) => (
+                    <Button
+                      key={label}
                       type="button"
-                      onClick={() => void submit(prompt)}
-                      className="min-h-20 animate-fade-up rounded-2xl border border-border bg-card/70 p-4 text-left text-sm leading-relaxed transition hover:border-primary/50 hover:bg-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-                      style={{ animationDelay: `${index * 45}ms` }}
+                      variant="outline"
+                      onClick={action}
+                      className="min-h-11 max-w-full rounded-full border-border bg-background px-4 font-normal shadow-none hover:bg-secondary"
                     >
-                      <Sparkles className="mb-2 size-4 text-primary" />
-                      {prompt}
-                    </button>
+                      <Icon className="size-4 shrink-0" />
+                      <span className="truncate">{label}</span>
+                    </Button>
                   ))}
                 </div>
               </div>
@@ -310,7 +318,7 @@ export function NuruChat({
         <ConversationScrollButton className="size-11" />
       </Conversation>
 
-      <div className="sticky bottom-0 z-20 bg-gradient-to-t from-background via-background to-transparent px-0 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-5">
+      <div className="sticky bottom-0 z-20 bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5">
         <div className="mx-auto max-w-3xl">
           <PromptInput
             {...(accept ? { accept } : {})}
@@ -319,29 +327,25 @@ export function NuruChat({
             maxFileSize={10 * 1024 * 1024}
             onError={({ message }) => { toast.error(message); }}
             onSubmit={({ text, files }) => submit(text, files)}
-            className="rounded-3xl shadow-[0_16px_50px_-20px_rgba(0,0,0,.85)] [&_[data-slot=input-group]]:rounded-3xl [&_[data-slot=input-group]]:border-border/80 [&_[data-slot=input-group]]:bg-card"
+            className="rounded-full [&_[data-slot=input-group]]:relative [&_[data-slot=input-group]]:rounded-full [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-sm"
           >
-            <PromptInputBody>
-              <PromptInputTextarea placeholder={placeholder} className="min-h-20 px-4 pt-4 text-base" />
-            </PromptInputBody>
-            <PromptInputFooter className="px-2 pb-2">
-              <PromptInputTools>
+            <PromptInputTextarea placeholder="Ask Ascender AI" className="min-h-14 max-h-36 py-4 pl-14 pr-28 text-base" />
+            <PromptInputFooter className="pointer-events-none absolute inset-0 z-10 h-full w-full p-1.5">
+              <PromptInputTools className="pointer-events-auto absolute left-1.5 top-1/2 -translate-y-1/2">
                 <PromptInputActionMenu>
                   <PromptInputActionMenuTrigger className="size-11 rounded-full" tooltip="Attachments and tools" />
                   <PromptInputActionMenuContent><PromptInputActionAddAttachments /></PromptInputActionMenuContent>
                 </PromptInputActionMenu>
-                <PromptInputButton
-                  className={cn("h-11 rounded-full px-3", webAccess && "bg-primary/15 text-primary")}
-                  tooltip="Search the web and include evidence"
-                  onClick={() => setWebAccess((value) => !value)}
-                  aria-pressed={webAccess}
-                ><Globe2 /> <span className="hidden sm:inline">Web</span></PromptInputButton>
+              </PromptInputTools>
+              <div className="pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
                 {speechSupported && <PromptInputButton className={cn("size-11 rounded-full", listening && "bg-destructive/15 text-destructive")} tooltip={listening ? "Stop voice input" : "Voice input"}
-                  onClick={() => listening ? stopListening() : startListening((text) => void submit(text))}>
+                  onClick={() => listening ? stopListening() : startListening((text) => void submit(text), language)}>
                   {listening ? <MicOff /> : <Mic />}
                 </PromptInputButton>}
-              </PromptInputTools>
-              <PromptInputSubmit className="size-11 rounded-full bg-primary text-primary-foreground hover:bg-primary/90" status={status} onStop={stop} />
+                <PromptInputSubmit aria-label={busy ? "Stop response" : "Send message"} className="size-11 rounded-full bg-chat-audio text-chat-audio-foreground hover:bg-chat-audio/90" status={status} onStop={stop}>
+                  <AudioLines className="size-5" />
+                </PromptInputSubmit>
+              </div>
             </PromptInputFooter>
           </PromptInput>
           <p className="mt-2 px-2 text-center text-[11px] leading-relaxed text-muted-foreground">
