@@ -66,7 +66,7 @@ type LiveSessionHandle = {
 };
 
 /** Real-time two-way voice conversation with Nuru AI over the Gemini Live API. */
-export function useGeminiLive(options: { systemInstruction: string; languageHint?: string }) {
+export function useGeminiLive(options: { systemInstruction: string; languageHint?: string | undefined }) {
   const { systemInstruction, languageHint } = options;
   const [status, setStatus] = useState<LiveStatus>("idle");
   const [error, setError] = useState<string | null>(null);

@@ -20,7 +20,7 @@ export function NuruLiveVoice({
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  onSaved?: () => void;
+  onSaved?: (() => void) | undefined;
 }) {
   const { locale } = useI18n();
   const languageHint = useMemo(() => {
