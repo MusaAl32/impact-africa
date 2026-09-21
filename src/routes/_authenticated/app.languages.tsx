@@ -112,9 +112,10 @@ function Translator() {
     setOutput("");
     try {
       const result = await translate({ data: { text: text.trim(), source, target } });
-      setOutput(result.text);
-    } catch (error) {
-      toast.error((error as Error).message || "Translation failed. Try again.");
+      if (result.error) toast.error(result.error);
+      else setOutput(result.text);
+    } catch {
+      toast.error("Translation failed. Try again.");
     } finally {
       setBusy(false);
     }
@@ -125,7 +126,9 @@ function Translator() {
     setBusy(true);
     try {
       const result = await detect({ data: { text: text.trim() } });
-      if (result.code) {
+      if (result.error) {
+        toast.error(result.error);
+      } else if (result.code) {
         setSource(result.code);
         setDetected(result.name);
         toast.success(`Detected ${result.name}`);
