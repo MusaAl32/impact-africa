@@ -56,8 +56,18 @@ export interface NuruChatProps {
   onHistoryChanged?: () => void;
 }
 
-const extractText = (message: UIMessage) =>
-  message.parts.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
+const extractText = (message: UIMessage) => {
+  const text = message.parts.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
+  if (text) return text;
+  return message.parts
+    .filter((part) => isToolUIPart(part) && part.state === "output-available")
+    .map((part) => {
+      try { return typeof part.output === "string" ? part.output : JSON.stringify(part.output, null, 2); }
+      catch { return ""; }
+    })
+    .filter(Boolean)
+    .join("\n");
+};
 
 function getSources(message: UIMessage): Source[] {
   const seen = new Set<string>();
@@ -343,13 +353,13 @@ export function NuruChat({
                     </MessageAction>
                   </MessageActions>
                 )}
-                {assistant && text && (
+                {assistant && (
                   <>
                     {sources.length > 0 && <SourcesPanel sources={sources} />}
                     <MessageActions className="flex-wrap gap-0.5 text-muted-foreground">
-                      <MessageAction className="size-10" tooltip={pausedId === message.id ? "Resume reading" : speakingId === message.id ? "Pause reading" : "Read aloud"} onClick={() => readAloud(message.id, text)}>
+                      {text && <MessageAction className="size-10" tooltip={pausedId === message.id ? "Resume reading" : speakingId === message.id ? "Pause reading" : "Read aloud"} onClick={() => readAloud(message.id, text)}>
                         {pausedId === message.id ? <Volume2 /> : speakingId === message.id ? <Pause /> : <Volume2 />}
-                      </MessageAction>
+                      </MessageAction>}
                       {speakingId === message.id && <MessageAction className="size-10" tooltip="Stop reading" onClick={stopReadAloud}><VolumeX /></MessageAction>}
                       <MessageAction className="size-10" tooltip="Helpful" onClick={() => setFeedback((v) => ({ ...v, [message.id]: "up" }))}>
                         <ThumbsUp className={feedback[message.id] === "up" ? "fill-current text-primary" : ""} />
@@ -388,7 +398,7 @@ export function NuruChat({
           {error && (
             <div role="alert" className="animate-fade-up rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
               <p>{friendlyError(error)}</p>
-              <Button className="mt-3" size="sm" variant="outline" onClick={() => void regenerate({ body: { department, language, projectContext, webAccess, conversationId } })}>
+              <Button className="mt-3" size="sm" variant="outline" onClick={() => void regenerate({ messageId: messages.at(-1)?.id, body: { department, language, projectContext, webAccess, conversationId } })}>
                 <RefreshCcw /> Try again
               </Button>
             </div>

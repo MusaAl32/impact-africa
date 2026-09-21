@@ -57,7 +57,7 @@ function friendlyError(error: unknown) {
     return "Your session expired. Please sign in again to use live voice.";
   if (text.includes("network") || text.includes("websocket") || text.includes("closed") || text.includes("failed to fetch"))
     return "The live connection dropped. Check your internet and start again.";
-  return raw || "Something went wrong with live voice. Please try again.";
+  return "Something went wrong with live voice. Please try again.";
 }
 
 type LiveSessionHandle = {
@@ -202,8 +202,11 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
           sessionResumption: {},
         },
         callbacks: {
-          onopen: () => setStatus("listening"),
+          onopen: () => {
+            if (generationRef.current === generation) setStatus("listening");
+          },
           onmessage: (message: unknown) => {
+            if (generationRef.current !== generation) return;
             const payload = message as {
               serverContent?: {
                 interrupted?: boolean;
@@ -244,11 +247,13 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
             }
           },
           onerror: (event: unknown) => {
+            if (generationRef.current !== generation) return;
             setError(friendlyError((event as { message?: string })?.message ?? "websocket"));
             setStatus("error");
             cleanup();
           },
           onclose: () => {
+            if (generationRef.current !== generation) return;
             sessionRef.current = null;
             setStatus((current) => (current === "error" ? current : "idle"));
           },
