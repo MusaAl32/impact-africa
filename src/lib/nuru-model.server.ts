@@ -10,7 +10,7 @@ import {
 } from "./ai-gateway.server";
 
 /** Fast direct-Google model used when a Gemini API key is configured. */
-export const NURU_GEMINI_MODEL = "gemini-3.8-flash";
+export const NURU_GEMINI_MODEL = "gemini-3.1-flash-lite";
 
 function geminiKey() {
   return process.env["GEMINI_API_KEY"]?.trim() || undefined;
@@ -43,7 +43,7 @@ export function nuruTextModel(options?: { runId?: string; fast?: boolean }): Nur
       modelId: NURU_GEMINI_MODEL,
       providerOptions: {
         google: {
-          thinkingConfig: { includeThoughts: false, thinkingLevel: options?.fast ? "low" : "medium" },
+          thinkingConfig: { includeThoughts: false, thinkingLevel: options?.fast ? "minimal" : "low" },
         },
       },
     };
@@ -75,7 +75,7 @@ export function nuruUtilityModel(): NuruModelChoice {
       model: google(NURU_GEMINI_MODEL),
       modelId: NURU_GEMINI_MODEL,
       providerOptions: {
-        google: { thinkingConfig: { includeThoughts: false, thinkingLevel: "low" } },
+        google: { thinkingConfig: { includeThoughts: false, thinkingLevel: "minimal" } },
       },
     };
   }
