@@ -28,11 +28,10 @@ export function LegalPage({
 
       {showStatus && (
         <div className="mt-12 rounded-2xl border border-border bg-card p-5 text-sm text-muted-foreground">
-          <p className="font-medium text-foreground">Company status</p>
+          <p className="font-medium text-foreground">Seller and contact details</p>
           <p className="mt-2">
-            {COMPANY.status} Planned jurisdiction: {COMPANY.plannedJurisdiction}. Target market:{" "}
-            {COMPANY.market}. We publish no registration number, legal address or certification
-            because none has been issued yet.
+            {COMPANY.name}, trading as {COMPANY.tradingName}, provides {COMPANY.product} and is the
+            party you contract with. Jurisdiction: {COMPANY.jurisdiction}. Market: {COMPANY.market}.
           </p>
           <p className="mt-3">
             General: <a href={`mailto:${COMPANY.generalEmail}`}>{COMPANY.generalEmail}</a> · Support:{" "}

@@ -71,6 +71,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/refunds" className="text-muted-foreground hover:text-foreground">
+                Refund Policy
+              </Link>
+            </li>
+            <li>
               <Link to="/company" className="text-muted-foreground hover:text-foreground">
                 Company Profile
               </Link>
@@ -79,7 +84,7 @@ export function SiteFooter() {
         </div>
       </div>
       <div className="border-t border-border/60 py-6 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Nuru AI by Africa Opportunity Hub — built for Africa,
+        © {new Date().getFullYear()} Nuru AI by Matola — built for Africa,
         connected to the world.
       </div>
 

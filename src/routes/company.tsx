@@ -11,13 +11,13 @@ export const Route = createFileRoute("/company")({
       {
         name: "description",
         content:
-          "Nuru AI is an advanced artificial intelligence platform dedicated to supporting professional growth, innovation, productivity, and digital transformation across Africa and beyond.",
+          "Nuru AI by Matola is an artificial intelligence platform supporting professional growth, innovation, productivity, and digital transformation.",
       },
       { property: "og:title", content: `Company Profile — ${COMPANY.product}` },
       {
         property: "og:description",
         content:
-          "Nuru AI — Intelligence for Africa. Connected to the World. Owned and operated by Africa Opportunity Hub.",
+          "Nuru AI — Intelligence for Africa. Connected to the World. Provided by Matola.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -59,12 +59,11 @@ function CompanyProfilePage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="Company status">
+      <LegalSection title="Seller identity">
         <p>
-          {COMPANY.status} Our planned company jurisdiction is {COMPANY.plannedJurisdiction} and our
-          target market is {COMPANY.market}. We do not claim any current company registration,
-          licence or certification. We publish no registration number, legal address or
-          certification because none has been issued yet.
+          {COMPANY.name}, trading as {COMPANY.tradingName}, owns and operates {COMPANY.product} and
+          is the seller and contracting party. Jurisdiction: {COMPANY.jurisdiction}. Target market:{" "}
+          {COMPANY.market}.
         </p>
       </LegalSection>
 

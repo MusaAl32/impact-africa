@@ -11,7 +11,7 @@ export const Route = createFileRoute("/privacy")({
       {
         name: "description",
         content:
-          "How Nuru AI and Africa Opportunity Hub collect, use and protect your personal information.",
+          "How Matola and Nuru AI collect, use and protect your personal information.",
       },
       { property: "og:title", content: `Privacy Policy — ${COMPANY.product}` },
       {
@@ -33,11 +33,10 @@ function PrivacyPage() {
     >
       <LegalSection title="Who we are">
         <p>
-          {COMPANY.name} builds {COMPANY.product}, an AI platform that brings together specialist
-          agents, multilingual support, a public Africa Opportunity Map, and a business hub.{" "}
-          {COMPANY.status} Our planned company jurisdiction is {COMPANY.plannedJurisdiction} and our
-          target market is {COMPANY.market}. We do not claim any current company registration,
-          licence or certification.
+          {COMPANY.name}, trading as {COMPANY.tradingName}, provides {COMPANY.product}, an AI platform
+          that brings together specialist agents, multilingual support, a public Africa Opportunity
+          Map, and a business hub. {COMPANY.name} is the data controller responsible for the personal
+          information described in this notice.
         </p>
       </LegalSection>
 
@@ -77,6 +76,11 @@ function PrivacyPage() {
           <li>Detect and prevent fraud, abuse, and unauthorized access.</li>
         </ul>
         <p>We do not sell your personal information and we do not run advertising profiles.</p>
+        <p>
+          We process account and service data to perform our contract with you; security, reliability,
+          analytics and product-improvement data for our legitimate interests; consent-based features
+          where you have made a choice; and records we must keep to meet legal obligations.
+        </p>
       </LegalSection>
 
       <LegalSection title="3. Data security and isolation">
@@ -124,23 +128,30 @@ function PrivacyPage() {
           search, or payment providers. These providers are expected to process information only as
           necessary to provide their services and subject to applicable agreements and safeguards.
         </p>
+        <p>
+          Recipient categories include hosting, authentication, AI, analytics, search and support
+          providers; Paddle as Merchant of Record for sales, subscriptions, payments, tax compliance
+          and invoicing; professional legal or accounting advisers; and public authorities when the
+          law requires disclosure.
+        </p>
       </LegalSection>
 
       <LegalSection title="7. Payment information">
         <p>
-          Payments may be processed by third-party payment providers such as Paystack.{" "}
-          {COMPANY.product} does not intentionally collect or store your full payment-card or
-          banking credentials when payment processing is handled directly by an external payment
-          provider. Payment information is subject to the applicable provider&apos;s privacy policy
-          and security practices.
+          Paddle is our online reseller and Merchant of Record. Paddle handles checkout, payment,
+          subscription management, taxes, invoices, customer-service enquiries and returns. Matola
+          does not collect or store your full payment-card or banking credentials. Paddle processes
+          payment information under its own privacy notice and security practices.
         </p>
       </LegalSection>
 
       <LegalSection title="8. Your choices and rights">
         <p>
           Depending on your location and applicable law, you may have rights concerning your
-          personal information, including requesting access, correction, deletion, or other
-          appropriate handling of your information.
+          personal information, including access, correction, deletion, restriction, portability,
+          objection, and withdrawal of consent without affecting earlier lawful processing. You may
+          also complain to the data-protection authority that applies where you live. We aim to answer
+          verified requests within one month where applicable law requires it.
         </p>
         <ul>
           <li>Clear your browser storage to remove locally saved preferences and workspace notes.</li>
@@ -153,22 +164,44 @@ function PrivacyPage() {
         <p>To make a privacy request, contact us through the official {COMPANY.product} support channel.</p>
       </LegalSection>
 
-      <LegalSection title="9. Children">
+      <LegalSection title="9. Retention and international transfers">
+        <p>
+          We keep account and service records while your account is active and only as long afterward
+          as reasonably needed for security, disputes, legal obligations and legitimate business
+          records. We then delete or anonymise them. Public contributions may remain public until they
+          are removed or a valid deletion request is accepted.
+        </p>
+        <p>
+          Our providers may process information outside your country. Where UK or EEA information is
+          transferred internationally, we rely on recognised safeguards such as adequacy decisions or
+          standard contractual clauses where required.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="10. Cookies and local storage">
+        <p>
+          We use essential cookies or local storage for sign-in, security, preferences and core service
+          operation. If analytics or marketing technologies requiring consent are introduced, we will
+          ask for that consent and provide controls to change it. Browser settings can also block or
+          delete cookies, although essential features may then stop working.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="11. Children">
         <p>
           The platform is intended for people aged 16 and over, or younger users with the consent
           of a parent, guardian or school.
         </p>
       </LegalSection>
 
-      <LegalSection title="10. Changes to this policy">
+      <LegalSection title="12. Changes to this policy">
         <p>
           We may update this Privacy Policy from time to time. When significant changes are made, we
-          will provide appropriate notice. As we grow and formalise the company, this policy will
-          change; we will update the effective date below when it does.
+          will provide appropriate notice and update the effective date shown above.
         </p>
       </LegalSection>
 
-      <LegalSection title="11. Contact">
+      <LegalSection title="13. Contact">
         <p>
           {COMPANY.product} is owned and operated by {COMPANY.name}. For privacy questions or
           requests, please contact us through the official {COMPANY.product} support channel, or email{" "}
