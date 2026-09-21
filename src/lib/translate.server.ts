@@ -12,7 +12,7 @@ function model() {
 }
 
 /** Turn AI gateway/stream failures into a clear, user-safe message. */
-async function readText(result: { text: Promise<string> }) {
+async function readText(result: { text: PromiseLike<string> }) {
   try {
     return await result.text;
   } catch (error) {
