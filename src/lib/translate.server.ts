@@ -3,6 +3,7 @@ import { streamText } from "ai";
 import {
   NURU_MODEL,
   createLovableAiGatewayProvider,
+  describeGatewayFailure,
   requireLovableApiKey,
 } from "./ai-gateway.server";
 import { AFRICAN_LANGUAGES, languageLabel } from "./languages";
@@ -16,16 +17,7 @@ async function readText(result: { text: PromiseLike<string> }) {
   try {
     return await result.text;
   } catch (error) {
-    const status = (error as { statusCode?: number } | undefined)?.statusCode;
-    const detail = error instanceof Error ? error.message : String(error ?? "");
-    console.error("Nuru translation error", status ?? "", detail);
-    if (status === 402 || /payment required/i.test(detail)) {
-      throw new Error("Nuru has run out of AI credits, so translation is paused. Please top up the workspace AI credits and try again.");
-    }
-    if (status === 429 || /rate limit/i.test(detail)) {
-      throw new Error("Nuru is receiving many requests. Please wait a moment and try again.");
-    }
-    throw new Error("Nuru could not complete that translation. Please try again.");
+    throw new Error(describeGatewayFailure(error, "translation"));
   }
 }
 
