@@ -7,7 +7,7 @@ type Recognition = {
   start: () => void;
   stop: () => void;
   onresult: ((event: { results: ArrayLike<ArrayLike<{ transcript: string }>> }) => void) | null;
-  onerror: (() => void) | null;
+  onerror: ((event: { error?: string }) => void) | null;
   onend: (() => void) | null;
 };
 
@@ -25,6 +25,7 @@ export function useSpeechRecognition() {
   const [supported, setSupported] = useState(false);
   const [listening, setListening] = useState(false);
   const [transcript, setTranscript] = useState("");
+  const [error, setError] = useState<string | null>(null);
   const ref = useRef<Recognition | null>(null);
 
   useEffect(() => {
@@ -36,7 +37,10 @@ export function useSpeechRecognition() {
 
   const start = useCallback((onResult?: ((text: string) => void), locale?: string) => {
     const Ctor = getRecognitionCtor();
-    if (!Ctor) return;
+    if (!Ctor) {
+      setError("Voice input is not supported by this browser.");
+      return;
+    }
     const recognition = new Ctor();
     recognition.lang = locale || "en-US";
     recognition.continuous = false;
@@ -50,11 +54,24 @@ export function useSpeechRecognition() {
         callbackRef.current?.(clean);
       }
     };
-    recognition.onerror = () => setListening(false);
+    recognition.onerror = (event) => {
+      setListening(false);
+      const code = event.error ?? "";
+      if (code === "not-allowed" || code === "service-not-allowed") {
+        setError("Microphone access was blocked. Allow microphone access and try again.");
+      } else if (code === "network") {
+        setError("Your connection appears to be offline.");
+      } else if (code === "no-speech") {
+        setError("Nuru did not hear anything. Please try speaking again.");
+      } else {
+        setError("Voice input stopped unexpectedly. Please try again.");
+      }
+    };
     recognition.onend = () => setListening(false);
     ref.current = recognition;
     callbackRef.current = onResult;
     setTranscript("");
+    setError(null);
     recognition.start();
     setListening(true);
   }, []);
@@ -64,7 +81,7 @@ export function useSpeechRecognition() {
     setListening(false);
   }, []);
 
-  return { supported, listening, transcript, start, stop };
+  return { supported, listening, transcript, error, start, stop };
 }
 
 /** Browser text-to-speech for Nuru voice replies. */
@@ -95,6 +112,14 @@ export function speak(
 
 export function stopSpeaking() {
   if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.cancel();
+}
+
+export function pauseSpeaking() {
+  if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.pause();
+}
+
+export function resumeSpeaking() {
+  if (typeof window !== "undefined" && "speechSynthesis" in window) window.speechSynthesis.resume();
 }
 
 /** The reading voices this browser/device actually offers. */
