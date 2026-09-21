@@ -1,6 +1,6 @@
-- [ ] Add reliable stop-generation state and persist partial responses once
-- [ ] Add edit-and-resend for user messages with owner-scoped history truncation
-- [ ] Improve chat focus recovery and safe offline/usage-limit errors
-- [ ] Improve microphone errors and text-response playback controls
-- [ ] Harden Gemini Live connection cleanup and visible state handling
-- [ ] Verify chat, history, voice, mobile/desktop, security, typecheck, and build
+- [x] Add reliable stop-generation state and persist partial responses once
+- [x] Add edit-and-resend for user messages with owner-scoped history truncation
+- [x] Improve chat focus recovery and safe offline/usage-limit errors
+- [x] Improve microphone errors and text-response playback controls
+- [x] Harden Gemini Live connection cleanup and visible state handling
+- [x] Verify chat, history, voice, mobile/desktop, security, typecheck, and build
