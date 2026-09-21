@@ -38,7 +38,9 @@ export async function runItemAnalysis(input: {
 }) {
   const dept = getDepartment(input.department);
 
+  let streamError: unknown;
   const result = streamText({
+    onError: ({ error }) => { streamError = error; },
     model: createLovableAiGatewayProvider(requireLovableApiKey())(NURU_MODEL),
     system: [
       NURU_IDENTITY,
@@ -52,7 +54,7 @@ export async function runItemAnalysis(input: {
   try {
     raw = await result.text;
   } catch (error) {
-    throw new Error(describeGatewayFailure(error, "analysis"));
+    throw new Error(describeGatewayFailure(streamError ?? error, "analysis"));
   }
 
   const analysis = raw.trim();
