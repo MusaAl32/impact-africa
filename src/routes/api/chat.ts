@@ -3,12 +3,8 @@ import { convertToModelMessages, smoothStream, streamText, stepCountIs, tool, ty
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import {
-  NURU_MODEL,
-  createLovableResponsesProvider,
-  getLovableAiGatewayRunId,
-  requireLovableApiKey,
-} from "@/lib/ai-gateway.server";
+import { getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
+import { nuruTextModel } from "@/lib/nuru-model.server";
 import { buildSystemPrompt } from "@/lib/prompts";
 import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
@@ -66,20 +62,19 @@ export const Route = createFileRoute("/api/chat")({
           if (!owned) return new Response("Conversation not found", { status: 404 });
         }
 
-        let apiKey: string;
+        let chatModel: ReturnType<typeof nuruTextModel>;
         try {
-          apiKey = requireLovableApiKey();
+          const runId = getLovableAiGatewayRunId(request);
+          chatModel = nuruTextModel({ fast: true, ...(runId ? { runId } : {}) });
         } catch (error) {
           return new Response((error as Error).message, { status: 500 });
         }
-
-        const gateway = createLovableResponsesProvider(apiKey, getLovableAiGatewayRunId(request));
 
         const webEnabled = body.webAccess !== false && webSearchConfigured();
 
         try {
           const result = streamText({
-            model: gateway.responses(NURU_MODEL),
+            model: chatModel.model,
             system: [
               buildSystemPrompt({
                 department: body.department ?? "platform",
@@ -97,30 +92,11 @@ export const Route = createFileRoute("/api/chat")({
                 : "You have no live web access in this reply. Do not present uncertain figures as current fact; say what the user should verify locally.",
             ].join("\n\n"),
             messages: await convertToModelMessages(body.messages),
-            stopWhen: stepCountIs(webEnabled ? 8 : 6),
+            stopWhen: stepCountIs(webEnabled ? 6 : 2),
             abortSignal: request.signal,
             experimental_transform: smoothStream({ chunking: "word" }),
-            providerOptions: {
-              openai: {
-                forceReasoning: true,
-                reasoningEffort: "medium",
-                reasoningSummary: "auto",
-                store: false,
-                include: ["reasoning.encrypted_content"],
-              },
-            },
+            providerOptions: chatModel.providerOptions,
             tools: {
-              activate_agents: tool({
-                description:
-                  "Declare which Nuru specialist agents are being coordinated for this request, before answering.",
-                inputSchema: z.object({
-                  agents: z
-                    .array(z.string())
-                    .describe("Specialist names, e.g. Business AI, Agriculture AI"),
-                  plan: z.string().describe("One sentence describing how they will be combined"),
-                }),
-                execute: async ({ agents, plan }) => ({ activated: agents, plan }),
-              }),
               ...(webEnabled
                 ? {
                     search_web: tool({
