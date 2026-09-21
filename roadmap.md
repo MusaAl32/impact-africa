@@ -15,3 +15,4 @@
 - [x] Enforce daily limits for messages and web searches
 - [ ] Count voice minutes and file uploads against daily limits
 - [ ] Verify on desktop and mobile, typecheck and build
+- [ ] Welcome email after a successful purchase (needs an email sender set up first)
