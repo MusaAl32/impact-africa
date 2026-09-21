@@ -80,7 +80,7 @@ function Landing() {
               <p className="mt-6 max-w-[52ch] text-base leading-relaxed text-muted-foreground md:text-lg">
                 Nuru is a single intelligent platform with specialist departments for agriculture,
                 business, education, research, documents, code and creative work — fluent in
-                African languages, voice and images.
+                 African languages, voice and images. Speak naturally
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">
