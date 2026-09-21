@@ -74,7 +74,8 @@ function getSources(message: UIMessage): Source[] {
 function friendlyError(error: Error | undefined) {
   const value = error?.message?.toLowerCase() ?? "";
   if (value.includes("429") || value.includes("rate")) return "Nuru is receiving many requests. Please wait a moment and try again.";
-  if (value.includes("credit") || value.includes("quota")) return "Nuru is temporarily unavailable because the AI service limit was reached. Please try again later.";
+  if (value.includes("402") || value.includes("payment") || value.includes("credit") || value.includes("quota"))
+    return "Nuru has run out of AI credits, so it cannot reply right now. Please top up the workspace AI credits and try again.";
   if (value.includes("timeout") || value.includes("timed out")) return "That response took too long. Please retry, or shorten your request.";
   if (value.includes("401") || value.includes("unauthorized")) return "Your session expired. Please sign in again to continue.";
   return "Nuru could not complete that response. Your conversation is safe—please try again.";
