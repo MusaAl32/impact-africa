@@ -56,6 +56,11 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
+              <Link to="/pricing" className="text-muted-foreground hover:text-foreground">
+                Pricing
+              </Link>
+            </li>
+            <li>
               <Link to="/privacy" className="text-muted-foreground hover:text-foreground">
                 Privacy Policy
               </Link>
