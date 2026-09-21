@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 
 import { verifyWebhook, EventName, type PaddleEnv } from "@/lib/paddle.server";
+import type { Database } from "@/integrations/supabase/types";
 
 const PRICE_TO_PLAN: Record<string, string> = {
   nuru_pro_monthly: "pro",
@@ -9,10 +10,10 @@ const PRICE_TO_PLAN: Record<string, string> = {
   nuru_pro_max_monthly: "pro_max",
 };
 
-let cached: ReturnType<typeof createClient> | null = null;
+let cached: ReturnType<typeof createClient<Database>> | null = null;
 function admin() {
   if (!cached) {
-    cached = createClient(
+    cached = createClient<Database>(
       process.env["SUPABASE_URL"]!,
       process.env["SUPABASE_SERVICE_ROLE_KEY"]!,
       { auth: { persistSession: false, autoRefreshToken: false } },
