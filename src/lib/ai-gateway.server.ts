@@ -111,7 +111,7 @@ export function describeGatewayFailure(error: unknown, subject: string) {
   if (status === 402 || /payment required|insufficient (ai )?credit/i.test(detail)) {
     return `Nuru has run out of AI credits, so ${subject} is paused. Please top up the workspace AI credits and try again.`;
   }
-  if (status === 429 || /rate limit/i.test(detail)) {
+  if (status === 429 || /rate limit|quota|high demand|overloaded/i.test(detail)) {
     return "Nuru is receiving many requests. Please wait a moment and try again.";
   }
   if (status === 401 || status === 403) {
