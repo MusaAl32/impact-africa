@@ -280,6 +280,54 @@ export type Database = {
           },
         ]
       }
+      plans: {
+        Row: {
+          active: boolean
+          created_at: string
+          currency: string
+          files_per_day: number
+          messages_per_day: number
+          name: string
+          price_cents: number
+          provider_price_id: string | null
+          searches_per_day: number
+          slug: string
+          sort_order: number
+          updated_at: string
+          voice_minutes_per_day: number
+        }
+        Insert: {
+          active?: boolean
+          created_at?: string
+          currency?: string
+          files_per_day?: number
+          messages_per_day?: number
+          name: string
+          price_cents?: number
+          provider_price_id?: string | null
+          searches_per_day?: number
+          slug: string
+          sort_order?: number
+          updated_at?: string
+          voice_minutes_per_day?: number
+        }
+        Update: {
+          active?: boolean
+          created_at?: string
+          currency?: string
+          files_per_day?: number
+          messages_per_day?: number
+          name?: string
+          price_cents?: number
+          provider_price_id?: string | null
+          searches_per_day?: number
+          slug?: string
+          sort_order?: number
+          updated_at?: string
+          voice_minutes_per_day?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           country: string
@@ -319,6 +367,53 @@ export type Database = {
         }
         Relationships: []
       }
+      subscriptions: {
+        Row: {
+          created_at: string
+          current_period_end: string | null
+          id: string
+          plan_slug: string
+          provider: string
+          provider_customer_id: string | null
+          provider_subscription_id: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_slug: string
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          current_period_end?: string | null
+          id?: string
+          plan_slug?: string
+          provider?: string
+          provider_customer_id?: string | null
+          provider_subscription_id?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "subscriptions_plan_slug_fkey"
+            columns: ["plan_slug"]
+            isOneToOne: false
+            referencedRelation: "plans"
+            referencedColumns: ["slug"]
+          },
+        ]
+      }
       ui_translations: {
         Row: {
           created_at: string
@@ -349,6 +444,33 @@ export type Database = {
         }
         Relationships: []
       }
+      usage_events: {
+        Row: {
+          created_at: string
+          day: string
+          id: string
+          kind: string
+          quantity: number
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          day?: string
+          id?: string
+          kind: string
+          quantity?: number
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          day?: string
+          id?: string
+          kind?: string
+          quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -375,6 +497,35 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_quota: {
+        Args: { _kind: string; _quantity?: number; _user_id: string }
+        Returns: Json
+      }
+      current_plan: {
+        Args: { _user_id: string }
+        Returns: {
+          active: boolean
+          created_at: string
+          currency: string
+          files_per_day: number
+          messages_per_day: number
+          name: string
+          price_cents: number
+          provider_price_id: string | null
+          searches_per_day: number
+          slug: string
+          sort_order: number
+          updated_at: string
+          voice_minutes_per_day: number
+        }
+        SetofOptions: {
+          from: "*"
+          to: "plans"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
+      get_entitlements: { Args: { _user_id: string }; Returns: Json }
       has_mcp_access: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
