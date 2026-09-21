@@ -91,6 +91,24 @@ function TermsPage() {
         </p>
       </LegalSection>
 
+      <LegalSection title="4A. AI-generated content and moderation">
+        <p>
+          {COMPANY.product} uses artificial intelligence to generate text, translations, plans and
+          other outputs. You are responsible for your prompts, for how you use the outputs, for
+          verifying their accuracy before relying on them, and for having the rights to any content
+          you submit. AI outputs are not professional, financial, legal, medical or other regulated
+          advice.
+        </p>
+        <p>
+          We actively moderate the service. We may remove or restrict content, refuse or filter
+          outputs, and suspend or terminate accounts that generate or attempt to generate unlawful,
+          harmful, deceptive or infringing material — including child sexual abuse material,
+          non-consensual intimate imagery, deepfakes intended to deceive, hate speech, incitement to
+          violence, fraud, spam or malware. We do not permit use of the service to build competing AI
+          models or to circumvent safety controls.
+        </p>
+      </LegalSection>
+
       <LegalSection title="5. User content">
         <p>
           You retain responsibility for the content, prompts, files, and other information that you
