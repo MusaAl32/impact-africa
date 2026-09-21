@@ -4,7 +4,7 @@ import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
   AudioLines, ChevronDown, Copy, ExternalLink, Flag, Globe2, Headphones,
   Image, Mic, MicOff, MoreHorizontal, Pause, PencilLine, RefreshCcw, Share2, Sparkles,
-  Square, ThumbsDown, ThumbsUp, Volume2, VolumeX,
+  Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -120,7 +120,10 @@ export function NuruChat({
       if (isAbort && conversationId && !cancelSavedRef.current) {
         cancelSavedRef.current = true;
         const parts = message.parts.map((part) => ({ ...part })) as UIMessage["parts"];
-        const lastText = parts.findLastIndex((part) => part.type === "text");
+        let lastText = -1;
+        parts.forEach((part, index) => {
+          if (part.type === "text") lastText = index;
+        });
         if (lastText >= 0) {
           const part = parts[lastText];
           if (part?.type === "text") part.text = `${part.text}\n\n_Stopped._`;
@@ -137,6 +140,10 @@ export function NuruChat({
     },
   });
   const busy = status === "submitted" || status === "streaming";
+
+  useEffect(() => {
+    if (status === "ready" || status === "error") textareaRef.current?.focus();
+  }, [status]);
 
   // Reset the thread only when the conversation actually changes. `initialMessages`
   // is a fresh array on every render, so depending on it here loops forever.
@@ -264,6 +271,12 @@ export function NuruChat({
     textareaRef.current?.focus();
   }
 
+  function cancelEdit() {
+    setEditingId(null);
+    if (textareaRef.current) textareaRef.current.value = "";
+    textareaRef.current?.focus();
+  }
+
   const emptyActions = [
     {
       label: "Start a voice chat",
@@ -386,6 +399,12 @@ export function NuruChat({
 
       <div className="sticky bottom-0 z-20 bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5">
         <div className="mx-auto max-w-3xl">
+          {editingId && (
+            <div className="mb-2 flex min-h-10 items-center justify-between rounded-lg border border-border bg-card px-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-2"><PencilLine className="size-3.5" /> Editing your message</span>
+              <Button type="button" size="icon" variant="ghost" className="size-8" onClick={cancelEdit} aria-label="Cancel editing"><X /></Button>
+            </div>
+          )}
           <PromptInput
             {...(accept ? { accept } : {})}
             multiple
@@ -412,10 +431,10 @@ export function NuruChat({
                 </PromptInputActionMenu>
               </PromptInputTools>
               <div className="pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
-                {speechSupported && <PromptInputButton className={cn("size-11 rounded-full", listening && "bg-destructive/15 text-destructive")} tooltip={listening ? "Stop voice input" : "Voice input"}
+                <PromptInputButton className={cn("size-11 rounded-full", listening && "bg-destructive/15 text-destructive")} tooltip={speechSupported ? (listening ? "Stop voice input" : "Voice input") : "Voice input unavailable in this browser"}
                   onClick={() => listening ? stopListening() : startListening((text) => void submit(text), language ? findLanguage(language)?.locale ?? language : undefined)}>
                   {listening ? <MicOff /> : <Mic />}
-                </PromptInputButton>}
+                </PromptInputButton>
                 <PromptInputSubmit aria-label={busy ? "Stop response" : "Send message"} className="size-11 rounded-full bg-chat-audio text-chat-audio-foreground hover:bg-chat-audio/90" status={status} onStop={stop}>
                   {busy ? <Square className="size-4 fill-current" /> : <AudioLines className="size-5" />}
                 </PromptInputSubmit>
