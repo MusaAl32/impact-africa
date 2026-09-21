@@ -9,9 +9,9 @@ import { NuruWordmark } from "@/components/nuru-logo";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { supabase } from "@/integrations/supabase/client";
 import { cn } from "@/lib/utils";
 import { DEPARTMENTS } from "@/lib/departments";
-import { isCurrentUserAdmin } from "@/lib/admin.functions";
 import { archiveConversation, createConversation, listConversations, renameConversation } from "@/lib/chat.functions";
 
 export const Route = createFileRoute("/_authenticated/app")({
@@ -27,9 +27,26 @@ function AppLayout() {
   const [history, setHistory] = useState<Awaited<ReturnType<typeof listConversations>>["items"]>([]);
 
   useEffect(() => {
-    isCurrentUserAdmin()
-      .then((r) => setIsAdmin(r.admin))
-      .catch(() => setIsAdmin(false));
+    let cancelled = false;
+
+    async function checkAdminRole() {
+      const { data: authData, error: authError } = await supabase.auth.getUser();
+      if (authError || !authData.user || cancelled) return;
+
+      const { data, error } = await supabase
+        .from("user_roles")
+        .select("id")
+        .eq("user_id", authData.user.id)
+        .eq("role", "admin")
+        .maybeSingle();
+
+      if (!cancelled) setIsAdmin(!error && data !== null);
+    }
+
+    void checkAdminRole();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   const refreshHistory = useCallback(() => {
