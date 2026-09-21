@@ -287,6 +287,12 @@ export function NuruChat({
     textareaRef.current?.focus();
   }
 
+  function retryLastResponse() {
+    const messageId = messages.at(-1)?.id;
+    const options = { body: { department, language, projectContext, webAccess, conversationId } };
+    return messageId ? regenerate({ ...options, messageId }) : regenerate(options);
+  }
+
   const emptyActions = [
     {
       label: "Start a voice chat",
@@ -398,7 +404,7 @@ export function NuruChat({
           {error && (
             <div role="alert" className="animate-fade-up rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
               <p>{friendlyError(error)}</p>
-              <Button className="mt-3" size="sm" variant="outline" onClick={() => void regenerate({ messageId: messages.at(-1)?.id, body: { department, language, projectContext, webAccess, conversationId } })}>
+              <Button className="mt-3" size="sm" variant="outline" onClick={() => void retryLastResponse()}>
                 <RefreshCcw /> Try again
               </Button>
             </div>
