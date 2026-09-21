@@ -124,9 +124,18 @@ export const Route = createFileRoute("/api/chat")({
                           .optional()
                           .describe("How many sources to return (default 5)."),
                       }),
-                      execute: async ({ query, limit }) => {
-                        try {
-                          const sources = await searchWeb(query, limit ?? 5);
+                       execute: async ({ query, limit }) => {
+                         try {
+                           const searchQuota = await consumeQuota(userId, "search");
+                           if (!searchQuota.allowed) {
+                             return {
+                               query,
+                               sources: [],
+                               count: 0,
+                               error: limitMessage(searchQuota),
+                             };
+                           }
+                           const sources = await searchWeb(query, limit ?? 5);
                           return { query, sources, count: sources.length };
                         } catch (error) {
                           console.error("Nuru web search error", error);
