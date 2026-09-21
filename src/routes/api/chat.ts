@@ -165,6 +165,15 @@ export const Route = createFileRoute("/api/chat")({
           return result.toUIMessageStreamResponse({
             originalMessages: body.messages,
             sendReasoning: true,
+            onError: (error) => {
+              const status = (error as { statusCode?: number } | undefined)?.statusCode;
+              const text = error instanceof Error ? error.message : String(error ?? "");
+              console.error("Nuru stream error", status ?? "", text);
+              if (status === 402 || /payment required/i.test(text)) return "402 payment required: AI credits exhausted";
+              if (status === 429 || /rate limit/i.test(text)) return "429 rate limited";
+              if (status === 401 || status === 403) return "401 unauthorized";
+              return "Nuru could not complete that response.";
+            },
             onFinish: async ({ responseMessage, isAborted }) => {
               if (isAborted || !body.conversationId) return;
               const { error: messageError } = await userDb.from("messages").upsert({
