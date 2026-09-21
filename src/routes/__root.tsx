@@ -165,21 +165,6 @@ function RootComponent() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const recoveryKey = "nuru-preview-module-recovery";
-    const recoverFromStaleModuleGraph = (event: ErrorEvent) => {
-      if (event.message !== "Uncaught undefined" || event.error !== undefined) return;
-      if (sessionStorage.getItem(recoveryKey) === "1") return;
-      sessionStorage.setItem(recoveryKey, "1");
-      window.location.reload();
-    };
-    window.addEventListener("error", recoverFromStaleModuleGraph);
-    const stableTimer = window.setTimeout(() => sessionStorage.removeItem(recoveryKey), 10_000);
-    return () => {
-      window.removeEventListener("error", recoverFromStaleModuleGraph);
-      window.clearTimeout(stableTimer);
-    };
-  }, []);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
