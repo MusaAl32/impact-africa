@@ -118,6 +118,7 @@ function RootShell({ children }: { children: ReactNode }) {
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: MODULE_RECOVERY_SCRIPT }} />
       </head>
       <body>
         {children}
