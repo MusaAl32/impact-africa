@@ -58,12 +58,12 @@ async function updateSubscription(data: any) {
   const externalPriceId = data?.items?.[0]?.price?.importMeta?.externalId as string | undefined;
   const planSlug = externalPriceId ? PRICE_TO_PLAN[externalPriceId] : undefined;
 
-  const patch: Record<string, unknown> = {
-    status: data.status ?? "active",
-    current_period_end: data.currentBillingPeriod?.endsAt ?? null,
+  const patch = {
+    status: (data.status ?? "active") as string,
+    current_period_end: (data.currentBillingPeriod?.endsAt ?? null) as string | null,
     updated_at: new Date().toISOString(),
+    ...(planSlug ? { plan_slug: planSlug } : {}),
   };
-  if (planSlug) patch['plan_slug'] = planSlug;
 
   const { error } = await admin()
     .from("subscriptions")
