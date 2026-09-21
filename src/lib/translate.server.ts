@@ -43,7 +43,7 @@ export async function runTranslation(input: {
     prompt: `Source language: ${sourceLabel}\nTarget language: ${languageLabel(input.target)}\n\nText:\n${input.text}`,
   });
 
-  const text = (await result.text).trim();
+  const text = (await readText(result)).trim();
   return { text };
 }
 
@@ -55,7 +55,7 @@ export async function runDetection(text: string) {
     prompt: text.slice(0, 2000),
   });
 
-  const raw = (await result.text).trim().toLowerCase().replace(/[^a-z-]/g, "");
+  const raw = (await readText(result)).trim().toLowerCase().replace(/[^a-z-]/g, "");
   const match = AFRICAN_LANGUAGES.find((l) => l.code === raw);
   return { code: match?.code ?? null, name: match?.name ?? null };
 }
