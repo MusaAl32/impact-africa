@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as CompanyRouteImport } from './routes/company'
 import { Route as McpRouteImport } from './routes/mcp'
+import { Route as PricingRouteImport } from './routes/pricing'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -55,6 +56,11 @@ const CompanyRoute = CompanyRouteImport.update({
 const McpRoute = McpRouteImport.update({
   id: '/mcp',
   path: '/mcp',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PricingRoute = PricingRouteImport.update({
+  id: '/pricing',
+  path: '/pricing',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -161,6 +167,7 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -185,6 +192,7 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -210,6 +218,7 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/company': typeof CompanyRoute
   '/mcp': typeof McpRoute
+  '/pricing': typeof PricingRoute
   '/privacy': typeof PrivacyRoute
   '/reset-password': typeof ResetPasswordRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -236,6 +245,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/company'
     | '/mcp'
+    | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/sitemap.xml'
@@ -260,6 +270,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/company'
     | '/mcp'
+    | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/sitemap.xml'
@@ -284,6 +295,7 @@ export interface FileRouteTypes {
     | '/auth'
     | '/company'
     | '/mcp'
+    | '/pricing'
     | '/privacy'
     | '/reset-password'
     | '/sitemap.xml'
@@ -310,6 +322,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   CompanyRoute: typeof CompanyRoute
   McpRoute: typeof McpRoute
+  PricingRoute: typeof PricingRoute
   PrivacyRoute: typeof PrivacyRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -355,6 +368,13 @@ declare module '@tanstack/react-router' {
       path: '/mcp'
       fullPath: '/mcp'
       preLoaderRoute: typeof McpRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pricing': {
+      id: '/pricing'
+      path: '/pricing'
+      fullPath: '/pricing'
+      preLoaderRoute: typeof PricingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -531,6 +551,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   CompanyRoute: CompanyRoute,
   McpRoute: McpRoute,
+  PricingRoute: PricingRoute,
   PrivacyRoute: PrivacyRoute,
   ResetPasswordRoute: ResetPasswordRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,

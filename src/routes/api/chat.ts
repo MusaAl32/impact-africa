@@ -62,6 +62,14 @@ export const Route = createFileRoute("/api/chat")({
           if (!owned) return new Response("Conversation not found", { status: 404 });
         }
 
+        const { consumeQuota, limitMessage } = await import("@/lib/billing.server");
+        try {
+          const quota = await consumeQuota(userId, "message");
+          if (!quota.allowed) return new Response(limitMessage(quota), { status: 429 });
+        } catch (error) {
+          console.error("Nuru quota check failed", error);
+        }
+
         let chatModel: ReturnType<typeof nuruTextModel>;
         try {
           const runId = getLovableAiGatewayRunId(request);
