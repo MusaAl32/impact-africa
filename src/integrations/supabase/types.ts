@@ -498,7 +498,7 @@ export type Database = {
     }
     Functions: {
       consume_quota: {
-        Args: { _kind: string; _quantity?: number }
+        Args: { _kind: string; _quantity?: number; _user_id: string }
         Returns: Json
       }
       current_plan: {
@@ -525,7 +525,7 @@ export type Database = {
           isSetofReturn: false
         }
       }
-      get_entitlements: { Args: never; Returns: Json }
+      get_entitlements: { Args: { _user_id: string }; Returns: Json }
       has_mcp_access: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
