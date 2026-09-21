@@ -90,3 +90,32 @@ export function requireLovableApiKey() {
 }
 
 export const NURU_MODEL = "openai/gpt-6-astra";
+
+/**
+ * Walk an AI SDK error (and its cause chain) and return a clear, user-safe
+ * message. Stream failures wrap the real gateway error inside `cause`.
+ */
+export function describeGatewayFailure(error: unknown, subject: string) {
+  let status: number | undefined;
+  const details: string[] = [];
+  let current: unknown = error;
+  for (let depth = 0; current && depth < 6; depth += 1) {
+    const node = current as { statusCode?: number; status?: number; message?: string; cause?: unknown };
+    status ??= node.statusCode ?? node.status;
+    if (typeof node.message === "string") details.push(node.message);
+    current = node.cause;
+  }
+  const detail = details.join(" | ");
+  console.error(`Nuru ${subject} error`, status ?? "", detail);
+
+  if (status === 402 || /payment required|insufficient (ai )?credit/i.test(detail)) {
+    return `Nuru has run out of AI credits, so ${subject} is paused. Please top up the workspace AI credits and try again.`;
+  }
+  if (status === 429 || /rate limit/i.test(detail)) {
+    return "Nuru is receiving many requests. Please wait a moment and try again.";
+  }
+  if (status === 401 || status === 403) {
+    return `Nuru is not authorised to run ${subject} right now. Please check the AI configuration.`;
+  }
+  return `Nuru could not complete that ${subject}. Please try again.`;
+}

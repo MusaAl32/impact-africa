@@ -4,6 +4,7 @@ import { createClient } from "@supabase/supabase-js";
 import {
   NURU_MODEL,
   createLovableAiGatewayProvider,
+  describeGatewayFailure,
   requireLovableApiKey,
 } from "./ai-gateway.server";
 import { getDepartment, type DepartmentId } from "./departments";
@@ -37,7 +38,9 @@ export async function runItemAnalysis(input: {
 }) {
   const dept = getDepartment(input.department);
 
+  let streamError: unknown;
   const result = streamText({
+    onError: ({ error }) => { streamError = error; },
     model: createLovableAiGatewayProvider(requireLovableApiKey())(NURU_MODEL),
     system: [
       NURU_IDENTITY,
@@ -47,6 +50,13 @@ export async function runItemAnalysis(input: {
     prompt: `Entry type: ${input.itemType}\nTitle: ${input.title}\n${input.meta ? `${input.meta}\n` : ""}\nDetails:\n${input.body}`,
   });
 
-  const analysis = (await result.text).trim();
+  let raw: string;
+  try {
+    raw = await result.text;
+  } catch (error) {
+    throw new Error(describeGatewayFailure(streamError ?? error, "analysis"));
+  }
+
+  const analysis = raw.trim();
   return { analysis, model: NURU_MODEL };
 }
