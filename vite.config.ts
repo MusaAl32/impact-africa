@@ -20,6 +20,15 @@ export default defineConfig({
     // and leave the open preview holding two incompatible module instances.
     optimizeDeps: {
       entries: ["src/**/*.{ts,tsx}"],
+      include: [
+        "@tanstack/history",
+        "@tanstack/router-core",
+        "@tanstack/router-core/isServer",
+        "@tanstack/router-core/ssr/client",
+        "@tanstack/router-core/ssr/server",
+        "h3-v2",
+        "seroval",
+      ],
     },
   },
 });
