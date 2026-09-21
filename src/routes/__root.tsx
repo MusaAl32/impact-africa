@@ -140,9 +140,19 @@ const MODULE_RECOVERY_SCRIPT = `(function(){
   window.addEventListener("unhandledrejection", function(event){
     if (isModuleFailure(event.reason)) recover();
   });
+  // Watchdog: some stale-chunk failures blank the page without firing any
+  // error event (hydration never starts). If nothing rendered, recover once.
+  window.addEventListener("load", function(){
+    window.setTimeout(function(){
+      try {
+        var body = document.body;
+        if (!body || (body.innerText || "").trim().length === 0) recover();
+      } catch (e) {}
+    }, 4000);
+  });
   window.setTimeout(function(){
     try { sessionStorage.removeItem(KEY); } catch (e) {}
-  }, 10000);
+  }, 15000);
 })();`;
 
 function RootShell({ children }: { children: ReactNode }) {
