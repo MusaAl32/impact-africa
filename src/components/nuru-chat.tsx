@@ -3,8 +3,8 @@ import type { FileUIPart, UIMessage } from "ai";
 import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
   AudioLines, ChevronDown, Copy, ExternalLink, Flag, Globe2, Headphones,
-  Image, Mic, MicOff, MoreHorizontal, PencilLine, RefreshCcw, Share2, Sparkles,
-  ThumbsDown, ThumbsUp, Volume2, VolumeX,
+  Image, Mic, MicOff, MoreHorizontal, Pause, PencilLine, RefreshCcw, Share2, Sparkles,
+  Square, ThumbsDown, ThumbsUp, Volume2, VolumeX, X,
 } from "lucide-react";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -32,10 +32,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { supabase } from "@/integrations/supabase/client";
-import { branchConversation, saveMessage } from "@/lib/chat.functions";
+import { branchConversation, replaceFromMessage, saveMessage } from "@/lib/chat.functions";
 import { cn } from "@/lib/utils";
 import { loadPreferences } from "@/lib/workspace";
-import { speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
+import { pauseSpeaking, resumeSpeaking, speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
+import { findLanguage } from "@/lib/languages";
 
 type Source = { title: string; url: string; domain: string; date?: string };
 
@@ -55,8 +56,18 @@ export interface NuruChatProps {
   onHistoryChanged?: () => void;
 }
 
-const extractText = (message: UIMessage) =>
-  message.parts.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
+const extractText = (message: UIMessage) => {
+  const text = message.parts.filter((part) => part.type === "text").map((part) => part.text).join("\n").trim();
+  if (text) return text;
+  return message.parts
+    .filter((part) => isToolUIPart(part) && part.state === "output-available")
+    .map((part) => {
+      try { return typeof part.output === "string" ? part.output : JSON.stringify(part.output, null, 2); }
+      catch { return ""; }
+    })
+    .filter(Boolean)
+    .join("\n");
+};
 
 function getSources(message: UIMessage): Source[] {
   const seen = new Set<string>();
@@ -73,12 +84,13 @@ function getSources(message: UIMessage): Source[] {
 
 function friendlyError(error: Error | undefined) {
   const value = error?.message?.toLowerCase() ?? "";
+  if (typeof navigator !== "undefined" && !navigator.onLine) return "Your connection appears to be offline.";
   if (value.includes("429") || value.includes("rate")) return "Nuru is receiving many requests. Please wait a moment and try again.";
   if (value.includes("402") || value.includes("payment") || value.includes("credit") || value.includes("quota"))
-    return "Nuru has run out of AI credits, so it cannot reply right now. Please top up the workspace AI credits and try again.";
+    return "You've reached your Free usage limit. Please try again when your access resets.";
   if (value.includes("timeout") || value.includes("timed out")) return "That response took too long. Please retry, or shorten your request.";
   if (value.includes("401") || value.includes("unauthorized")) return "Your session expired. Please sign in again to continue.";
-  return "Nuru could not complete that response. Your conversation is safe—please try again.";
+  return "Something went wrong. Please try again. Your conversation is safe.";
 }
 
 function fileParts(files: FileUIPart[]) {
@@ -92,10 +104,14 @@ export function NuruChat({
 }: NuruChatProps) {
   const [webAccess, setWebAccess] = useState(true);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
+  const [pausedId, setPausedId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
   const [initialSent, setInitialSent] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
-  const { listening, supported: speechSupported, start: startListening, stop: stopListening } =
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+  const cancelSavedRef = useRef(false);
+  const { listening, supported: speechSupported, error: speechError, start: startListening, stop: stopListening } =
     useSpeechRecognition();
 
   const transport = useMemo(() => new DefaultChatTransport({
@@ -110,8 +126,34 @@ export function NuruChat({
     id: conversationId ?? `${department}-ephemeral`,
     messages: initialMessages,
     transport,
+    onFinish: async ({ message, isAbort }) => {
+      if (isAbort && conversationId && !cancelSavedRef.current) {
+        cancelSavedRef.current = true;
+        const parts = message.parts.map((part) => ({ ...part })) as UIMessage["parts"];
+        let lastText = -1;
+        parts.forEach((part, index) => {
+          if (part.type === "text") lastText = index;
+        });
+        if (lastText >= 0) {
+          const part = parts[lastText];
+          if (part?.type === "text") part.text = `${part.text}\n\n_Stopped._`;
+        } else {
+          parts.push({ type: "text", text: "_Stopped._" });
+        }
+        setMessages((current) => current.map((item) => item.id === message.id ? { ...item, parts } : item));
+        try {
+          await saveMessage({ data: { conversationId, clientMessageId: message.id, role: "assistant", parts, department } });
+          onHistoryChanged?.();
+        } catch { toast.error("The stopped response could not be saved."); }
+      }
+      window.setTimeout(() => textareaRef.current?.focus(), 0);
+    },
   });
   const busy = status === "submitted" || status === "streaming";
+
+  useEffect(() => {
+    if (status === "ready" || status === "error") textareaRef.current?.focus();
+  }, [status]);
 
   // Reset the thread only when the conversation actually changes. `initialMessages`
   // is a fresh array on every render, so depending on it here loops forever.
@@ -124,11 +166,21 @@ export function NuruChat({
   const submit = useCallback(async (text: string, files: FileUIPart[] = []) => {
     const clean = text.trim();
     if ((!clean && files.length === 0) || busy) return;
-    const id = crypto.randomUUID();
+    cancelSavedRef.current = false;
+    const id = editingId ?? crypto.randomUUID();
     const parts: UIMessage["parts"] = [
       ...(clean ? [{ type: "text" as const, text: clean }] : []),
       ...fileParts(files),
     ];
+    if (editingId && conversationId) {
+      try {
+        await replaceFromMessage({ data: { conversationId, clientMessageId: editingId } });
+        setMessages((current) => current.slice(0, current.findIndex((message) => message.id === editingId)));
+      } catch {
+        toast.error("This message could not be edited. Please try again.");
+        return;
+      }
+    }
     if ((persist || conversationId) && conversationId) {
       try {
         await saveMessage({ data: {
@@ -143,8 +195,17 @@ export function NuruChat({
     await sendMessage({ id, role: "user", parts }, {
       body: { department, language, projectContext, webAccess, conversationId },
     });
+    setEditingId(null);
     onHistoryChanged?.();
-  }, [busy, conversationId, department, language, onHistoryChanged, persist, projectContext, sendMessage, webAccess]);
+    window.setTimeout(() => textareaRef.current?.focus(), 0);
+  }, [busy, conversationId, department, editingId, language, onHistoryChanged, persist, projectContext, sendMessage, setMessages, webAccess]);
+
+  useEffect(() => {
+    if (!speechError) return;
+    toast.error(speechError);
+  }, [speechError]);
+
+  useEffect(() => () => stopSpeaking(), []);
 
   useEffect(() => {
     if (!initialPrompt || initialSent || messages.length > 0) return;
@@ -183,18 +244,53 @@ export function NuruChat({
   }
 
   function readAloud(id: string, text: string) {
+    if (pausedId === id) {
+      resumeSpeaking();
+      setPausedId(null);
+      return;
+    }
     if (speakingId === id) {
-      stopSpeaking();
-      setSpeakingId(null);
+      pauseSpeaking();
+      setPausedId(id);
       return;
     }
     const prefs = loadPreferences();
     setSpeakingId(id);
-    speak(text, language, {
+    const speechLocale = language ? findLanguage(language)?.locale ?? language : undefined;
+    speak(text, speechLocale, {
       voiceURI: prefs.voiceURI,
       rate: prefs.voiceRate,
-      onEnd: () => setSpeakingId(null),
+      onEnd: () => {
+        setSpeakingId((current) => current === id ? null : current);
+        setPausedId((current) => current === id ? null : current);
+      },
     });
+  }
+
+  function stopReadAloud() {
+    stopSpeaking();
+    setSpeakingId(null);
+    setPausedId(null);
+  }
+
+  function editMessage(message: UIMessage) {
+    if (busy) return;
+    const text = extractText(message);
+    setEditingId(message.id);
+    if (textareaRef.current) textareaRef.current.value = text;
+    textareaRef.current?.focus();
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    if (textareaRef.current) textareaRef.current.value = "";
+    textareaRef.current?.focus();
+  }
+
+  function retryLastResponse() {
+    const messageId = messages.at(-1)?.id;
+    const options = { body: { department, language, projectContext, webAccess, conversationId } };
+    return messageId ? regenerate({ ...options, messageId }) : regenerate(options);
   }
 
   const emptyActions = [
@@ -256,13 +352,21 @@ export function NuruChat({
                     </Tool>
                   ) : null)}
                 </MessageContent>
-                {assistant && text && (
+                {!assistant && text && (
+                  <MessageActions className="justify-end opacity-70 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100">
+                    <MessageAction className="size-10" tooltip="Edit and resend" onClick={() => editMessage(message)} disabled={busy}>
+                      <PencilLine />
+                    </MessageAction>
+                  </MessageActions>
+                )}
+                {assistant && (
                   <>
                     {sources.length > 0 && <SourcesPanel sources={sources} />}
                     <MessageActions className="flex-wrap gap-0.5 text-muted-foreground">
-                      <MessageAction className="size-10" tooltip={speakingId === message.id ? "Stop reading" : "Read aloud"} onClick={() => readAloud(message.id, text)}>
-                        {speakingId === message.id ? <VolumeX /> : <Volume2 />}
-                      </MessageAction>
+                      {text && <MessageAction className="size-10" tooltip={pausedId === message.id ? "Resume reading" : speakingId === message.id ? "Pause reading" : "Read aloud"} onClick={() => readAloud(message.id, text)}>
+                        {pausedId === message.id ? <Volume2 /> : speakingId === message.id ? <Pause /> : <Volume2 />}
+                      </MessageAction>}
+                      {speakingId === message.id && <MessageAction className="size-10" tooltip="Stop reading" onClick={stopReadAloud}><VolumeX /></MessageAction>}
                       <MessageAction className="size-10" tooltip="Helpful" onClick={() => setFeedback((v) => ({ ...v, [message.id]: "up" }))}>
                         <ThumbsUp className={feedback[message.id] === "up" ? "fill-current text-primary" : ""} />
                       </MessageAction>
@@ -300,7 +404,7 @@ export function NuruChat({
           {error && (
             <div role="alert" className="animate-fade-up rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm">
               <p>{friendlyError(error)}</p>
-              <Button className="mt-3" size="sm" variant="outline" onClick={() => void regenerate({ body: { department, language, projectContext, webAccess, conversationId } })}>
+              <Button className="mt-3" size="sm" variant="outline" onClick={() => void retryLastResponse()}>
                 <RefreshCcw /> Try again
               </Button>
             </div>
@@ -311,6 +415,12 @@ export function NuruChat({
 
       <div className="sticky bottom-0 z-20 bg-background px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2 sm:px-5">
         <div className="mx-auto max-w-3xl">
+          {editingId && (
+            <div className="mb-2 flex min-h-10 items-center justify-between rounded-lg border border-border bg-card px-3 text-xs text-muted-foreground">
+              <span className="flex items-center gap-2"><PencilLine className="size-3.5" /> Editing your message</span>
+              <Button type="button" size="icon" variant="ghost" className="size-8" onClick={cancelEdit} aria-label="Cancel editing"><X /></Button>
+            </div>
+          )}
           <PromptInput
             {...(accept ? { accept } : {})}
             multiple
@@ -320,7 +430,7 @@ export function NuruChat({
             onSubmit={({ text, files }) => submit(text, files)}
             className="rounded-full [&_[data-slot=input-group]]:relative [&_[data-slot=input-group]]:rounded-full [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-sm"
           >
-            <PromptInputTextarea placeholder="Ask Ascender AI" className="min-h-14 max-h-36 py-4 pl-14 pr-28 text-base" />
+              <PromptInputTextarea ref={textareaRef} autoFocus placeholder={editingId ? "Edit your message" : "Ask Ascender AI"} className="min-h-14 max-h-36 py-4 pl-14 pr-28 text-base" />
             <PromptInputFooter className="pointer-events-none absolute inset-0 z-10 h-full w-full p-1.5">
               <PromptInputTools className="pointer-events-auto absolute left-1.5 top-1/2 -translate-y-1/2">
                 <PromptInputActionMenu>
@@ -337,12 +447,12 @@ export function NuruChat({
                 </PromptInputActionMenu>
               </PromptInputTools>
               <div className="pointer-events-auto absolute right-1.5 top-1/2 flex -translate-y-1/2 items-center gap-0.5">
-                {speechSupported && <PromptInputButton className={cn("size-11 rounded-full", listening && "bg-destructive/15 text-destructive")} tooltip={listening ? "Stop voice input" : "Voice input"}
-                  onClick={() => listening ? stopListening() : startListening((text) => void submit(text), language)}>
+                <PromptInputButton className={cn("size-11 rounded-full", listening && "bg-destructive/15 text-destructive")} tooltip={speechSupported ? (listening ? "Stop voice input" : "Voice input") : "Voice input unavailable in this browser"}
+                  onClick={() => listening ? stopListening() : startListening((text) => void submit(text), language ? findLanguage(language)?.locale ?? language : undefined)}>
                   {listening ? <MicOff /> : <Mic />}
-                </PromptInputButton>}
+                </PromptInputButton>
                 <PromptInputSubmit aria-label={busy ? "Stop response" : "Send message"} className="size-11 rounded-full bg-chat-audio text-chat-audio-foreground hover:bg-chat-audio/90" status={status} onStop={stop}>
-                  <AudioLines className="size-5" />
+                  {busy ? <Square className="size-4 fill-current" /> : <AudioLines className="size-5" />}
                 </PromptInputSubmit>
               </div>
             </PromptInputFooter>

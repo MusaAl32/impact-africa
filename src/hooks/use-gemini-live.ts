@@ -57,7 +57,7 @@ function friendlyError(error: unknown) {
     return "Your session expired. Please sign in again to use live voice.";
   if (text.includes("network") || text.includes("websocket") || text.includes("closed") || text.includes("failed to fetch"))
     return "The live connection dropped. Check your internet and start again.";
-  return raw || "Something went wrong with live voice. Please try again.";
+  return "Something went wrong with live voice. Please try again.";
 }
 
 type LiveSessionHandle = {
@@ -86,6 +86,7 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
   const playheadRef = useRef(0);
   const mutedRef = useRef(false);
   const startingRef = useRef(false);
+  const generationRef = useRef(0);
   const userBufferRef = useRef("");
   const modelBufferRef = useRef("");
 
@@ -156,6 +157,7 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
   }, []);
 
   const stop = useCallback(() => {
+    generationRef.current += 1;
     cleanup();
     startingRef.current = false;
     setStatus("idle");
@@ -164,6 +166,8 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
   const start = useCallback(async () => {
     if (startingRef.current || sessionRef.current) return;
     startingRef.current = true;
+    const generation = generationRef.current + 1;
+    generationRef.current = generation;
     setError(null);
     setTurns([]);
     setStatus("connecting");
@@ -172,10 +176,15 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
       const stream = await navigator.mediaDevices.getUserMedia({
         audio: { channelCount: 1, echoCancellation: true, noiseSuppression: true, autoGainControl: true },
       });
+      if (generationRef.current !== generation) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
       streamRef.current = stream;
 
       const { GoogleGenAI, Modality } = await import("@google/genai");
       const { token, model } = await createLiveToken();
+      if (generationRef.current !== generation) return;
 
       const ai = new GoogleGenAI({ apiKey: token, httpOptions: { apiVersion: "v1alpha" } });
       const languageLine = optionsRef.current.languageHint
@@ -193,8 +202,11 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
           sessionResumption: {},
         },
         callbacks: {
-          onopen: () => setStatus("listening"),
+          onopen: () => {
+            if (generationRef.current === generation) setStatus("listening");
+          },
           onmessage: (message: unknown) => {
+            if (generationRef.current !== generation) return;
             const payload = message as {
               serverContent?: {
                 interrupted?: boolean;
@@ -235,16 +247,23 @@ export function useGeminiLive(options: { systemInstruction: string; languageHint
             }
           },
           onerror: (event: unknown) => {
+            if (generationRef.current !== generation) return;
             setError(friendlyError((event as { message?: string })?.message ?? "websocket"));
             setStatus("error");
             cleanup();
           },
           onclose: () => {
+            if (generationRef.current !== generation) return;
             sessionRef.current = null;
             setStatus((current) => (current === "error" ? current : "idle"));
           },
         },
       })) as unknown as LiveSessionHandle;
+
+      if (generationRef.current !== generation) {
+        session.close();
+        return;
+      }
 
       sessionRef.current = session;
 

@@ -1,10 +1,6 @@
-- [x] Upgrade the chat surface using AI Elements while preserving Nuru tools, voice, attachments, and web sources
-- [x] Add secure threaded conversation history with dedicated URLs and sidebar navigation
-- [x] Reduce primary departments and add an Explore more disclosure
-- [x] Add first-message prompt cards, WhatsApp sharing, polished errors, and exact trust disclaimer
-- [x] Audit and fix mobile layout, touch targets, spacing, animations, and contrast across all app pages
-- [x] Add About to primary navigation; omit usage figures unless a safe real aggregate is available
-- [x] Verify links, two-thread persistence, chat streaming, mobile/desktop layouts, and diagnostics
-- [x] Fix the render loop that crashed every department page
-- [x] Verify data isolation, ownership enforcement and secret exposure with direct API tests
-- [x] Fix the latest build failure blocking publishing
+- [x] Add reliable stop-generation state and persist partial responses once
+- [x] Add edit-and-resend for user messages with owner-scoped history truncation
+- [x] Improve chat focus recovery and safe offline/usage-limit errors
+- [x] Improve microphone errors and text-response playback controls
+- [x] Harden Gemini Live connection cleanup and visible state handling
+- [x] Verify chat, history, voice, mobile/desktop, security, typecheck, and build

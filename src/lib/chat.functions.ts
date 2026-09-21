@@ -19,6 +19,10 @@ const branchSchema = z.object({
   // May be empty when the reply has no saved id yet — we then branch from everything saved.
   throughClientMessageId: z.string().max(160).optional().default(""),
 });
+const replaceFromMessageSchema = z.object({
+  conversationId: z.string().uuid(),
+  clientMessageId: z.string().min(1).max(160),
+});
 
 async function verifyOwnedConversation(
   supabase: SupabaseClient<Database>,
@@ -184,6 +188,34 @@ export const saveMessage = createServerFn({ method: "POST" })
       .eq("user_id", context.userId);
     if (touchError) throw new Error("This conversation could not be updated.");
     return { ok: true, title };
+  });
+
+/** Removes one owned user turn and every later turn before an edited resend. */
+export const replaceFromMessage = createServerFn({ method: "POST" })
+  .inputValidator(replaceFromMessageSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    await verifyOwnedConversation(context.supabase, context.userId, data.conversationId);
+    const { data: rows, error: loadError } = await context.supabase
+      .from("messages")
+      .select("id, client_message_id, role")
+      .eq("conversation_id", data.conversationId)
+      .eq("user_id", context.userId)
+      .order("created_at", { ascending: true });
+    if (loadError) throw new Error("This message could not be edited.");
+    const index = (rows ?? []).findIndex((row) => row.client_message_id === data.clientMessageId && row.role === "user");
+    if (index < 0) throw new Error("This message could not be found.");
+    const ids = (rows ?? []).slice(index).map((row) => row.id);
+    if (ids.length > 0) {
+      const { error: deleteError } = await context.supabase
+        .from("messages")
+        .delete()
+        .eq("conversation_id", data.conversationId)
+        .eq("user_id", context.userId)
+        .in("id", ids);
+      if (deleteError) throw new Error("This message could not be edited.");
+    }
+    return { ok: true };
   });
 
 export const branchConversation = createServerFn({ method: "POST" })

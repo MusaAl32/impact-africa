@@ -63,7 +63,7 @@ function AppLayout() {
       await archiveConversation({ data: { conversationId: id } });
       refreshHistory();
       if (pathname.endsWith(id)) await navigate({ to: "/app" });
-    } catch { toast.error("Could not archive this conversation."); }
+    } catch { toast.error("Could not delete this conversation."); }
   }
 
   const primary = DEPARTMENTS.slice(0, 4);
@@ -130,7 +130,7 @@ function AppLayout() {
                 <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-11 shrink-0 sm:size-9" aria-label={`Options for ${item.title}`}><MoreHorizontal /></Button></DropdownMenuTrigger>
                 <DropdownMenuContent align="end">
                   <DropdownMenuItem onClick={() => void rename(item.id, item.title)}><Pencil /> Rename</DropdownMenuItem>
-                  <DropdownMenuItem className="text-destructive" onClick={() => void archive(item.id)}><Trash2 /> Archive</DropdownMenuItem>
+                  <DropdownMenuItem className="text-destructive" onClick={() => void archive(item.id)}><Trash2 /> Delete</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
             </div>

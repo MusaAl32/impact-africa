@@ -69,7 +69,7 @@ function ConversationPage() {
       await archiveConversation({ data: { conversationId } });
       window.dispatchEvent(new Event("nuru-history-changed"));
       await navigate({ to: "/app", replace: true });
-    } catch { toast.error("Could not archive this conversation."); }
+    } catch { toast.error("Could not delete this conversation."); }
   }
 
   return (
@@ -88,7 +88,7 @@ function ConversationPage() {
           <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-11" aria-label="Conversation options"><MoreHorizontal /></Button></DropdownMenuTrigger>
           <DropdownMenuContent align="end">
             <DropdownMenuItem onClick={() => void rename()}><Pencil /> Rename</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive" onClick={() => void archive()}><Trash2 /> Archive</DropdownMenuItem>
+            <DropdownMenuItem className="text-destructive" onClick={() => void archive()}><Trash2 /> Delete</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       </header>
