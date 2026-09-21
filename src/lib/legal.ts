@@ -3,14 +3,15 @@
  * Edit this file to update Privacy, Terms and contact details everywhere.
  */
 export const COMPANY = {
-  name: "Africa Opportunity Hub",
+  name: "Matola",
+  tradingName: "Africa Opportunity Hub",
   product: "Nuru AI",
-  status: "Early-stage startup. Not yet formally incorporated.",
-  plannedJurisdiction: "Malawi (planned)",
+  status: "Matola is the seller, service provider and data controller for Nuru AI.",
+  jurisdiction: "Malawi",
   market: "Africa",
   generalEmail: "hello@africaopportunityhub.com",
   supportEmail: "support@africaopportunityhub.com",
   legalEmail: "legal@africaopportunityhub.com",
-  effectiveDate: "19 September 2026",
-  lastUpdated: "19 September 2026",
+  effectiveDate: "21 September 2026",
+  lastUpdated: "21 September 2026",
 } as const;

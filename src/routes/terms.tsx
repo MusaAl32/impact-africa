@@ -34,8 +34,8 @@ function TermsPage() {
       <LegalSection title="1. Acceptance of terms">
         <p>
           By using {COMPANY.product} you agree to comply with these Terms and all applicable laws and
-          regulations. If you do not agree with these Terms, please do not use the service.{" "}
-          {COMPANY.status} These terms will be updated as the company formalises.
+          regulations. If you do not agree with these Terms, please do not use the service. Your
+          contract for the service is with {COMPANY.name}, trading as {COMPANY.tradingName}.
         </p>
       </LegalSection>
 
@@ -66,8 +66,8 @@ function TermsPage() {
           significant financial, legal, medical, educational, or professional consequences.
         </p>
         <p>
-          The service is offered as-is, free of charge at this stage, and may change or be
-          interrupted while we build.
+          Free and paid plans are available. Features and allowances vary by plan and may change as
+          described on the pricing page.
         </p>
       </LegalSection>
 
@@ -81,6 +81,7 @@ function TermsPage() {
           <li>Abuse, disrupt, or overload the service, including by scraping or bypassing rate limits.</li>
           <li>Attempt to reverse-engineer or compromise protected portions of the platform.</li>
           <li>Submit unlawful, hateful, defamatory, deliberately false or harmful content.</li>
+          <li>Create deceptive deepfakes, facilitate fraud or spam, infringe intellectual-property rights, generate malware, or attempt to jailbreak safety controls.</li>
           <li>Use the service in ways that violate applicable laws.</li>
         </ul>
         <p>
@@ -104,6 +105,14 @@ function TermsPage() {
           public, read-only agent endpoint. You confirm you have the right to share it. Do not submit
           anyone else&apos;s private or personal information.
         </p>
+        <p>
+          You retain your rights in prompts, files and other inputs, and any rights you may have in
+          outputs, subject to applicable law and third-party rights. You confirm that you have the
+          rights needed for every input. We may remove or restrict content, refuse outputs, or suspend
+          repeat infringers. Rights holders may send a takedown request to{" "}
+          <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a> with identification of the
+          work, the disputed material and their contact details.
+        </p>
       </LegalSection>
 
       <LegalSection title="6. Security">
@@ -124,9 +133,14 @@ function TermsPage() {
 
       <LegalSection title="8. Payments and subscriptions">
         <p>
-          Where paid features or subscriptions are offered, applicable prices, billing periods, renewal
-          terms, cancellation procedures, and refund conditions will be presented before purchase.
-          Payments may be processed by third-party payment providers.
+          Paid plans renew at the billing interval and price shown at checkout until cancelled. Our
+          order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of
+          Record for all our orders. Paddle provides all customer service inquiries and handles
+          returns. Payment, billing, tax, cancellation and refund mechanics are governed by Paddle&apos;s{" "}
+          <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noreferrer">
+            Buyer Terms
+          </a>{" "}
+          and our <a href="/refunds">Refund Policy</a>.
         </p>
       </LegalSection>
 
@@ -137,23 +151,37 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="10. Availability and liability">
+      <LegalSection title="10. Availability, warranties and liability">
         <p>
-          We do not promise uninterrupted service. To the maximum extent permitted by applicable
-          law, we are not liable for indirect or consequential loss, lost profits, or decisions made
-          in reliance on AI output or third-party sources.
+          We do not promise uninterrupted or error-free service. The service is provided as available,
+          without implied warranties of merchantability or fitness for a particular purpose to the
+          fullest extent the law permits. To that extent, we are not liable for indirect, consequential
+          or special loss, lost profits, lost data or lost goodwill. Our aggregate liability is limited
+          to fees you paid for the service in the 12 months before the claim. Nothing excludes liability
+          that cannot lawfully be excluded, including liability for fraud, death or personal injury
+          caused by negligence where applicable.
         </p>
       </LegalSection>
 
       <LegalSection title="11. Governing law">
         <p>
-          Until the company is formally incorporated, disputes will be handled in good faith through
-          direct discussion. Our planned jurisdiction is {COMPANY.plannedJurisdiction}; we will publish a
-          governing-law clause once incorporation is complete.
+          These Terms are governed by the laws of {COMPANY.jurisdiction}, subject to any mandatory
+          consumer protections that apply where you live. We will first try to resolve disputes in good
+          faith through direct discussion; unresolved disputes may be brought before the competent
+          courts of {COMPANY.jurisdiction}.
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Changes to these terms">
+      <LegalSection title="12. Suspension and termination">
+        <p>
+          We may suspend or terminate access for a material breach, non-payment, security or fraud
+          risk, or repeated or serious policy violations. You may stop using the service or cancel a
+          paid plan at any time. When access ends, we may delete account content after a reasonable
+          period, subject to legal retention duties and any available export options.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="13. Changes to these terms">
         <p>
           We may update these Terms from time to time. Continued use of {COMPANY.product} after
           updated Terms become effective constitutes acceptance of the updated Terms, where permitted
@@ -161,7 +189,7 @@ function TermsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Contact">
+      <LegalSection title="14. Contact">
         <p>
           {COMPANY.product} is proudly owned and operated by {COMPANY.name}. For questions regarding
           these Terms, please contact us through the official {COMPANY.product} contact channel, or
