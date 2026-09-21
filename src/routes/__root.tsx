@@ -113,11 +113,44 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
   errorComponent: ErrorComponent,
 });
 
+// Installed before hydration so a failed/stale module chunk cannot blank the
+// screen before React (and any effect-based handler) has mounted.
+const MODULE_RECOVERY_SCRIPT = `(function(){
+  var KEY = "nuru-module-recovery";
+  function recover(){
+    try {
+      if (sessionStorage.getItem(KEY) === "1") return;
+      sessionStorage.setItem(KEY, "1");
+    } catch (e) {}
+    var url = new URL(window.location.href);
+    url.searchParams.set("r", String(Date.now()));
+    window.location.replace(url.toString());
+  }
+  function isModuleFailure(value){
+    if (value === undefined || value === null) return true;
+    var text = typeof value === "string" ? value : String(value.message || value);
+    return /dynamically imported module|Importing a module script failed|error loading dynamically imported|Failed to fetch|ChunkLoadError|MIME type|Unexpected token '<'/i.test(text);
+  }
+  window.addEventListener("error", function(event){
+    var target = event.target;
+    if (target && target !== window && (target.tagName === "SCRIPT" || target.tagName === "LINK")) { recover(); return; }
+    if (event.message === "Uncaught undefined" && event.error === undefined) { recover(); return; }
+    if (event.error && isModuleFailure(event.error)) recover();
+  }, true);
+  window.addEventListener("unhandledrejection", function(event){
+    if (isModuleFailure(event.reason)) recover();
+  });
+  window.setTimeout(function(){
+    try { sessionStorage.removeItem(KEY); } catch (e) {}
+  }, 10000);
+})();`;
+
 function RootShell({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className="dark">
       <head>
         <HeadContent />
+        <script dangerouslySetInnerHTML={{ __html: MODULE_RECOVERY_SCRIPT }} />
       </head>
       <body>
         {children}
@@ -132,21 +165,6 @@ function RootComponent() {
 
   const router = useRouter();
 
-  useEffect(() => {
-    const recoveryKey = "nuru-preview-module-recovery";
-    const recoverFromStaleModuleGraph = (event: ErrorEvent) => {
-      if (event.message !== "Uncaught undefined" || event.error !== undefined) return;
-      if (sessionStorage.getItem(recoveryKey) === "1") return;
-      sessionStorage.setItem(recoveryKey, "1");
-      window.location.reload();
-    };
-    window.addEventListener("error", recoverFromStaleModuleGraph);
-    const stableTimer = window.setTimeout(() => sessionStorage.removeItem(recoveryKey), 10_000);
-    return () => {
-      window.removeEventListener("error", recoverFromStaleModuleGraph);
-      window.clearTimeout(stableTimer);
-    };
-  }, []);
 
   useEffect(() => {
     const { data } = supabase.auth.onAuthStateChange((event) => {
