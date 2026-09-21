@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Loader2, Mic, MicOff, PhoneOff, Sparkles } from "lucide-react";
+import { Loader2, Mic, MicOff, PhoneOff } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -9,6 +9,7 @@ import { saveLiveTranscript } from "@/lib/chat.functions";
 import { AFRICAN_LANGUAGES } from "@/lib/languages";
 import { useI18n } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
+import { NuruMark } from "@/components/nuru-logo";
 
 const SYSTEM_INSTRUCTION =
   "You are Nuru AI, a helpful, intelligent and respectful AI assistant built to serve users in Africa and connect them with the wider world. Have natural conversational dialogue. Keep responses clear and useful. Respond in the user's selected system language when possible. If the user speaks English, respond in English. If the user speaks Chichewa, respond in Chichewa. Support multilingual conversation naturally. Do not interrupt the user. If the user interrupts you, immediately stop speaking and listen.";
@@ -91,7 +92,7 @@ export function NuruLiveVoice({
       <DialogContent className="flex max-h-[90dvh] flex-col gap-5 sm:max-w-md">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-2">
-            <Sparkles className="size-4 text-primary" aria-hidden />
+            <NuruMark className="size-6" />
             Nuru Live Voice
           </DialogTitle>
           <DialogDescription>Speak naturally — you can cut in at any time.</DialogDescription>
