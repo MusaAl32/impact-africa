@@ -14,8 +14,6 @@ import {
 import { cn } from "@/lib/utils";
 import { cjk } from "@streamdown/cjk";
 import { code } from "@streamdown/code";
-import { math } from "@streamdown/math";
-import { mermaid } from "@streamdown/mermaid";
 import type { UIMessage } from "ai";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import type { ComponentProps, HTMLAttributes, ReactElement } from "react";
@@ -321,19 +319,55 @@ export const MessageBranchPage = ({
 
 export type MessageResponseProps = ComponentProps<typeof Streamdown>;
 
-const streamdownPlugins = { cjk, code, math, mermaid };
+const basePlugins = { cjk, code };
+
+/**
+ * Diagram and formula rendering pull in very large libraries, so they are
+ * loaded only when the message actually contains a mermaid block or math.
+ */
+function useExtraPlugins(source: unknown) {
+  const text = typeof source === "string" ? source : "";
+  const needsMermaid = text.includes("```mermaid");
+  const needsMath = /\$\$|\\\(|\\\[/.test(text);
+  const [extra, setExtra] = useState<Record<string, unknown>>({});
+
+  useEffect(() => {
+    let cancelled = false;
+    const load = async () => {
+      const next: Record<string, unknown> = {};
+      if (needsMermaid && !("mermaid" in extra)) {
+        next["mermaid"] = (await import("@streamdown/mermaid")).mermaid;
+      }
+      if (needsMath && !("math" in extra)) {
+        next["math"] = (await import("@streamdown/math")).math;
+      }
+      if (!cancelled && Object.keys(next).length > 0) {
+        setExtra((current) => ({ ...current, ...next }));
+      }
+    };
+    void load();
+    return () => {
+      cancelled = true;
+    };
+  }, [needsMermaid, needsMath, extra]);
+
+  return extra;
+}
 
 export const MessageResponse = memo(
-  ({ className, ...props }: MessageResponseProps) => (
-    <Streamdown
-      className={cn(
-        "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
-        className
-      )}
-      plugins={streamdownPlugins}
-      {...props}
-    />
-  ),
+  ({ className, ...props }: MessageResponseProps) => {
+    const extraPlugins = useExtraPlugins(props.children);
+    return (
+      <Streamdown
+        className={cn(
+          "size-full [&>*:first-child]:mt-0 [&>*:last-child]:mb-0",
+          className
+        )}
+        plugins={{ ...basePlugins, ...extraPlugins } as typeof basePlugins}
+        {...props}
+      />
+    );
+  },
   (prevProps, nextProps) =>
     prevProps.children === nextProps.children &&
     nextProps.isAnimating === prevProps.isAnimating

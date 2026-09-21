@@ -1,12 +1,8 @@
 import { streamText } from "ai";
 import { createClient } from "@supabase/supabase-js";
 
-import {
-  NURU_MODEL,
-  createLovableAiGatewayProvider,
-  describeGatewayFailure,
-  requireLovableApiKey,
-} from "./ai-gateway.server";
+import { describeGatewayFailure } from "./ai-gateway.server";
+import { nuruUtilityModel } from "./nuru-model.server";
 import { getDepartment, type DepartmentId } from "./departments";
 import { NURU_IDENTITY } from "./prompts";
 import type { Database } from "@/integrations/supabase/types";
@@ -37,11 +33,13 @@ export async function runItemAnalysis(input: {
   meta?: string;
 }) {
   const dept = getDepartment(input.department);
+  const analysisModel = nuruUtilityModel();
 
   let streamError: unknown;
   const result = streamText({
     onError: ({ error }) => { streamError = error; },
-    model: createLovableAiGatewayProvider(requireLovableApiKey())(NURU_MODEL),
+    model: analysisModel.model,
+    providerOptions: analysisModel.providerOptions,
     system: [
       NURU_IDENTITY,
       `Active department: ${dept.name}. ${dept.expertise ?? dept.tagline}`,
@@ -58,5 +56,5 @@ export async function runItemAnalysis(input: {
   }
 
   const analysis = raw.trim();
-  return { analysis, model: NURU_MODEL };
+  return { analysis, model: analysisModel.modelId };
 }

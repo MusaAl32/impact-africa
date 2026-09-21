@@ -1,15 +1,11 @@
 import { streamText } from "ai";
 
-import {
-  NURU_MODEL,
-  createLovableAiGatewayProvider,
-  describeGatewayFailure,
-  requireLovableApiKey,
-} from "./ai-gateway.server";
+import { describeGatewayFailure } from "./ai-gateway.server";
+import { nuruUtilityModel } from "./nuru-model.server";
 import { AFRICAN_LANGUAGES, languageLabel } from "./languages";
 
 function model() {
-  return createLovableAiGatewayProvider(requireLovableApiKey())(NURU_MODEL);
+  return nuruUtilityModel().model;
 }
 
 /** Captures the underlying gateway error, which the stream error hides. */
