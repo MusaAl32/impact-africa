@@ -3,15 +3,13 @@ import { Check, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { PaymentTestModeBanner } from "@/components/payment-test-mode-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { usePaddleCheckout } from "@/hooks/use-paddle-checkout";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyEntitlements, listPlans, type PublicPlan } from "@/lib/billing.functions";
 import type { Entitlements } from "@/lib/billing.server";
-import { paymentsConfigured } from "@/lib/paddle";
+import { confirmPaypalSubscription, startPaypalSubscription } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/pricing")({
   staticData: { sitemap: true },
