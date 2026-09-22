@@ -10,12 +10,12 @@ export const Route = createFileRoute("/refunds")({
       { title: `Refund Policy — ${COMPANY.product}` },
       {
         name: "description",
-        content: "How to request a refund for a Nuru AI purchase made through Paddle.",
+        content: "How to request a refund for a Nuru AI purchase made through PayPal.",
       },
       { property: "og:title", content: `Refund Policy — ${COMPANY.product}` },
       {
         property: "og:description",
-        content: "Nuru AI's 30-day refund policy and instructions for requesting a refund through Paddle.",
+        content: "Nuru AI's 30-day refund policy and instructions for requesting a refund through PayPal.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
@@ -40,32 +40,30 @@ function RefundPolicyPage() {
 
       <LegalSection title="2. How to request a refund">
         <p>
-          Paddle is our online reseller and Merchant of Record and handles returns. To request a
-          refund, visit{" "}
-          <a href="https://paddle.net" target="_blank" rel="noreferrer">
-            paddle.net
-          </a>{" "}
-          and provide the email address and transaction details associated with your order. You may
-          also contact <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a> for help.
+          Email <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a> with the email
+          address used for the purchase and the PayPal transaction or subscription reference. We
+          reply to every request and process approved refunds promptly.
         </p>
       </LegalSection>
 
       <LegalSection title="3. Processing">
         <p>
-          Approved refunds are returned by Paddle to the original payment method. The time needed for
-          funds to appear depends on your payment provider. Subscription cancellation stops future
-          renewals but does not automatically refund earlier charges; submit a refund request within
-          the period above if you also want a qualifying charge refunded.
+          Approved refunds are returned through PayPal to the original payment method. The time
+          needed for funds to appear depends on PayPal and your bank or card issuer. Cancelling a
+          subscription stops future renewals but does not automatically refund earlier charges;
+          submit a refund request within the period above if you also want a qualifying charge
+          refunded.
         </p>
       </LegalSection>
 
-      <LegalSection title="4. Paddle terms">
+      <LegalSection title="4. Payment processing">
         <p>
-          Payment, billing, tax, cancellation and refund processing is also subject to Paddle&apos;s{" "}
-          <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noreferrer">
-            Buyer Terms
-          </a>{" "}
-          and <a href="https://www.paddle.com/legal/refund-policy" target="_blank" rel="noreferrer">Refund Policy</a>.
+          Payments are processed by PayPal. Payment, billing and dispute mechanics are also subject
+          to PayPal&apos;s{" "}
+          <a href="https://www.paypal.com/legalhub/home" target="_blank" rel="noreferrer">
+            user agreement and policies
+          </a>
+          .
         </p>
       </LegalSection>
     </LegalPage>

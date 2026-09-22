@@ -3,15 +3,13 @@ import { Check, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { PaymentTestModeBanner } from "@/components/payment-test-mode-banner";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { Button } from "@/components/ui/button";
-import { usePaddleCheckout } from "@/hooks/use-paddle-checkout";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyEntitlements, listPlans, type PublicPlan } from "@/lib/billing.functions";
 import type { Entitlements } from "@/lib/billing.server";
-import { paymentsConfigured } from "@/lib/paddle";
+import { confirmPaypalSubscription, startPaypalSubscription } from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/pricing")({
   staticData: { sitemap: true },
@@ -45,11 +43,6 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const PRICE_IDS: Record<string, string> = {
-  pro: "nuru_pro_monthly",
-  pro_plus: "nuru_pro_plus_monthly",
-  pro_max: "nuru_pro_max_monthly",
-};
 
 function useCountdown(resetsAt?: string) {
   const [label, setLabel] = useState("");
@@ -85,7 +78,6 @@ function PricingPage() {
   const [user, setUser] = useState<{ id: string; email: string } | null>(null);
   const [entitlements, setEntitlements] = useState<Entitlements | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
-  const { openCheckout } = usePaddleCheckout();
   const countdown = useCountdown(entitlements?.resets_at);
 
   useEffect(() => {
@@ -98,6 +90,24 @@ function PricingPage() {
     });
   }, []);
 
+  // Apply the new plan as soon as the buyer comes back from PayPal.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const subscriptionId = params.get("subscription_id");
+    if (!subscriptionId) return;
+    confirmPaypalSubscription({ data: { subscriptionId } })
+      .then(async () => {
+        toast.success("Payment received — your new plan is active.");
+        setEntitlements(await getMyEntitlements());
+      })
+      .catch(() => {
+        toast.error("We could not confirm your payment yet. It may take a moment to appear.");
+      })
+      .finally(() => {
+        window.history.replaceState({}, "", "/pricing");
+      });
+  }, []);
+
   const currentSlug = entitlements?.plan_slug ?? "free";
   const currentPlan = plans.find((p) => p.slug === currentSlug);
 
@@ -106,24 +116,25 @@ function PricingPage() {
       window.location.href = "/auth";
       return;
     }
-    const priceId = PRICE_IDS[plan.slug];
-    if (!priceId || !paymentsConfigured()) {
-      toast.error("Card payments are not available yet. Please try again shortly.");
-      return;
-    }
     setBusy(plan.slug);
     try {
-      await openCheckout({ priceId, userId: user.id, customerEmail: user.email });
+      const origin = window.location.origin;
+      const { approveUrl } = await startPaypalSubscription({
+        data: {
+          planSlug: plan.slug,
+          returnUrl: `${origin}/pricing`,
+          cancelUrl: `${origin}/pricing?checkout=cancelled`,
+        },
+      });
+      window.location.href = approveUrl;
     } catch {
-      toast.error("We could not open the payment window. Please try again.");
-    } finally {
+      toast.error("We could not open PayPal. Please try again in a moment.");
       setBusy(null);
     }
   }
 
   return (
     <div className="min-h-screen bg-background">
-      <PaymentTestModeBanner />
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl px-4 py-12">
         <header className="text-center">
