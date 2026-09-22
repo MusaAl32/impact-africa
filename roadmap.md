@@ -7,7 +7,7 @@
 
 ## Pricing, plans and limits
 - [x] Database: plans, subscriptions, usage_events, entitlement + quota functions
-- [x] Enable built-in payments (Paddle)
+- [x] Enable PayPal payments
 - [x] Create the three paid subscription products and prices
 - [x] Public /pricing page: four plans, current plan, usage remaining, reset countdown, upgrade button
 - [x] Checkout flow (overlay) linked to the signed-in user

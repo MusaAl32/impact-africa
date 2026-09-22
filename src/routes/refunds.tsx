@@ -10,12 +10,12 @@ export const Route = createFileRoute("/refunds")({
       { title: `Refund Policy — ${COMPANY.product}` },
       {
         name: "description",
-        content: "How to request a refund for a Nuru AI purchase made through Paddle.",
+        content: "How to request a refund for a Nuru AI purchase made through PayPal.",
       },
       { property: "og:title", content: `Refund Policy — ${COMPANY.product}` },
       {
         property: "og:description",
-        content: "Nuru AI's 30-day refund policy and instructions for requesting a refund through Paddle.",
+        content: "Nuru AI's 30-day refund policy and instructions for requesting a refund through PayPal.",
       },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
