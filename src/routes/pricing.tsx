@@ -43,11 +43,6 @@ export const Route = createFileRoute("/pricing")({
   component: PricingPage,
 });
 
-const PRICE_IDS: Record<string, string> = {
-  pro: "nuru_pro_monthly",
-  pro_plus: "nuru_pro_plus_monthly",
-  pro_max: "nuru_pro_max_monthly",
-};
 
 function useCountdown(resetsAt?: string) {
   const [label, setLabel] = useState("");
