@@ -130,18 +130,17 @@ function PrivacyPage() {
         </p>
         <p>
           Recipient categories include hosting, authentication, AI, analytics, search and support
-          providers; Paddle as Merchant of Record for sales, subscriptions, payments, tax compliance
-          and invoicing; professional legal or accounting advisers; and public authorities when the
-          law requires disclosure.
+          providers; PayPal for payment and subscription processing; professional legal or
+          accounting advisers; and public authorities when the law requires disclosure.
         </p>
       </LegalSection>
 
       <LegalSection title="7. Payment information">
         <p>
-          Paddle is our online reseller and Merchant of Record. Paddle handles checkout, payment,
-          subscription management, taxes, invoices, customer-service enquiries and returns. Matola
-          does not collect or store your full payment-card or banking credentials. Paddle processes
-          payment information under its own privacy notice and security practices.
+          Payments and subscriptions are processed by PayPal. Matola does not collect or store your
+          full payment-card or banking credentials; PayPal processes payment information under its
+          own privacy notice and security practices. We keep only the subscription reference and
+          plan status needed to give you access to the plan you paid for.
         </p>
       </LegalSection>
 

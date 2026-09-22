@@ -151,12 +151,11 @@ function TermsPage() {
 
       <LegalSection title="8. Payments and subscriptions">
         <p>
-          Paid plans renew at the billing interval and price shown at checkout until cancelled. Our
-          order process is conducted by our online reseller Paddle.com. Paddle.com is the Merchant of
-          Record for all our orders. Paddle provides all customer service inquiries and handles
-          returns. Payment, billing, tax, cancellation and refund mechanics are governed by Paddle&apos;s{" "}
-          <a href="https://www.paddle.com/legal/checkout-buyer-terms" target="_blank" rel="noreferrer">
-            Buyer Terms
+          Paid plans renew at the billing interval and price shown at checkout until cancelled.
+          Matola is the seller of record for all orders and provides customer service, billing
+          support and refunds. Payments are processed by PayPal and are also subject to PayPal&apos;s{" "}
+          <a href="https://www.paypal.com/legalhub/home" target="_blank" rel="noreferrer">
+            user agreement and policies
           </a>{" "}
           and our <a href="/refunds">Refund Policy</a>.
         </p>
