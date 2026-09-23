@@ -176,14 +176,37 @@ function RootComponent() {
 
   const router = useRouter();
 
-
   useEffect(() => {
+    let pendingRefresh: (() => void) | null = null;
+
+    const refreshAfterNavigation = (includeQueries: boolean) => {
+      const refresh = () => {
+        pendingRefresh?.();
+        pendingRefresh = null;
+        void router.invalidate();
+        if (includeQueries) void queryClient.invalidateQueries();
+      };
+
+      if (!router.state.isLoading) {
+        refresh();
+        return;
+      }
+
+      // Invalidating while a protected route is still loading can replace its
+      // match before TanStack has cleared the old load promise. Wait for that
+      // navigation to settle so auth restoration cannot blank the whole app.
+      pendingRefresh?.();
+      pendingRefresh = router.subscribe("onResolved", refresh);
+    };
+
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      refreshAfterNavigation(event !== "SIGNED_OUT");
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      pendingRefresh?.();
+      data.subscription.unsubscribe();
+    };
   }, [queryClient, router]);
 
   return (
