@@ -9,7 +9,11 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { getMyEntitlements, listPlans, type PublicPlan } from "@/lib/billing.functions";
 import type { Entitlements } from "@/lib/billing.server";
-import { confirmPaypalSubscription, startPaypalSubscription } from "@/lib/payments.functions";
+import {
+  cancelMyPaypalSubscription,
+  confirmPaypalSubscription,
+  startPaypalSubscription,
+} from "@/lib/payments.functions";
 
 export const Route = createFileRoute("/pricing")({
   staticData: { sitemap: true },
@@ -111,6 +115,20 @@ function PricingPage() {
   const currentSlug = entitlements?.plan_slug ?? "free";
   const currentPlan = plans.find((p) => p.slug === currentSlug);
 
+  async function handleCancel() {
+    if (!window.confirm("Cancel your subscription? You'll move back to the Free plan.")) return;
+    setBusy("cancel");
+    try {
+      await cancelMyPaypalSubscription();
+      toast.success("Your subscription has been cancelled.");
+      setEntitlements(await getMyEntitlements());
+    } catch {
+      toast.error("We could not cancel right now. Please try again in a moment.");
+    } finally {
+      setBusy(null);
+    }
+  }
+
   async function handleUpgrade(plan: PublicPlan) {
     if (!user) {
       window.location.href = "/auth";
@@ -175,6 +193,19 @@ function PricingPage() {
                 );
               })}
             </dl>
+            {entitlements.price_cents > 0 && (
+              <div className="mt-4 flex justify-end">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled={busy === "cancel"}
+                  onClick={() => void handleCancel()}
+                >
+                  {busy === "cancel" && <Loader2 className="mr-2 size-4 animate-spin" />}
+                  Cancel subscription
+                </Button>
+              </div>
+            )}
           </section>
         )}
 

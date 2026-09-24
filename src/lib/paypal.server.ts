@@ -143,6 +143,13 @@ export async function readPaypalSubscription(id: string): Promise<PaypalSubscrip
 const ACTIVE_STATUSES = new Set(["ACTIVE", "APPROVED"]);
 
 /** Reads authoritative state from PayPal and mirrors it into the subscriptions table. */
+export async function cancelPaypalSubscriptionAtPaypal(id: string, reason: string): Promise<void> {
+  await paypalFetch(`/v1/billing/subscriptions/${encodeURIComponent(id)}/cancel`, {
+    method: "POST",
+    body: JSON.stringify({ reason }),
+  });
+}
+
 export async function syncPaypalSubscription(subscriptionId: string): Promise<void> {
   const subscription = await readPaypalSubscription(subscriptionId);
   const userId = subscription.custom_id;
@@ -164,6 +171,28 @@ export async function syncPaypalSubscription(subscriptionId: string): Promise<vo
   }
 
   const active = ACTIVE_STATUSES.has(subscription.status);
+
+  const { data: existingRow } = await db
+    .from("subscriptions")
+    .select("provider, provider_subscription_id")
+    .eq("user_id", userId)
+    .maybeSingle();
+  const previousId =
+    existingRow?.provider === "paypal" ? existingRow.provider_subscription_id : null;
+
+  if (previousId && previousId !== subscription.id) {
+    // Events for an older, replaced subscription must not overwrite the current one.
+    if (!active) return;
+    // Plan switch: stop billing the old subscription so the customer never pays twice.
+    try {
+      const old = await readPaypalSubscription(previousId);
+      if (ACTIVE_STATUSES.has(old.status) || old.status === "SUSPENDED") {
+        await cancelPaypalSubscriptionAtPaypal(previousId, "Switched to a different Nuru AI plan");
+      }
+    } catch (err) {
+      console.error("PayPal sync: failed to cancel previous subscription", previousId, err);
+    }
+  }
   const { error } = await db.from("subscriptions").upsert(
     {
       user_id: userId,
