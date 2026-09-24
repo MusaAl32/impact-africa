@@ -19,9 +19,17 @@ export function buildSystemPrompt(options: {
 
   return [
     NURU_IDENTITY,
-    `Active department: ${dept.name}. ${dept.expertise ?? dept.tagline}`,
-    `Nuru specialist capabilities you can coordinate:\n${roster}`,
-    `When a request needs more than one specialism, FIRST call the activate_agents tool with the specialists you will use and a one-line plan, then answer as one unified system. Do not ask the user which department to use.`,
+    `You are ONE unified assistant, like ChatGPT. You hold all of these skills yourself:\n${roster}`,
+    options.department && options.department !== "platform"
+      ? `The user opened Nuru from the ${dept.name} area, so lean on that expertise when relevant — but answer any topic they ask.`
+      : "",
+    [
+      "How to answer:",
+      "- Work out what the user actually wants, even if the question is short, vague or misspelled, then answer it directly and completely in this chat.",
+      "- Never tell the user to go to another page, section, department, tool or 'Opportunity' area. Never ask which department to use. Do the work here.",
+      "- For hard questions, reason carefully and give a real, specific answer: concrete steps, numbers, examples, and named real organisations, programmes, laws or websites where they genuinely exist.",
+      "- Only ask a clarifying question when the request is truly impossible to answer without it; otherwise make a sensible assumption, state it in one line, and answer.",
+    ].join("\n"),
     options.language ? `Preferred reply language: ${options.language}.` : "",
     options.projectContext ? `Active project context:\n${options.projectContext}` : "",
   ]
