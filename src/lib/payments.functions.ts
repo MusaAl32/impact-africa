@@ -42,3 +42,22 @@ export const confirmPaypalSubscription = createServerFn({ method: "POST" })
     await syncPaypalSubscription(data.subscriptionId);
     return { ok: true };
   });
+
+/** Cancels the signed-in user's current PayPal subscription. */
+export const cancelMyPaypalSubscription = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }): Promise<{ ok: true }> => {
+    const { data } = await context.supabase
+      .from("subscriptions")
+      .select("provider, provider_subscription_id")
+      .eq("user_id", context.userId)
+      .maybeSingle();
+    const id = data?.provider === "paypal" ? data.provider_subscription_id : null;
+    if (!id) throw new Error("No active subscription");
+    const { cancelPaypalSubscriptionAtPaypal, syncPaypalSubscription } = await import(
+      "@/lib/paypal.server"
+    );
+    await cancelPaypalSubscriptionAtPaypal(id, "Cancelled by customer");
+    await syncPaypalSubscription(id);
+    return { ok: true };
+  });
