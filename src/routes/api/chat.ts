@@ -92,7 +92,7 @@ export const Route = createFileRoute("/api/chat")({
               webEnabled
                 ? [
                     "You can browse the live web with the search_web tool.",
-                    "Use it whenever the answer depends on current facts: prices, policies, news, statistics, programmes, funding, market data, dates, or anything you are not certain about.",
+                    "Use it whenever the answer depends on current facts or the user needs real resources: prices, policies, news, statistics, programmes, funding, scholarships, jobs, grants, organisations, websites, market data, dates, or anything you are not certain about. Search on your own — never ask permission.",
                     "Base factual claims only on what the returned sources actually say. Never invent a statistic, organisation, price or citation, and never fabricate a URL.",
                     "Cite inline with numbered markers like [1], [2] that match the order of the sources returned, and end the answer with a **Sources** list of the numbered titles and their links.",
                     "If the search returns nothing useful, say so plainly and explain what the user should check locally instead.",
