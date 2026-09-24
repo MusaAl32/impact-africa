@@ -1,4 +1,4 @@
-const GATEWAY = "https://connector-gateway.lovable.dev/firecrawl/v2";
+const FIRECRAWL_ENDPOINT = "https://api.firecrawl.dev/v1/search";
 
 export type WebSource = {
   title: string;
@@ -22,21 +22,19 @@ function clean(value: unknown, max: number) {
 }
 
 export function webSearchConfigured() {
-  return Boolean(process.env["LOVABLE_API_KEY"] && process.env["FIRECRAWL_API_KEY"]);
+  return Boolean(process.env["FIRECRAWL_API_KEY"]?.trim());
 }
 
-/** Live web search used to ground Nuru answers in citable public sources. */
+/** Live web search using the project's own Firecrawl API key. */
 export async function searchWeb(query: string, limit = 5): Promise<WebSource[]> {
-  const lovableKey = process.env["LOVABLE_API_KEY"];
-  const connectionKey = process.env["FIRECRAWL_API_KEY"];
-  if (!lovableKey || !connectionKey) throw new Error("Web search is not configured");
+  const apiKey = process.env["FIRECRAWL_API_KEY"]?.trim();
+  if (!apiKey) throw new Error("Web search is not configured");
 
-  const response = await fetch(`${GATEWAY}/search`, {
+  const response = await fetch(FIRECRAWL_ENDPOINT, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${lovableKey}`,
-      "X-Connection-Api-Key": connectionKey,
+      Authorization: `Bearer ${apiKey}`,
     },
     body: JSON.stringify({
       query: query.slice(0, 300),
@@ -51,13 +49,9 @@ export async function searchWeb(query: string, limit = 5): Promise<WebSource[]> 
   }
 
   const payload = (await response.json()) as {
-    data?: { web?: unknown[] } | unknown[];
+    data?: unknown[];
   };
-  const raw = Array.isArray(payload.data)
-    ? payload.data
-    : Array.isArray((payload.data as { web?: unknown[] })?.web)
-      ? ((payload.data as { web?: unknown[] }).web as unknown[])
-      : [];
+  const raw = Array.isArray(payload.data) ? payload.data : [];
 
   return raw
     .map((item) => {

@@ -3,14 +3,12 @@ import { Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 
-import { lovable } from "@/integrations/lovable";
 import { NuruWordmark } from "@/components/nuru-logo";
 import { PasswordField } from "@/components/password-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
-import "@lovable.dev/cloud-auth-js/styles.css";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
@@ -128,12 +126,11 @@ function AuthPage() {
   async function handleGoogle() {
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", {
-        redirect_uri: window.location.origin,
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: { redirectTo: `${window.location.origin}/app` },
       });
-      if (result.error) throw new Error(String(result.error));
-      if (result.redirected) return;
-      navigate({ to: "/app", replace: true });
+      if (error) throw error;
     } catch (error) {
       toast.error((error as Error).message);
     } finally {

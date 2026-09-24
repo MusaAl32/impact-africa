@@ -3,9 +3,10 @@ import { convertToModelMessages, smoothStream, streamText, stepCountIs, tool, ty
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
 
-import { getLovableAiGatewayRunId } from "@/lib/ai-gateway.server";
 import { nuruTextModel } from "@/lib/nuru-model.server";
 import { buildSystemPrompt } from "@/lib/prompts";
+import { buildLongTermContext, rememberUserTurn } from "@/lib/memory.server";
+import { buildSpecialistCouncilTool } from "@/lib/agent-orchestrator.server";
 import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
 import type { Database, Json } from "@/integrations/supabase/types";
@@ -72,15 +73,27 @@ export const Route = createFileRoute("/api/chat")({
 
         let chatModel: ReturnType<typeof nuruTextModel>;
         try {
-          const runId = getLovableAiGatewayRunId(request);
-          chatModel = nuruTextModel({ fast: true, ...(runId ? { runId } : {}) });
+          chatModel = nuruTextModel({ fast: true });
         } catch (error) {
           return new Response((error as Error).message, { status: 500 });
         }
 
         const webEnabled = body.webAccess !== false && webSearchConfigured();
+        const latestUserText = [...body.messages].reverse().find((message) => message.role === "user")?.parts
+          .filter((part) => part.type === "text")
+          .map((part) => part.text)
+          .join("\n")
+          .trim() ?? "";
+        let longTermContext = "";
+        try {
+          longTermContext = await buildLongTermContext(userDb, userId, latestUserText);
+          if (latestUserText) await rememberUserTurn(userDb, userId, body.conversationId, latestUserText);
+        } catch (error) {
+          console.error("Nuru long-term memory retrieval failed", error);
+        }
 
         try {
+          const councilTools = buildSpecialistCouncilTool();
           const result = streamText({
             model: chatModel.model,
             system: [
@@ -89,10 +102,11 @@ export const Route = createFileRoute("/api/chat")({
                 ...(body.language ? { language: body.language } : {}),
                 ...(body.projectContext ? { projectContext: body.projectContext } : {}),
               }),
+              longTermContext ? `Long-term memory context:\n${longTermContext}` : "No relevant long-term memory was retrieved.",
               webEnabled
                 ? [
                     "You can browse the live web with the search_web tool.",
-                    "Use it whenever the answer depends on current facts or the user needs real resources: prices, policies, news, statistics, programmes, funding, scholarships, jobs, grants, organisations, websites, market data, dates, or anything you are not certain about. Search on your own — never ask permission.",
+                    "Use it whenever the answer depends on current facts: prices, policies, news, statistics, programmes, funding, market data, dates, or anything you are not certain about.",
                     "Base factual claims only on what the returned sources actually say. Never invent a statistic, organisation, price or citation, and never fabricate a URL.",
                     "Cite inline with numbered markers like [1], [2] that match the order of the sources returned, and end the answer with a **Sources** list of the numbered titles and their links.",
                     "If the search returns nothing useful, say so plainly and explain what the user should check locally instead.",
@@ -100,11 +114,12 @@ export const Route = createFileRoute("/api/chat")({
                 : "You have no live web access in this reply. Do not present uncertain figures as current fact; say what the user should verify locally.",
             ].join("\n\n"),
             messages: await convertToModelMessages(body.messages),
-            stopWhen: stepCountIs(webEnabled ? 6 : 2),
+            stopWhen: stepCountIs(webEnabled ? 10 : 8),
             abortSignal: request.signal,
             experimental_transform: smoothStream({ chunking: "word" }),
             providerOptions: chatModel.providerOptions,
             tools: {
+              ...councilTools,
               ...(webEnabled
                 ? {
                     search_web: tool({

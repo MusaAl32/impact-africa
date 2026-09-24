@@ -71,11 +71,6 @@ export function SiteFooter() {
               </Link>
             </li>
             <li>
-              <Link to="/refunds" className="text-muted-foreground hover:text-foreground">
-                Refund Policy
-              </Link>
-            </li>
-            <li>
               <Link to="/company" className="text-muted-foreground hover:text-foreground">
                 Company Profile
               </Link>
