@@ -153,9 +153,7 @@ function TermsPage() {
         <p>
           Paid plans renew at the billing interval and price shown at checkout until cancelled.
           Matola is the seller of record for all orders and provides customer service, billing
-          support and refunds. Payments are processed by PayPal and are also subject to PayPal&apos;s{" "}
-          <a href="https://www.paypal.com/legalhub/home" target="_blank" rel="noreferrer">
-            user agreement and policies
+          support and refunds. Paid services are not currently enabled in this version of Nuru AI.
           </a>{" "}
           and our <a href="/refunds">Refund Policy</a>.
         </p>

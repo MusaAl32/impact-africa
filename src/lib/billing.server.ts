@@ -20,7 +20,17 @@ export type Entitlements = {
   used: Partial<Record<UsageKind, number>>;
 };
 
-/** Checks and records one unit of usage for the signed-in user. Server-only. */
+/**
+ * Nuru's current free-tier limits. Paid plans are intentionally not part of
+ * this migration and can be introduced later on the Nuru production platform.
+ */
+export const FREE_LIMITS: Record<UsageKind, number> = {
+  message: 20,
+  voice_minute: 10,
+  file: 3,
+  search: 5,
+};
+
 export async function consumeQuota(
   userId: string,
   kind: UsageKind,
@@ -36,13 +46,6 @@ export async function consumeQuota(
   return data as unknown as QuotaResult;
 }
 
-export async function readEntitlements(userId: string): Promise<Entitlements> {
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data, error } = await supabaseAdmin.rpc("get_entitlements", { _user_id: userId });
-  if (error) throw new Error(error.message);
-  return data as unknown as Entitlements;
-}
-
 export function limitMessage(result: QuotaResult): string {
   const labels: Record<UsageKind, string> = {
     message: "messages",
@@ -50,5 +53,5 @@ export function limitMessage(result: QuotaResult): string {
     file: "file uploads",
     search: "web searches",
   };
-  return `You've used all ${result.limit} ${labels[result.kind]} on your ${result.plan_name} plan today. Your allowance resets at midnight UTC — or upgrade at /pricing for more.`;
+  return `You've used all ${result.limit} ${labels[result.kind]} for today. Your allowance resets at midnight UTC.`;
 }

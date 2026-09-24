@@ -430,7 +430,7 @@ export function NuruChat({
             onSubmit={({ text, files }) => submit(text, files)}
             className="rounded-full [&_[data-slot=input-group]]:relative [&_[data-slot=input-group]]:rounded-full [&_[data-slot=input-group]]:border-border [&_[data-slot=input-group]]:bg-card [&_[data-slot=input-group]]:shadow-sm"
           >
-              <PromptInputTextarea ref={textareaRef} autoFocus placeholder={editingId ? "Edit your message" : "Ask Ascender AI"} className="min-h-14 max-h-36 py-4 pl-14 pr-28 text-base" />
+              <PromptInputTextarea ref={textareaRef} autoFocus placeholder={editingId ? "Edit your message" : "Message Nuru AI"} className="min-h-14 max-h-36 py-4 pl-14 pr-28 text-base" />
             <PromptInputFooter className="pointer-events-none absolute inset-0 z-10 h-full w-full p-1.5">
               <PromptInputTools className="pointer-events-auto absolute left-1.5 top-1/2 -translate-y-1/2">
                 <PromptInputActionMenu>

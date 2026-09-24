@@ -1,15 +1,15 @@
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import type { UIMessage } from "ai";
-import { ArrowLeft, MoreHorizontal, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, MoreHorizontal, Pencil, Trash2, Share2, Pin, FolderPlus, Home, Archive, Sparkles, SlidersHorizontal } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 
 import { NuruChat } from "@/components/nuru-chat";
 import { Button } from "@/components/ui/button";
 import {
-  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger,
+  DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { archiveConversation, getConversation, renameConversation } from "@/lib/chat.functions";
+import { archiveConversation, createConversation, getConversation, renameConversation } from "@/lib/chat.functions";
 import { getDepartment } from "@/lib/departments";
 
 export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")({
@@ -38,6 +38,13 @@ function MissingConversation() {
   );
 }
 
+function togglePinLocal(id: string) {
+  const current: string[] = JSON.parse(localStorage.getItem("nuru-pinned") || "[]");
+  const next = current.includes(id) ? current.filter((x) => x !== id) : [id, ...current];
+  localStorage.setItem("nuru-pinned", JSON.stringify(next));
+  toast.success(current.includes(id) ? "Removed from pinned chats" : "Chat pinned");
+}
+
 function ConversationPage() {
   const { conversationId } = Route.useParams();
   const data = Route.useLoaderData();
@@ -63,6 +70,22 @@ function ConversationPage() {
     } catch { toast.error("Could not rename this conversation."); }
   }
 
+  async function shareConversation() {
+    const url = window.location.href;
+    if (navigator.share) { try { await navigator.share({ title, text: `Conversation with Nuru AI: ${title}`, url }); return; } catch { return; } }
+    await navigator.clipboard.writeText(url);
+    toast.success("Conversation link copied.");
+  }
+
+  async function clearChat() {
+    if (!window.confirm("Start a fresh chat? This conversation will remain in your history.")) return;
+    try {
+      const next = await createConversation();
+      window.dispatchEvent(new Event("nuru-history-changed"));
+      await navigate({ to: "/app/chat/$conversationId", params: { conversationId: next.id } });
+    } catch { toast.error("Could not start a fresh chat."); }
+  }
+
   async function archive() {
     if (!window.confirm("Remove this conversation from your history?")) return;
     try {
@@ -76,21 +99,32 @@ function ConversationPage() {
     <div className="chat-workspace mx-auto flex h-[calc(100dvh-3.5rem)] min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden bg-background px-0 lg:h-screen lg:px-4 lg:py-5">
       <header className="mb-2 hidden min-h-11 items-center justify-between gap-3 lg:flex">
         <div className="flex min-w-0 items-center gap-2">
-          <Button asChild size="icon" variant="ghost" className="size-11 lg:hidden">
+          <Button asChild size="icon" variant="ghost" className="size-9 lg:hidden">
             <Link to="/app" aria-label="Back to Nuru"><ArrowLeft /></Link>
           </Button>
-          <div className="min-w-0">
-            <p className="truncate text-sm font-medium">{title}</p>
-            <p className="text-xs text-muted-foreground">{dept.name}</p>
-          </div>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild><button className="flex min-w-0 items-center gap-2 rounded-lg px-2 py-1.5 text-left hover:bg-black/[.05]"><div className="size-7 rounded-lg bg-black/[.06] p-1.5"><Sparkles className="size-4" /></div><div className="min-w-0"><p className="truncate text-sm font-semibold">Nuru</p><p className="text-[11px] text-muted-foreground">{dept.name} · Auto</p></div><SlidersHorizontal className="ml-1 size-3.5 text-muted-foreground" /></button></DropdownMenuTrigger>
+            <DropdownMenuContent align="start"><DropdownMenuItem onClick={() => toast.info("Automatic model routing is enabled.")}>Nuru Auto</DropdownMenuItem><DropdownMenuItem onClick={() => toast.info("Model selection will be connected to your platform configuration.")}>Model settings</DropdownMenuItem></DropdownMenuContent>
+          </DropdownMenu>
+          <span className="hidden truncate text-xs text-muted-foreground xl:inline">{title}</span>
         </div>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-11" aria-label="Conversation options"><MoreHorizontal /></Button></DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={() => void rename()}><Pencil /> Rename</DropdownMenuItem>
-            <DropdownMenuItem className="text-destructive" onClick={() => void archive()}><Trash2 /> Delete</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+        <div className="flex items-center gap-1">
+          <Button size="icon" variant="ghost" className="size-9" onClick={() => void shareConversation()} aria-label="Share conversation"><Share2 /></Button>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-9" aria-label="Conversation options"><MoreHorizontal /></Button></DropdownMenuTrigger>
+            <DropdownMenuContent align="end" className="w-52">
+              <DropdownMenuItem onClick={() => togglePinLocal(conversationId)}><Pin /> Pin chat</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info("Project management is ready to connect to your workspace.")}><FolderPlus /> Add to project</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void shareConversation()}><Share2 /> Share</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => toast.info("Home shortcuts will be available on supported devices.")}><Home /> Add to home</DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem onClick={() => void rename()}><Pencil /> Rename</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void clearChat()}><Sparkles /> Start new chat</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void archive()}><Archive /> Archive</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive" onClick={() => void archive()}><Trash2 /> Delete</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </header>
       <NuruChat
         key={conversationId}
@@ -98,7 +132,7 @@ function ConversationPage() {
         department={department}
         initialMessages={initialMessages}
         heading="What can I help you work through?"
-        placeholder="Ask Ascender AI"
+        placeholder="Message Nuru AI"
         suggestions={dept.suggestions ?? []}
         onHistoryChanged={() => window.dispatchEvent(new Event("nuru-history-changed"))}
       />
