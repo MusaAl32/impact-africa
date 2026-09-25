@@ -14,6 +14,81 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_audit_events: {
+        Row: {
+          action: string | null
+          agent_type: string | null
+          conversation_id: string | null
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          risk_level: string | null
+          success: boolean
+          user_id: string | null
+        }
+        Insert: {
+          action?: string | null
+          agent_type?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          risk_level?: string | null
+          success?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          action?: string | null
+          agent_type?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          risk_level?: string | null
+          success?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_usage_events: {
+        Row: {
+          agent_type: string | null
+          conversation_id: string | null
+          created_at: string
+          estimated_cost: number | null
+          id: string
+          input_tokens: number | null
+          model: string | null
+          output_tokens: number | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_type?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_type?: string | null
+          conversation_id?: string | null
+          created_at?: string
+          estimated_cost?: number | null
+          id?: string
+          input_tokens?: number | null
+          model?: string | null
+          output_tokens?: number | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       aom_analyses: {
         Row: {
           analysis: string
@@ -467,6 +542,66 @@ export type Database = {
           id?: string
           kind?: string
           quantity?: number
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_devices: {
+        Row: {
+          created_at: string
+          device_name: string | null
+          id: string
+          last_seen_at: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          device_name?: string | null
+          id?: string
+          last_seen_at?: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          device_name?: string | null
+          id?: string
+          last_seen_at?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_memory: {
+        Row: {
+          category: string
+          content: string
+          conversation_id: string | null
+          created_at: string
+          enabled: boolean
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          category: string
+          content: string
+          conversation_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          category?: string
+          content?: string
+          conversation_id?: string | null
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
