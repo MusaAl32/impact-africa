@@ -33,7 +33,6 @@ import { Route as AuthenticatedAppOpportunitiesRouteImport } from './routes/_aut
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppWorkspaceRouteImport } from './routes/_authenticated/app.workspace'
 import { Route as AuthenticatedAppChatConversationIdRouteImport } from './routes/_authenticated/app.chat.$conversationId'
-import { Route as ApiPublicPaymentsWebhookRouteImport } from './routes/api/public/payments/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -161,12 +160,6 @@ const AuthenticatedAppChatConversationIdRoute =
     path: '/chat/$conversationId',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
-const ApiPublicPaymentsWebhookRoute =
-  ApiPublicPaymentsWebhookRouteImport.update({
-    id: '/api/public/payments/webhook',
-    path: '/api/public/payments/webhook',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -192,7 +185,6 @@ export interface FileRoutesByFullPath {
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -217,7 +209,6 @@ export interface FileRoutesByTo {
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -245,7 +236,6 @@ export interface FileRoutesById {
   '/_authenticated/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
-  '/api/public/payments/webhook': typeof ApiPublicPaymentsWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -273,7 +263,6 @@ export interface FileRouteTypes {
     | '/app/workspace'
     | '/app/'
     | '/app/chat/$conversationId'
-    | '/api/public/payments/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -298,7 +287,6 @@ export interface FileRouteTypes {
     | '/app/workspace'
     | '/app'
     | '/app/chat/$conversationId'
-    | '/api/public/payments/webhook'
   id:
     | '__root__'
     | '/'
@@ -325,7 +313,6 @@ export interface FileRouteTypes {
     | '/_authenticated/app/workspace'
     | '/_authenticated/app/'
     | '/_authenticated/app/chat/$conversationId'
-    | '/api/public/payments/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -343,7 +330,6 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
-  ApiPublicPaymentsWebhookRoute: typeof ApiPublicPaymentsWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -516,13 +502,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppChatConversationIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
-    '/api/public/payments/webhook': {
-      id: '/api/public/payments/webhook'
-      path: '/api/public/payments/webhook'
-      fullPath: '/api/public/payments/webhook'
-      preLoaderRoute: typeof ApiPublicPaymentsWebhookRouteImport
-      parentRoute: typeof rootRouteImport
-    }
   }
 }
 
@@ -581,7 +560,6 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
-  ApiPublicPaymentsWebhookRoute: ApiPublicPaymentsWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
