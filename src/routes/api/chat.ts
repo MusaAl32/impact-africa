@@ -94,6 +94,24 @@ export const Route = createFileRoute("/api/chat")({
 
         try {
           const councilTools = buildSpecialistCouncilTool();
+          const imageTool = tool({
+                description: "Create an image (picture, sticker, logo, poster, illustration) from a detailed English description. The image is shown to the user automatically; do not repeat it as a link.",
+                inputSchema: z.object({ prompt: z.string().min(3).max(2000).describe("Detailed visual description.") }),
+                execute: async ({ prompt }) => {
+                  try {
+                    const { generateNuruImage } = await import("@/lib/image-gen.server");
+                    return await generateNuruImage(prompt);
+                  } catch (error) {
+                    console.error("Nuru image tool error", error);
+                    return { error: "The image could not be created right now." };
+                  }
+                },
+               toModelOutput: ({ output }) => ({
+                  type: "text" as const,
+                  value: output && "image" in output ? "Image created and already shown to the user." : (output as { error?: string })?.error ?? "Image failed.",
+                }),
+              });
+
           const result = streamText({
             model: chatModel.model,
             system: [
@@ -113,26 +131,14 @@ export const Route = createFileRoute("/api/chat")({
                   ].join(" ")
                 : "You have no live web access in this reply. Do not present uncertain figures as current fact; say what the user should verify locally.",
             ].join("\n\n"),
-            messages: await convertToModelMessages(body.messages),
+            messages: await convertToModelMessages(body.messages, { tools: { generate_image: imageTool } }),
             stopWhen: stepCountIs(webEnabled ? 10 : 8),
             abortSignal: request.signal,
             experimental_transform: smoothStream({ chunking: "word" }),
             providerOptions: chatModel.providerOptions,
             tools: {
               ...councilTools,
-              generate_image: tool({
-                description: "Create an image (picture, sticker, logo, poster, illustration) from a detailed English description. The image is shown to the user automatically; do not repeat it as a link.",
-                inputSchema: z.object({ prompt: z.string().min(3).max(2000).describe("Detailed visual description.") }),
-                execute: async ({ prompt }) => {
-                  try {
-                    const { generateNuruImage } = await import("@/lib/image-gen.server");
-                    return await generateNuruImage(prompt);
-                  } catch (error) {
-                    console.error("Nuru image tool error", error);
-                    return { error: "The image could not be created right now." };
-                  }
-                },
-              }),
+              generate_image: imageTool,
               ...(webEnabled
                 ? {
                     search_web: tool({
