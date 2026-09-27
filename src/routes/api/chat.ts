@@ -120,6 +120,19 @@ export const Route = createFileRoute("/api/chat")({
             providerOptions: chatModel.providerOptions,
             tools: {
               ...councilTools,
+              generate_image: tool({
+                description: "Create an image (picture, sticker, logo, poster, illustration) from a detailed English description. The image is shown to the user automatically; do not repeat it as a link.",
+                inputSchema: z.object({ prompt: z.string().min(3).max(2000).describe("Detailed visual description.") }),
+                execute: async ({ prompt }) => {
+                  try {
+                    const { generateNuruImage } = await import("@/lib/image-gen.server");
+                    return await generateNuruImage(prompt);
+                  } catch (error) {
+                    console.error("Nuru image tool error", error);
+                    return { error: "The image could not be created right now." };
+                  }
+                },
+              }),
               ...(webEnabled
                 ? {
                     search_web: tool({
