@@ -1,7 +1,12 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { LogOut } from "lucide-react";
-import { useEffect, useState } from "react";
+import { Loader2, LogOut } from "lucide-react";
+import { useCallback, useEffect, useState } from "react";
+
+import { Switch } from "@/components/ui/switch";
+import { clearMyMemory, getMemoryStats } from "@/lib/memory.functions";
+import { enablePush } from "@/lib/push-client";
+import { getPushStatus, registerPushToken, unregisterPush } from "@/lib/push.functions";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -270,6 +275,71 @@ function SettingsPage() {
         </Button>
         </div>
       </div>
+
+      <MemoryAndNotifications />
     </div>
+  );
+}
+
+function MemoryAndNotifications() {
+  const [memory, setMemory] = useState<number | null>(null);
+  const [devices, setDevices] = useState<number | null>(null);
+  const [busy, setBusy] = useState<"memory" | "push" | null>(null);
+  const [loadError, setLoadError] = useState(false);
+
+  const load = useCallback(() => {
+    setLoadError(false);
+    Promise.all([getMemoryStats(), getPushStatus()])
+      .then(([m, p]) => { setMemory(m.count); setDevices(p.devices); })
+      .catch(() => setLoadError(true));
+  }, []);
+  useEffect(load, [load]);
+
+  async function clearMemory() {
+    if (!window.confirm("Clear everything Nuru remembers about you? Your chats stay.")) return;
+    setBusy("memory");
+    try { await clearMyMemory(); setMemory(0); toast.success("Memory cleared"); }
+    catch { toast.error("Could not clear your memory. Please try again."); }
+    finally { setBusy(null); }
+  }
+
+  async function togglePush(on: boolean) {
+    setBusy("push");
+    try {
+      if (!on) { await unregisterPush(); setDevices(0); toast.success("Notifications turned off"); return; }
+      const result = await enablePush();
+      if (result.status === "registered") { await registerPushToken({ data: { token: result.token } }); setDevices((d) => (d ?? 0) + 1); toast.success("Notifications are on for this device"); }
+      else if (result.status === "open-in-new-tab") toast.error("Open Nuru in its own browser tab to allow notifications.");
+      else if (result.status === "denied") toast.error("Notifications are blocked. Allow them in your browser's site settings.");
+      else if (result.status === "unsupported") toast.error("This browser doesn't support notifications.");
+      else toast.error("Notifications aren't fully set up yet.");
+    } catch { toast.error("Could not change notifications. Please try again."); }
+    finally { setBusy(null); }
+  }
+
+  return (
+    <section className="mt-6 space-y-5 rounded-2xl border border-border bg-card p-5">
+      {loadError && (
+        <div role="alert" className="flex items-center justify-between gap-2 text-sm text-destructive">
+          Couldn't load these settings. <Button size="sm" variant="outline" onClick={load}>Retry</Button>
+        </div>
+      )}
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <h2 className="text-sm font-semibold">Memory</h2>
+          <p className="text-xs text-muted-foreground">{memory === null ? "Loading…" : `Nuru remembers ${memory} note${memory === 1 ? "" : "s"} from your chats.`}</p>
+        </div>
+        <Button variant="outline" size="sm" disabled={busy !== null || !memory} onClick={() => void clearMemory()}>
+          {busy === "memory" && <Loader2 className="mr-1 size-4 animate-spin" />} Clear my memory
+        </Button>
+      </div>
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div>
+          <Label htmlFor="push-switch" className="text-sm font-semibold">Notifications</Label>
+          <p className="text-xs text-muted-foreground">Get alerts from Nuru on this device.</p>
+        </div>
+        <Switch id="push-switch" disabled={busy !== null || devices === null} checked={(devices ?? 0) > 0} onCheckedChange={(v) => void togglePush(v)} />
+      </div>
+    </section>
   );
 }
