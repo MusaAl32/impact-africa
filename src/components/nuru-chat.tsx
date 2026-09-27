@@ -345,6 +345,20 @@ export function NuruChat({
                       <CollapsibleTrigger className="flex min-h-11 w-full items-center justify-between px-3 text-xs font-medium text-muted-foreground">Thinking summary <ChevronDown className="size-4" /></CollapsibleTrigger>
                       <CollapsibleContent className="border-t border-border px-3 py-3 text-sm text-muted-foreground"><MessageResponse>{part.text}</MessageResponse></CollapsibleContent>
                     </Collapsible>
+                  ) : part.type === "file" && part.mediaType?.startsWith("image/") ? (
+                    <img key={`${message.id}-${index}`} src={part.url} alt={part.filename ?? "Attached image"} className="max-h-72 max-w-full rounded-xl border border-border object-contain" />
+                  ) : isToolUIPart(part) && part.type === "tool-generate_image" ? (
+                    <div key={`${message.id}-${index}`} className="max-w-md">
+                      {part.state === "output-available" && (part.output as { image?: string })?.image ? (
+                        <a href={(part.output as { image: string }).image} download="nuru-image.png" title="Download image">
+                          <img src={(part.output as { image: string }).image} alt={String((part.input as { prompt?: string })?.prompt ?? "Generated image")} className="w-full rounded-xl border border-border" />
+                        </a>
+                      ) : part.state === "output-available" || part.state === "output-error" ? (
+                        <p className="rounded-xl border border-border p-3 text-sm text-muted-foreground">{(part.output as { error?: string })?.error ?? part.errorText ?? "The image could not be created."}</p>
+                      ) : (
+                        <div className="flex aspect-square w-full animate-pulse items-center justify-center rounded-xl bg-muted text-sm text-muted-foreground">Creating image…</div>
+                      )}
+                    </div>
                   ) : isToolUIPart(part) ? (
                     <Tool key={`${message.id}-${index}`} defaultOpen={false}>
                       {part.type === "dynamic-tool" ? <ToolHeader type={part.type} state={part.state} toolName={part.toolName} /> : <ToolHeader type={part.type} state={part.state} />}

@@ -1,6 +1,6 @@
 import { createFileRoute, Link, Outlet, useNavigate, useRouterState } from "@tanstack/react-router";
 import {
-  Archive, Bookmark, ChevronDown, FolderPlus, GalleryVerticalEnd, Globe2, HelpCircle, Home, Image as ImageIcon,
+  Archive, Bookmark, ChevronDown, GalleryVerticalEnd, Globe2, HelpCircle, Image as ImageIcon,
   Library, Menu, MessageCircle, MessageSquarePlus, MoreHorizontal, Pin, Plus, Search, Settings, Sparkles,
   Trash2, X, BriefcaseBusiness, HeartPulse, TrendingUp, SlidersHorizontal, LogOut, Share2, PanelLeftClose, PanelLeftOpen,
 } from "lucide-react";
@@ -32,11 +32,11 @@ const quickTools = [
 ];
 
 const workspaceTools = [
-  { label: "Health", icon: HeartPulse },
-  { label: "Investing", icon: TrendingUp },
-  { label: "Business", icon: BriefcaseBusiness },
-  { label: "Research", icon: Globe2 },
-];
+  { label: "Health", icon: HeartPulse, to: "/app" },
+  { label: "Investing", icon: TrendingUp, to: "/app/investments" },
+  { label: "Business", icon: BriefcaseBusiness, to: "/app/business" },
+  { label: "Research", icon: Globe2, to: "/app/research" },
+] as const;
 
 function AppLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -101,8 +101,15 @@ function AppLayout() {
     toast.success(pinned.includes(id) ? "Removed from pinned chats" : "Chat pinned");
   }
 
-  function feature(label: string) {
-    toast.info(`${label} is ready to be connected to your Nuru platform.`);
+  function go(to: "/app/workspace" | "/app/creative") {
+    setOpen(false);
+    void navigate({ to });
+  }
+
+  async function share(id: string) {
+    const url = `${window.location.origin}/app/chat/${id}`;
+    try { await navigator.clipboard.writeText(url); toast.success("Link copied — only you can open it while signed in."); }
+    catch { toast.error("Could not copy the link."); }
   }
 
   const filteredHistory = useMemo(() => {
@@ -146,12 +153,10 @@ function AppLayout() {
             <DropdownMenu><DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="mr-1 size-8 shrink-0 rounded-md opacity-0 group-hover:opacity-100 focus:opacity-100"><MoreHorizontal className="size-4" /></Button></DropdownMenuTrigger><DropdownMenuContent align="start" className="w-48">
               <DropdownMenuItem onClick={() => togglePin(item.id)}><Pin /> {pinned.includes(item.id) ? "Unpin chat" : "Pin chat"}</DropdownMenuItem>
               <DropdownMenuItem onClick={() => void rename(item.id, item.title)}>Rename</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => feature("Add to project")}><FolderPlus /> Add to project</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => feature("Share chat")}><Share2 /> Share</DropdownMenuItem>
-              <DropdownMenuItem onClick={() => feature("Add to home")}><Home /> Add to home</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => void share(item.id)}><Share2 /> Copy link</DropdownMenuItem>
               <DropdownMenuSeparator />
               <DropdownMenuItem onClick={() => void archive(item.id)}><Archive /> Archive</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive" onClick={() => void archive(item.id)}><Trash2 /> Delete</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive" onClick={() => { if (window.confirm("Remove this chat from your list?")) void archive(item.id); }}><Trash2 /> Delete</DropdownMenuItem>
             </DropdownMenuContent></DropdownMenu>
           </div>;
         })}
@@ -162,14 +167,14 @@ function AppLayout() {
   const nav = <div className="px-2 pt-3">
     <Button onClick={() => void newChat()} variant="outline" className="mb-2 h-10 w-full justify-start gap-3 rounded-lg border-black/[.08] bg-transparent px-3 text-sm font-medium shadow-none hover:bg-black/[.05]"><MessageSquarePlus className="size-[18px]" /> New chat</Button>
     <button onClick={() => { setSearchOpen(true); setOpen(true); }} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><Search className="size-[18px]" /> Search chats <kbd className="ml-auto hidden rounded border bg-white px-1.5 py-0.5 text-[10px] text-muted-foreground xl:inline">Ctrl K</kbd></button>
-    <button onClick={() => feature("Library")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><Library className="size-[18px]" /> Library</button>
-    <button onClick={() => feature("Projects")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><BriefcaseBusiness className="size-[18px]" /> Projects</button>
-    <button onClick={() => feature("Images")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><ImageIcon className="size-[18px]" /> Images</button>
+    <button onClick={() => go("/app/workspace")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><Library className="size-[18px]" /> Library</button>
+    <button onClick={() => go("/app/workspace")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><BriefcaseBusiness className="size-[18px]" /> Projects</button>
+    <button onClick={() => go("/app/creative")} className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><ImageIcon className="size-[18px]" /> Images</button>
     <div className="my-3 border-t border-black/[.07]" />
     <p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Nuru</p>
     {primary.map(departmentLink)}
     <Collapsible className="mt-0.5"><CollapsibleTrigger className="flex min-h-10 w-full items-center justify-between rounded-lg px-3 text-[14px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground">More <ChevronDown className="size-4 transition-transform [[data-state=open]>&]:rotate-180" /></CollapsibleTrigger><CollapsibleContent className="space-y-0.5">{more.map(departmentLink)}</CollapsibleContent></Collapsible>
-    <div className="mt-3 border-t border-black/[.07] pt-2"><p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Explore</p>{workspaceTools.map(({ label, icon: Icon }) => <button key={label} onClick={() => feature(label)} className="flex h-9 w-full items-center gap-3 rounded-lg px-3 text-[13px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><Icon className="size-4" /> {label}</button>)}</div>
+    <div className="mt-3 border-t border-black/[.07] pt-2"><p className="px-3 pb-1 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">Explore</p>{workspaceTools.map(({ label, icon: Icon, to }) => <Link key={label} to={to} onClick={() => setOpen(false)} className="flex h-9 w-full items-center gap-3 rounded-lg px-3 text-[13px] text-muted-foreground hover:bg-black/[.045] hover:text-foreground"><Icon className="size-4" /> {label}</Link>)}</div>
     {isAdmin && <Link to="/app/admin" className="mt-2 flex h-9 items-center gap-3 rounded-lg px-3 text-[13px] text-muted-foreground hover:bg-black/[.045]"><Settings className="size-4" /> Admin</Link>}
   </div>;
 
@@ -179,7 +184,7 @@ function AppLayout() {
         {!collapsed && <Link to="/" aria-label="Nuru AI home" className="px-2"><NuruWordmark /></Link>}
         <Button size="icon" variant="ghost" className="size-9 rounded-lg" onClick={() => setCollapsed(!collapsed)} aria-label="Toggle sidebar">{collapsed ? <PanelLeftOpen className="size-5" /> : <PanelLeftClose className="size-5" />}</Button>
       </div>
-      {collapsed ? <div className="flex flex-col items-center gap-2 px-2 pt-2"><Button size="icon" variant="ghost" onClick={() => void newChat()}><Plus /></Button><Button size="icon" variant="ghost" onClick={() => { setCollapsed(false); setSearchOpen(true); }}><Search /></Button><Button size="icon" variant="ghost" onClick={() => feature("Library")}><Library /></Button><Button size="icon" variant="ghost" onClick={() => feature("Projects")}><BriefcaseBusiness /></Button></div> : <div className="flex min-h-0 flex-1 flex-col overflow-hidden"><div className="shrink-0">{nav}</div><div className="min-h-0 flex-1 overflow-y-auto">{conversations}</div></div>}
+      {collapsed ? <div className="flex flex-col items-center gap-2 px-2 pt-2"><Button size="icon" variant="ghost" onClick={() => void newChat()}><Plus /></Button><Button size="icon" variant="ghost" onClick={() => { setCollapsed(false); setSearchOpen(true); }}><Search /></Button><Button size="icon" variant="ghost" onClick={() => go("/app/workspace")}><Library /></Button><Button size="icon" variant="ghost" onClick={() => go("/app/workspace")}><BriefcaseBusiness /></Button></div> : <div className="flex min-h-0 flex-1 flex-col overflow-hidden"><div className="shrink-0">{nav}</div><div className="min-h-0 flex-1 overflow-y-auto">{conversations}</div></div>}
       <div className="border-t border-black/[.07] p-2"><AccountMenu /></div>
     </aside>
 
