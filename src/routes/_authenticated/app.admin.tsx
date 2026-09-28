@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useCallback, useEffect, useState } from "react";
 import { toast } from "sonner";
+import { sendPushToAll } from "@/lib/push.functions";
 import { Loader2, ShieldCheck, ShieldOff, Trash2 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -343,7 +344,32 @@ function AdminConsole() {
           ))}
         </TabsContent>
       </Tabs>
+      <SendNotification />
     </div>
+  );
+}
+
+function SendNotification() {
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [sending, setSending] = useState(false);
+  async function send() {
+    if (!title.trim() || !body.trim()) { toast.error("Add a title and a message."); return; }
+    setSending(true);
+    try {
+      const r = await sendPushToAll({ data: { title, body } });
+      toast.success(`Sent to ${r.sent} device${r.sent === 1 ? "" : "s"}${r.failed ? `, ${r.failed} failed` : ""}.`);
+      setTitle(""); setBody("");
+    } catch (e) { toast.error(e instanceof Error ? e.message : "Could not send."); }
+    finally { setSending(false); }
+  }
+  return (
+    <Card className="mt-8 space-y-3 p-5">
+      <h2 className="text-sm font-semibold">Send a notification to all users</h2>
+      <input className="h-10 w-full rounded-md border border-border bg-background px-3 text-sm" maxLength={80} placeholder="Title" value={title} onChange={(e) => setTitle(e.target.value)} />
+      <textarea className="min-h-20 w-full rounded-md border border-border bg-background p-3 text-sm" maxLength={240} placeholder="Message" value={body} onChange={(e) => setBody(e.target.value)} />
+      <Button onClick={() => void send()} disabled={sending}>{sending && <Loader2 className="mr-1 size-4 animate-spin" />} Send</Button>
+    </Card>
   );
 }
 
