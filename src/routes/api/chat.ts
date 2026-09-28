@@ -150,7 +150,7 @@ export const Route = createFileRoute("/api/chat")({
                   ].join(" ")
                 : "You have no live web access in this reply. Do not present uncertain figures as current fact; say what the user should verify locally.",
             ].join("\n\n"),
-            messages: await convertToModelMessages(body.messages, { tools: { generate_image: imageTool } }),
+            messages: await convertToModelMessages(chatMessages, { tools: { generate_image: imageTool } }),
             stopWhen: stepCountIs(webEnabled ? 10 : 8),
             abortSignal: request.signal,
             experimental_transform: smoothStream({ chunking: "word" }),
