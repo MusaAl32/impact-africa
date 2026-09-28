@@ -144,7 +144,7 @@ function SettingsPage() {
             </SelectTrigger>
             <SelectContent className="max-h-72">
               <SelectItem value="en">English</SelectItem>
-              {AFRICAN_LANGUAGES.map((l) => (
+              {AFRICAN_LANGUAGES.filter((l) => l.code !== "en").map((l) => (
                 <SelectItem key={l.code} value={l.code}>
                   {l.name} · {l.nativeName}
                 </SelectItem>
@@ -175,7 +175,7 @@ function SettingsPage() {
             </SelectTrigger>
             <SelectContent className="max-h-72">
               <SelectItem value="en">English</SelectItem>
-              {AFRICAN_LANGUAGES.map((l) => (
+              {AFRICAN_LANGUAGES.filter((l) => l.code !== "en").map((l) => (
                 <SelectItem key={l.code} value={l.code}>
                   {l.name} · {l.nativeName}
                 </SelectItem>
