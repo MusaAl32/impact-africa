@@ -44,8 +44,9 @@ const SubmissionInput = z.object({
 });
 
 export const submitProblem = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => SubmissionInput.parse(input))
-  .handler(async ({ data }) => {
+  .handler(async ({ data, context }) => {
     const { publicDb, runItemAnalysis } = await import("./aom.server");
 
     let aiSummary: string | null = null;
@@ -68,6 +69,7 @@ export const submitProblem = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("aom_submissions")
       .insert({
+        user_id: context.userId,
         title: data.title,
         summary: data.summary,
         category: data.category,
