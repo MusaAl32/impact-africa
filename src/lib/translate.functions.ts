@@ -14,6 +14,7 @@ export type TranslateResult = { text: string; error?: string };
 export type DetectResult = { code: string | null; name: string | null; error?: string };
 
 export const translateText = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => TranslateInput.parse(input))
   .handler(async ({ data }): Promise<TranslateResult> => {
     try {
@@ -24,6 +25,7 @@ export const translateText = createServerFn({ method: "POST" })
   });
 
 export const detectLanguage = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ text: z.string().min(1).max(4000) }).parse(input))
   .handler(async ({ data }): Promise<DetectResult> => {
     try {

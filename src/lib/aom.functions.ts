@@ -69,6 +69,7 @@ export const submitProblem = createServerFn({ method: "POST" })
     const { data: row, error } = await supabaseAdmin
       .from("aom_submissions")
       .insert({
+        user_id: context.userId,
         title: data.title,
         summary: data.summary,
         category: data.category,
