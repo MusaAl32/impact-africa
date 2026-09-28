@@ -36,7 +36,7 @@ const workspaceTools = [
   { label: "Investing", icon: TrendingUp, to: "/app/investments" },
   { label: "Business", icon: BriefcaseBusiness, to: "/app/business" },
   { label: "Research", icon: Globe2, to: "/app/research" },
-] as const;
+] as Array<{ label: string; icon: typeof HeartPulse; to: string }>;
 
 function AppLayout() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
@@ -101,7 +101,7 @@ function AppLayout() {
     toast.success(pinned.includes(id) ? "Removed from pinned chats" : "Chat pinned");
   }
 
-  function go(to: "/app/workspace" | "/app/creative") {
+  function go(to: string) {
     setOpen(false);
     void navigate({ to });
   }
