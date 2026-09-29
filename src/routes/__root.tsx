@@ -176,12 +176,30 @@ function RootComponent() {
 
 
   useEffect(() => {
+    // Invalidating while a protected route is still loading can replace its
+    // match mid-load and blank the app, so defer until navigation resolves.
+    let pendingUnsub: (() => void) | null = null;
+    const refresh = (signedOut: boolean) => {
+      const run = () => {
+        void router.invalidate();
+        if (!signedOut) void queryClient.invalidateQueries();
+      };
+      if (!router.state.isLoading) return run();
+      pendingUnsub?.();
+      pendingUnsub = router.subscribe("onResolved", () => {
+        pendingUnsub?.();
+        pendingUnsub = null;
+        run();
+      });
+    };
     const { data } = supabase.auth.onAuthStateChange((event) => {
       if (event !== "SIGNED_IN" && event !== "SIGNED_OUT" && event !== "USER_UPDATED") return;
-      router.invalidate();
-      if (event !== "SIGNED_OUT") queryClient.invalidateQueries();
+      refresh(event === "SIGNED_OUT");
     });
-    return () => data.subscription.unsubscribe();
+    return () => {
+      pendingUnsub?.();
+      data.subscription.unsubscribe();
+    };
   }, [queryClient, router]);
 
   return (

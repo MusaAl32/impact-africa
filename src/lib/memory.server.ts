@@ -28,9 +28,10 @@ export async function buildLongTermContext(
   query: string,
 ): Promise<string> {
   const memoryDb = db as SupabaseClient<any>;
+  // Bounded reads: only user-authored messages (no large tool/image payloads).
   const [{ data: memories }, { data: messages }] = await Promise.all([
-    memoryDb.from("user_memory").select("category, content, updated_at").eq("user_id", userId).eq("enabled", true).order("updated_at", { ascending: false }).limit(500),
-    memoryDb.from("messages").select("conversation_id, role, parts, created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(1000),
+    memoryDb.from("user_memory").select("category, content, updated_at").eq("user_id", userId).eq("enabled", true).order("updated_at", { ascending: false }).limit(100),
+    memoryDb.from("messages").select("conversation_id, role, parts, created_at").eq("user_id", userId).eq("role", "user").order("created_at", { ascending: false }).limit(150),
   ]);
 
   const words = keywords(query);
@@ -62,14 +63,7 @@ export async function rememberUserTurn(
   conversationId: string | undefined,
   text: string,
 ) {
-  const clean = text.trim();
-  if (!clean) return;
-  // Keep a durable, user-owned memory trail. Retrieval later selects only relevant items.
-  const memoryDb = db as SupabaseClient<any>;
-  await memoryDb.from("user_memory").insert({
-    user_id: userId,
-    category: "conversation_turn",
-    content: clean.slice(0, 6000),
-    ...(conversationId ? { conversation_id: conversationId } : {}),
-  });
+  // Every user turn is already stored in `messages`, which retrieval reads.
+  // Duplicating each turn into user_memory made memory grow without bound.
+  void db; void userId; void conversationId; void text;
 }
