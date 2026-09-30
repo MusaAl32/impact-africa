@@ -16,3 +16,9 @@
 - [ ] Count voice minutes and file uploads against daily limits
 - [ ] Verify on desktop and mobile, typecheck and build
 - [ ] Welcome email after a successful purchase (needs an email sender set up first)
+
+## Company-wide professional polish
+- [ ] Apply the selected prestige editorial system to shared tokens and controls
+- [ ] Polish the homepage, public navigation, company, legal, pricing, and authentication pages
+- [ ] Polish the authenticated shell, chat, departments, settings, and investment views
+- [ ] Verify desktop/mobile rendering, metadata, interactions, and diagnostics
