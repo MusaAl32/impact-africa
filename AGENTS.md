@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- The shared visual system uses semantic midnight-and-gold tokens, Instrument Serif display type, and Work Sans body type so public and authenticated surfaces remain coherent.

@@ -1,7 +1,7 @@
 export function NuruLogo({ className = "size-8" }: { className?: string }) {
   return (
     <span
-      className={`inline-flex items-center justify-center rounded-xl ${className}`}
+      className={`inline-flex items-center justify-center rounded-lg ${className}`}
       style={{ backgroundImage: "var(--gradient-gold)", boxShadow: "var(--glow-gold)" }}
       aria-hidden="true"
     >
@@ -23,8 +23,8 @@ export function NuruWordmark({ compact = false }: { compact?: boolean }) {
       <NuruLogo className="size-8" />
       {!compact && (
         <span className="flex flex-col leading-none">
-          <span className="text-base font-bold tracking-tight">Nuru AI</span>
-          <span className="text-[10px] font-medium uppercase tracking-[0.18em] text-muted-foreground">
+          <span className="font-display text-xl leading-none">Nuru AI</span>
+          <span className="mt-1 text-[9px] font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Built for Africa
           </span>
         </span>
