@@ -284,6 +284,27 @@ export type Database = {
         }
         Relationships: []
       }
+      guest_usage: {
+        Row: {
+          day: string
+          identity_hash: string
+          message_count: number
+          updated_at: string
+        }
+        Insert: {
+          day?: string
+          identity_hash: string
+          message_count?: number
+          updated_at?: string
+        }
+        Update: {
+          day?: string
+          identity_hash?: string
+          message_count?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       investments: {
         Row: {
           amount: number
@@ -484,6 +505,128 @@ export type Database = {
           updated_at?: string
           voice_rate?: number
           voice_uri?: string
+        }
+        Relationships: []
+      }
+      project_conversations: {
+        Row: {
+          conversation_id: string
+          created_at: string
+          project_id: string
+          user_id: string
+        }
+        Insert: {
+          conversation_id: string
+          created_at?: string
+          project_id: string
+          user_id: string
+        }
+        Update: {
+          conversation_id?: string
+          created_at?: string
+          project_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_conversations_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_conversations_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      project_files: {
+        Row: {
+          created_at: string
+          error_message: string | null
+          extracted_text: string
+          file_name: string
+          id: string
+          mime_type: string
+          project_id: string
+          size_bytes: number
+          status: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message?: string | null
+          extracted_text?: string
+          file_name: string
+          id?: string
+          mime_type: string
+          project_id: string
+          size_bytes: number
+          status?: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string | null
+          extracted_text?: string
+          file_name?: string
+          id?: string
+          mime_type?: string
+          project_id?: string
+          size_bytes?: number
+          status?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_files_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      projects: {
+        Row: {
+          archived: boolean
+          created_at: string
+          description: string
+          id: string
+          instructions: string
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          archived?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          instructions?: string
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          archived?: boolean
+          created_at?: string
+          description?: string
+          id?: string
+          instructions?: string
+          name?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -704,6 +847,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      consume_guest_message: {
+        Args: { _identity_hash: string; _limit?: number }
+        Returns: Json
+      }
       consume_quota: {
         Args: { _kind: string; _quantity?: number; _user_id: string }
         Returns: Json
