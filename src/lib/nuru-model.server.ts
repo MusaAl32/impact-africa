@@ -3,6 +3,7 @@ import type { LanguageModel } from "ai";
 import type { SharedV4ProviderOptions } from "@ai-sdk/provider";
 
 import { NURU_MODEL, requireGeminiApiKey } from "./ai-gateway.server";
+import { getNuruCapability, type NuruCapabilityId } from "./nuru-capabilities";
 
 export const NURU_GEMINI_MODEL = NURU_MODEL;
 
@@ -32,8 +33,9 @@ export function geminiConfigured() {
   return Boolean(process.env["GEMINI_API_KEY"]?.trim());
 }
 
-export function nuruTextModel(options?: { fast?: boolean }): NuruModelChoice {
-  return googleModel(options);
+export function nuruTextModel(options?: { fast?: boolean; capability?: NuruCapabilityId }): NuruModelChoice {
+  const capability = getNuruCapability(options?.capability);
+  return googleModel({ fast: options?.fast ?? capability.reasoning === "minimal" });
 }
 
 export function nuruUtilityModel(): NuruModelChoice {

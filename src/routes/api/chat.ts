@@ -10,6 +10,7 @@ import { buildSpecialistCouncilTool } from "@/lib/agent-orchestrator.server";
 import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
 import type { Database, Json } from "@/integrations/supabase/types";
+import { detectCapability, getNuruCapability, NURU_CAPABILITY_IDS, type NuruCapabilityId } from "@/lib/nuru-capabilities";
 
 
 export const Route = createFileRoute("/api/chat")({
@@ -24,6 +25,7 @@ export const Route = createFileRoute("/api/chat")({
           projectContext?: string;
           webAccess?: boolean;
           conversationId?: string;
+          capability?: NuruCapabilityId;
         };
 
         try {
@@ -37,20 +39,21 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const authHeader = request.headers.get("authorization");
-        if (!authHeader?.startsWith("Bearer ")) return new Response("Unauthorized", { status: 401 });
-        const token = authHeader.slice(7);
+        const token = authHeader?.startsWith("Bearer ") ? authHeader.slice(7) : null;
         const url = process.env["SUPABASE_URL"];
         const key = process.env["SUPABASE_PUBLISHABLE_KEY"];
         if (!url || !key) return new Response("Service unavailable", { status: 503 });
         const userDb = createClient<Database>(url, key, {
-          global: { headers: { Authorization: `Bearer ${token}` } },
+          global: { headers: token ? { Authorization: `Bearer ${token}` } : {} },
           auth: { persistSession: false, autoRefreshToken: false },
         });
-        const { data: claims, error: claimsError } = await userDb.auth.getClaims(token);
-        const userId = claims?.claims?.sub;
-        if (claimsError || !userId) return new Response("Unauthorized", { status: 401 });
+        const claimsResult = token ? await userDb.auth.getClaims(token) : null;
+        const userId = claimsResult?.data?.claims?.sub;
+        if (token && (claimsResult?.error || !userId)) return new Response("Unauthorized", { status: 401 });
+        const guest = !userId;
 
-        if (body.conversationId) {
+        if (body.conversationId && guest) return new Response("Sign in to save conversations.", { status: 401 });
+        if (body.conversationId && userId) {
           const parsed = z.string().uuid().safeParse(body.conversationId);
           if (!parsed.success) return new Response("Invalid conversation", { status: 400 });
           const { data: owned } = await userDb
@@ -64,16 +67,28 @@ export const Route = createFileRoute("/api/chat")({
         }
 
         const { consumeQuota, limitMessage } = await import("@/lib/billing.server");
-        try {
-          const quota = await consumeQuota(userId, "message");
-          if (!quota.allowed) return new Response(limitMessage(quota), { status: 429 });
-        } catch (error) {
-          console.error("Nuru quota check failed", error);
+        if (userId) {
+          try {
+            const quota = await consumeQuota(userId, "message");
+            if (!quota.allowed) return new Response(limitMessage(quota), { status: 429 });
+          } catch (error) {
+            console.error("Nuru quota check failed", error);
+            return new Response("Nuru could not confirm your usage allowance. Please try again.", { status: 503 });
+          }
+        } else {
+          const forwarded = request.headers.get("cf-connecting-ip") ?? request.headers.get("x-forwarded-for")?.split(",")[0] ?? "unknown";
+          const identity = `${forwarded}|${request.headers.get("user-agent") ?? "unknown"}`;
+          const hash = [...new Uint8Array(await crypto.subtle.digest("SHA-256", new TextEncoder().encode(identity)))].map((v) => v.toString(16).padStart(2, "0")).join("");
+          const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+          const { data: quota, error: quotaError } = await supabaseAdmin.rpc("consume_guest_message", { _identity_hash: hash, _limit: 5 });
+          if (quotaError) return new Response("Nuru's guest trial is temporarily unavailable.", { status: 503 });
+          if (!(quota as { allowed?: boolean })?.allowed) return new Response("Create a free Nuru AI account to continue, save conversations, and access them across devices.", { status: 429 });
         }
 
         let chatModel: ReturnType<typeof nuruTextModel>;
         try {
-          chatModel = nuruTextModel({ fast: true });
+          const selected = NURU_CAPABILITY_IDS.includes(body.capability as NuruCapabilityId) ? body.capability : "nuru-2";
+          chatModel = nuruTextModel({ capability: selected });
         } catch (error) {
           return new Response((error as Error).message, { status: 500 });
         }
@@ -86,8 +101,13 @@ export const Route = createFileRoute("/api/chat")({
           .trim() ?? "";
         let longTermContext = "";
         try {
-          longTermContext = await buildLongTermContext(userDb, userId, latestUserText);
-          if (latestUserText) await rememberUserTurn(userDb, userId, body.conversationId, latestUserText);
+          const hasVisual = body.messages.some((message) => message.parts.some((part) => part.type === "file" && part.mediaType?.startsWith("image/")));
+          const routedDepartment = detectCapability(latestUserText, hasVisual) as DepartmentId;
+          const capability = getNuruCapability(body.capability);
+          if (userId) {
+            longTermContext = await buildLongTermContext(userDb, userId, latestUserText);
+            if (latestUserText) await rememberUserTurn(userDb, userId, body.conversationId, latestUserText);
+          }
         } catch (error) {
           console.error("Nuru long-term memory retrieval failed", error);
         }
@@ -136,10 +156,11 @@ export const Route = createFileRoute("/api/chat")({
             model: chatModel.model,
             system: [
               buildSystemPrompt({
-                department: body.department ?? "platform",
+                department: routedDepartment,
                 ...(body.language ? { language: body.language } : {}),
               }),
-              longTermContext ? `Long-term memory context:\n${longTermContext}` : "No relevant long-term memory was retrieved.",
+              `Nuru capability mode: ${capability.name}. This is a product configuration backed by connected AI services, not a claim of a separately trained foundation model.`,
+              longTermContext ? `Long-term memory context:\n${longTermContext}` : guest ? "This is a limited guest conversation. Do not claim to remember the visitor beyond this chat." : "No relevant long-term memory was retrieved.",
               webEnabled
                 ? [
                     "You can browse the live web with the search_web tool.",
@@ -157,7 +178,7 @@ export const Route = createFileRoute("/api/chat")({
             providerOptions: chatModel.providerOptions,
             tools: {
               ...councilTools,
-              generate_image: imageTool,
+              ...(guest ? {} : { generate_image: imageTool }),
               ...(webEnabled
                 ? {
                     search_web: tool({
@@ -179,6 +200,7 @@ export const Route = createFileRoute("/api/chat")({
                       }),
                        execute: async ({ query, limit }) => {
                          try {
+                           if (!userId) return { query, sources: [], count: 0, error: "Sign in to use live web search." };
                            const searchQuota = await consumeQuota(userId, "search");
                            if (!searchQuota.allowed) {
                              return {
@@ -221,7 +243,7 @@ export const Route = createFileRoute("/api/chat")({
               return "Nuru could not complete that response.";
             },
             onFinish: async ({ responseMessage, isAborted }) => {
-              if (isAborted || !body.conversationId) return;
+              if (isAborted || !body.conversationId || !userId) return;
               const { error: messageError } = await userDb.from("messages").upsert({
                 conversation_id: body.conversationId,
                 user_id: userId,
