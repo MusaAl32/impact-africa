@@ -84,7 +84,7 @@ function Landing() {
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <Button asChild size="lg">
-                  <Link to="/auth">
+                  <Link to="/chat">
                     Try it free <ArrowRight className="ml-1.5 size-4" />
                   </Link>
                 </Button>

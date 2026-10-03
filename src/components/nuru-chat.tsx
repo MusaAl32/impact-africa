@@ -1,4 +1,5 @@
 import { useChat } from "@ai-sdk/react";
+import { Link } from "@tanstack/react-router";
 import type { FileUIPart, UIMessage } from "ai";
 import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
@@ -37,6 +38,7 @@ import { cn } from "@/lib/utils";
 import { loadPreferences } from "@/lib/workspace";
 import { pauseSpeaking, resumeSpeaking, speak, stopSpeaking, useSpeechRecognition } from "@/hooks/use-speech";
 import { findLanguage } from "@/lib/languages";
+import { getNuruCapability, NURU_CAPABILITIES, type NuruCapabilityId } from "@/lib/nuru-capabilities";
 
 type Source = { title: string; url: string; domain: string; date?: string };
 
@@ -54,6 +56,8 @@ export interface NuruChatProps {
   conversationId?: string;
   initialMessages?: UIMessage[];
   onHistoryChanged?: () => void;
+  guest?: boolean;
+  initialCapability?: NuruCapabilityId;
 }
 
 const extractText = (message: UIMessage) => {
@@ -100,7 +104,7 @@ function fileParts(files: FileUIPart[]) {
 export function NuruChat({
   department, initialPrompt, language,
   projectContext, className, accept, heading = "How can Nuru help?", persist = false,
-  conversationId, initialMessages = [], onHistoryChanged,
+  conversationId, initialMessages = [], onHistoryChanged, guest = false, initialCapability = "nuru-2",
 }: NuruChatProps) {
   const [webAccess, setWebAccess] = useState(true);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
@@ -109,6 +113,7 @@ export function NuruChat({
   const [feedback, setFeedback] = useState<Record<string, "up" | "down">>({});
   const [initialSent, setInitialSent] = useState(false);
   const [liveOpen, setLiveOpen] = useState(false);
+  const [capability, setCapability] = useState<NuruCapabilityId>(initialCapability);
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
   const cancelSavedRef = useRef(false);
   const { listening, supported: speechSupported, error: speechError, start: startListening, stop: stopListening } =
@@ -193,12 +198,12 @@ export function NuruChat({
       }
     }
     await sendMessage({ id, role: "user", parts }, {
-      body: { department, language, projectContext, webAccess, conversationId },
+      body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability },
     });
     setEditingId(null);
     onHistoryChanged?.();
     window.setTimeout(() => textareaRef.current?.focus(), 0);
-  }, [busy, conversationId, department, editingId, language, onHistoryChanged, persist, projectContext, sendMessage, setMessages, webAccess]);
+  }, [busy, capability, conversationId, department, editingId, guest, language, onHistoryChanged, persist, projectContext, sendMessage, setMessages, webAccess]);
 
   useEffect(() => {
     if (!speechError) return;
@@ -289,7 +294,7 @@ export function NuruChat({
 
   function retryLastResponse() {
     const messageId = messages.at(-1)?.id;
-    const options = { body: { department, language, projectContext, webAccess, conversationId } };
+    const options = { body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability } };
     return messageId ? regenerate({ ...options, messageId }) : regenerate(options);
   }
 
@@ -305,14 +310,29 @@ export function NuruChat({
 
   return (
     <section className={cn("chat-workspace flex min-h-0 flex-1 flex-col overflow-hidden bg-background text-foreground", className)} aria-label="Nuru AI chat">
+      <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-3 px-4 pt-3 sm:px-5">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-auto justify-start gap-2 px-2 py-1.5 text-left" aria-label="Select Nuru capability">
+              <NuruMark className="size-6" /><span><span className="block text-sm font-semibold">{getNuruCapability(capability).name}</span><span className="block text-[10px] font-normal text-muted-foreground">Automatic expertise routing</span></span><ChevronDown className="size-3.5" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="start" className="w-72">
+            {NURU_CAPABILITIES.map((item) => <DropdownMenuItem key={item.id} onClick={() => item.id === "voice" ? setLiveOpen(true) : setCapability(item.id)} className="items-start py-2.5"><span><span className="block font-medium">{item.name}</span><span className="block text-xs text-muted-foreground">{item.description}</span></span></DropdownMenuItem>)}
+          </DropdownMenuContent>
+        </DropdownMenu>
+        {guest && <Button asChild size="sm"><Link to="/auth">Create free account</Link></Button>}
+      </div>
       <Conversation className="min-h-[44vh]">
         <ConversationContent className="mx-auto min-h-full w-full max-w-3xl gap-7 px-4 pb-8 pt-3 sm:px-5">
           {messages.length === 0 ? (
-            <ConversationEmptyState className="min-h-[65vh] justify-end px-0 pb-4 pt-16 sm:min-h-[60vh] sm:justify-center">
+            <ConversationEmptyState className="min-h-[58vh] justify-end px-0 pb-4 pt-10 sm:min-h-[55vh] sm:justify-center">
               <div className="animate-fade-up w-full max-w-xl">
-                <h1 className="sr-only">{heading}</h1>
+                <NuruMark className="mb-4 size-10" />
+                <h1 className="font-display text-3xl text-foreground">{heading}</h1>
+                <p className="mb-6 mt-2 text-sm text-muted-foreground">Your intelligent assistant for Africa and beyond.</p>
                 <div className="flex flex-col items-start gap-2">
-                  {emptyActions.map(({ label, icon: Icon, action }) => (
+                  {emptyActions.filter((item) => !guest || item.label === "Write or edit").map(({ label, icon: Icon, action }) => (
                     <Button
                       key={label}
                       type="button"
@@ -394,9 +414,9 @@ export function NuruChat({
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-10 rounded-md" aria-label="More response actions"><MoreHorizontal /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
-                          <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, webAccess, conversationId } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
+                          {!guest && <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>}
+                          {!guest && <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => void copy(text)}><Copy /> Copy</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => void share(text)}><Share2 /> Share</DropdownMenuItem>
@@ -451,12 +471,12 @@ export function NuruChat({
                   <PromptInputActionMenuTrigger className="size-11 rounded-full" tooltip="Attachments and tools" />
                   <PromptInputActionMenuContent>
                     <PromptInputActionAddAttachments />
-                    <PromptInputActionMenuItem onSelect={() => setWebAccess((value) => !value)}>
+                    {!guest && <PromptInputActionMenuItem onSelect={() => setWebAccess((value) => !value)}>
                       <Globe2 className="mr-2 size-4" /> {webAccess ? "Turn off web search" : "Search the web"}
-                    </PromptInputActionMenuItem>
-                    <PromptInputActionMenuItem onSelect={() => setLiveOpen(true)}>
+                    </PromptInputActionMenuItem>}
+                    {!guest && <PromptInputActionMenuItem onSelect={() => setLiveOpen(true)}>
                       <Headphones className="mr-2 size-4" /> Start live voice
-                    </PromptInputActionMenuItem>
+                    </PromptInputActionMenuItem>}
                   </PromptInputActionMenuContent>
                 </PromptInputActionMenu>
               </PromptInputTools>
@@ -476,7 +496,7 @@ export function NuruChat({
           </p>
         </div>
       </div>
-      <NuruLiveVoice open={liveOpen} onOpenChange={setLiveOpen} onSaved={onHistoryChanged} />
+      {!guest && <NuruLiveVoice open={liveOpen} onOpenChange={setLiveOpen} onSaved={onHistoryChanged} />}
     </section>
   );
 }
