@@ -87,23 +87,23 @@ export const Route = createFileRoute("/api/chat")({
 
         let chatModel: ReturnType<typeof nuruTextModel>;
         try {
-          const selected = NURU_CAPABILITY_IDS.includes(body.capability as NuruCapabilityId) ? body.capability : "nuru-2";
+          const selected: NuruCapabilityId = NURU_CAPABILITY_IDS.includes(body.capability as NuruCapabilityId) ? (body.capability as NuruCapabilityId) : "nuru-2";
           chatModel = nuruTextModel({ capability: selected });
         } catch (error) {
           return new Response((error as Error).message, { status: 500 });
         }
 
-        const webEnabled = body.webAccess !== false && webSearchConfigured();
+        const webEnabled = !guest && body.webAccess !== false && webSearchConfigured();
         const latestUserText = [...body.messages].reverse().find((message) => message.role === "user")?.parts
           .filter((part) => part.type === "text")
           .map((part) => part.text)
           .join("\n")
           .trim() ?? "";
         let longTermContext = "";
+        const hasVisual = body.messages.some((message) => message.parts.some((part) => part.type === "file" && part.mediaType?.startsWith("image/")));
+        const routedDepartment = detectCapability(latestUserText, hasVisual) as DepartmentId;
+        const capability = getNuruCapability(body.capability);
         try {
-          const hasVisual = body.messages.some((message) => message.parts.some((part) => part.type === "file" && part.mediaType?.startsWith("image/")));
-          const routedDepartment = detectCapability(latestUserText, hasVisual) as DepartmentId;
-          const capability = getNuruCapability(body.capability);
           if (userId) {
             longTermContext = await buildLongTermContext(userDb, userId, latestUserText);
             if (latestUserText) await rememberUserTurn(userDb, userId, body.conversationId, latestUserText);

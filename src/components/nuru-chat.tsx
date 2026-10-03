@@ -1,4 +1,5 @@
 import { useChat } from "@ai-sdk/react";
+import { Link } from "@tanstack/react-router";
 import type { FileUIPart, UIMessage } from "ai";
 import { DefaultChatTransport, isToolUIPart } from "ai";
 import {
@@ -320,7 +321,7 @@ export function NuruChat({
             {NURU_CAPABILITIES.map((item) => <DropdownMenuItem key={item.id} onClick={() => item.id === "voice" ? setLiveOpen(true) : setCapability(item.id)} className="items-start py-2.5"><span><span className="block font-medium">{item.name}</span><span className="block text-xs text-muted-foreground">{item.description}</span></span></DropdownMenuItem>)}
           </DropdownMenuContent>
         </DropdownMenu>
-        {guest && <Button asChild size="sm"><a href="/auth">Create free account</a></Button>}
+        {guest && <Button asChild size="sm"><Link to="/auth">Create free account</Link></Button>}
       </div>
       <Conversation className="min-h-[44vh]">
         <ConversationContent className="mx-auto min-h-full w-full max-w-3xl gap-7 px-4 pb-8 pt-3 sm:px-5">
@@ -331,7 +332,7 @@ export function NuruChat({
                 <h1 className="font-display text-3xl text-foreground">{heading}</h1>
                 <p className="mb-6 mt-2 text-sm text-muted-foreground">Your intelligent assistant for Africa and beyond.</p>
                 <div className="flex flex-col items-start gap-2">
-                  {emptyActions.map(({ label, icon: Icon, action }) => (
+                  {emptyActions.filter((item) => !guest || item.label === "Write or edit").map(({ label, icon: Icon, action }) => (
                     <Button
                       key={label}
                       type="button"
@@ -414,8 +415,8 @@ export function NuruChat({
                         <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-10 rounded-md" aria-label="More response actions"><MoreHorizontal /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
                           <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>
-                          <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>
+                          {!guest && <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>}
+                          {!guest && <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>}
                           <DropdownMenuSeparator />
                           <DropdownMenuItem onClick={() => void copy(text)}><Copy /> Copy</DropdownMenuItem>
                           <DropdownMenuItem onClick={() => void share(text)}><Share2 /> Share</DropdownMenuItem>
