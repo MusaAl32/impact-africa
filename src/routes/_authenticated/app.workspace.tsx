@@ -71,7 +71,10 @@ function WorkspacePage() {
   const context = useMemo(() => buildProjectContext(prefs, contextItems), [prefs, selectedId, projects]);
 
   async function add() {
-    if (!name.trim()) return toast.error("Give the project a name first.");
+    if (!name.trim()) {
+      toast.error("Give the project a name first.");
+      return;
+    }
     try {
       await addProject({ data: { name, description, instructions } });
       setName(""); setDescription(""); setInstructions("");
@@ -87,13 +90,22 @@ function WorkspacePage() {
   async function upload(file: File) {
     if (!selected) return;
     const allowed = ["application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "text/plain", "image/jpeg", "image/png", "image/webp"] as const;
-    if (!allowed.includes(file.type as (typeof allowed)[number]) || file.size > 10 * 1024 * 1024) return toast.error("Use PDF, DOCX, TXT, JPG, PNG or WebP files up to 10 MB.");
+    if (!allowed.includes(file.type as (typeof allowed)[number]) || file.size > 10 * 1024 * 1024) {
+      toast.error("Use PDF, DOCX, TXT, JPG, PNG or WebP files up to 10 MB.");
+      return;
+    }
     const { data: session } = await supabase.auth.getUser();
-    if (!session.user) return toast.error("Please sign in again.");
+    if (!session.user) {
+      toast.error("Please sign in again.");
+      return;
+    }
     const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-");
     const path = `${session.user.id}/${selected.id}/${crypto.randomUUID()}-${safeName}`;
     const { error } = await supabase.storage.from("nuru-files").upload(path, file, { contentType: file.type, upsert: false });
-    if (error) return toast.error("File upload failed.");
+    if (error) {
+      toast.error("File upload failed.");
+      return;
+    }
     try {
       const extractedText = file.type === "text/plain" ? (await file.text()).slice(0, 100000) : "";
       await saveFileRecord({ data: { projectId: selected.id, storagePath: path, fileName: file.name, mimeType: file.type as (typeof allowed)[number], sizeBytes: file.size, extractedText } });
@@ -159,7 +171,7 @@ function WorkspacePage() {
         </h2>
         <NuruChat
           department="workspace"
-          projectContext={selected ? context : undefined}
+          {...(selected ? { projectContext: context } : {})}
           placeholder="Ask Nuru about your saved projects…"
           suggestions={[
             "Summarise my active projects and what to do next",

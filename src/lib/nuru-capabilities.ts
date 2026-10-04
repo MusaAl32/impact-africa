@@ -10,18 +10,26 @@ export type NuruCapability = {
   reasoning: "minimal" | "low";
 };
 
+const DEFAULT_NURU_CAPABILITY: NuruCapability = {
+  id: "nuru-2",
+  name: "Nuru 2",
+  description: "Deeper analysis, planning and complex questions",
+  input: "text",
+  reasoning: "low",
+};
+
 /** Product capability modes. These configure connected AI services; they are not separate foundation models. */
 export const NURU_CAPABILITIES: NuruCapability[] = [
   { id: "fast", name: "Nuru Fast", description: "Quick everyday conversations and simple tasks", input: "text", reasoning: "minimal" },
   { id: "nuru-1", name: "Nuru 1", description: "Writing, learning, translation and everyday work", input: "text", reasoning: "minimal" },
-  { id: "nuru-2", name: "Nuru 2", description: "Deeper analysis, planning and complex questions", input: "text", reasoning: "low" },
+  DEFAULT_NURU_CAPABILITY,
   { id: "nuru-3", name: "Nuru 3", description: "Demanding research, coding and professional work", input: "text", reasoning: "low" },
   { id: "vision", name: "Nuru Vision", description: "Images, screenshots, diagrams and visual documents", input: "vision", reasoning: "low" },
   { id: "voice", name: "Nuru Voice", description: "Natural spoken conversations", input: "voice", reasoning: "minimal" },
 ];
 
 export function getNuruCapability(id: string | undefined) {
-  return NURU_CAPABILITIES.find((capability) => capability.id === id) ?? NURU_CAPABILITIES[2];
+  return NURU_CAPABILITIES.find((capability) => capability.id === id) ?? DEFAULT_NURU_CAPABILITY;
 }
 
 export function detectCapability(text: string, hasVisual: boolean): string {

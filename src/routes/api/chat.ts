@@ -250,7 +250,7 @@ export const Route = createFileRoute("/api/chat")({
                 client_message_id: responseMessage.id,
                 role: "assistant",
                 parts: responseMessage.parts as unknown as Json,
-                department: body.department ?? "platform",
+                department: routedDepartment,
               }, { onConflict: "conversation_id,client_message_id" });
               if (messageError) console.error("Nuru assistant persistence failed");
               await userDb
