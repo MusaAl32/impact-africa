@@ -58,6 +58,7 @@ export interface NuruChatProps {
   onHistoryChanged?: () => void;
   guest?: boolean;
   initialCapability?: NuruCapabilityId;
+  projectId?: string;
 }
 
 const extractText = (message: UIMessage) => {
@@ -104,7 +105,7 @@ function fileParts(files: FileUIPart[]) {
 export function NuruChat({
   department, initialPrompt, language,
   projectContext, className, accept, heading = "How can Nuru help?", persist = false,
-  conversationId, initialMessages = [], onHistoryChanged, guest = false, initialCapability = "nuru-2",
+  conversationId, initialMessages = [], onHistoryChanged, guest = false, initialCapability = "nuru-2", projectId,
 }: NuruChatProps) {
   const [webAccess, setWebAccess] = useState(true);
   const [speakingId, setSpeakingId] = useState<string | null>(null);
@@ -198,12 +199,18 @@ export function NuruChat({
       }
     }
     await sendMessage({ id, role: "user", parts }, {
-      body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability },
+      body: { department, language, projectContext, projectId, webAccess: guest ? false : webAccess, conversationId, capability },
     });
     setEditingId(null);
     onHistoryChanged?.();
     window.setTimeout(() => textareaRef.current?.focus(), 0);
-  }, [busy, capability, conversationId, department, editingId, guest, language, onHistoryChanged, persist, projectContext, sendMessage, setMessages, webAccess]);
+  }, [busy, capability, conversationId, department, editingId, guest, language, onHistoryChanged, persist, projectContext, projectId, sendMessage, setMessages, webAccess]);
+
+  useEffect(() => {
+    if (!guest || typeof window === "undefined") return;
+    const transcript = messages.map((message) => ({ role: message.role, text: extractText(message) })).filter((item) => (item.role === "user" || item.role === "assistant") && item.text).slice(-30);
+    if (transcript.length) window.sessionStorage.setItem("nuru.guest.transcript", JSON.stringify(transcript));
+  }, [guest, messages]);
 
   useEffect(() => {
     if (!speechError) return;
@@ -294,7 +301,7 @@ export function NuruChat({
 
   function retryLastResponse() {
     const messageId = messages.at(-1)?.id;
-    const options = { body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability } };
+    const options = { body: { department, language, projectContext, projectId, webAccess: guest ? false : webAccess, conversationId, capability } };
     return messageId ? regenerate({ ...options, messageId }) : regenerate(options);
   }
 
@@ -414,7 +421,7 @@ export function NuruChat({
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild><Button size="icon" variant="ghost" className="size-10 rounded-md" aria-label="More response actions"><MoreHorizontal /></Button></DropdownMenuTrigger>
                         <DropdownMenuContent align="start">
-                          <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, webAccess: guest ? false : webAccess, conversationId, capability } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
+                          <DropdownMenuItem onClick={() => void regenerate({ messageId: message.id, body: { department, language, projectContext, projectId, webAccess: guest ? false : webAccess, conversationId, capability } })}><RefreshCcw /> Regenerate</DropdownMenuItem>
                           {!guest && <DropdownMenuItem onClick={() => setWebAccess(true)}><Globe2 /> Web search</DropdownMenuItem>}
                           {!guest && <DropdownMenuItem onClick={() => void branch(message.id)}><Sparkles /> Branch</DropdownMenuItem>}
                           <DropdownMenuSeparator />

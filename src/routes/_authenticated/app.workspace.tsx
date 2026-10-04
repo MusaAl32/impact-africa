@@ -171,7 +171,7 @@ function WorkspacePage() {
         </h2>
         <NuruChat
           department="workspace"
-          {...(selected ? { projectContext: context } : {})}
+          {...(selected ? { projectId: selected.id } : { projectContext: context })}
           placeholder="Ask Nuru about your saved projects…"
           suggestions={[
             "Summarise my active projects and what to do next",

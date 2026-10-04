@@ -23,6 +23,12 @@ const replaceFromMessageSchema = z.object({
   conversationId: z.string().uuid(),
   clientMessageId: z.string().min(1).max(160),
 });
+const guestTranscriptSchema = z.object({
+  messages: z.array(z.object({
+    role: z.enum(["user", "assistant"]),
+    text: z.string().trim().min(1).max(12000),
+  })).min(1).max(30),
+});
 
 async function verifyOwnedConversation(
   supabase: SupabaseClient<Database>,
@@ -141,6 +147,39 @@ export const archiveConversation = createServerFn({ method: "POST" })
       .eq("user_id", context.userId);
     if (error) throw new Error("Could not archive this conversation.");
     return { ok: true };
+  });
+
+export const deleteConversation = createServerFn({ method: "POST" })
+  .inputValidator(conversationIdSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const { error } = await context.supabase.from("conversations").delete()
+      .eq("id", data.conversationId).eq("user_id", context.userId);
+    if (error) throw new Error("Could not delete this conversation.");
+    return { ok: true };
+  });
+
+export const importGuestConversation = createServerFn({ method: "POST" })
+  .inputValidator(guestTranscriptSchema)
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ data, context }) => {
+    const first = data.messages.find((message) => message.role === "user")?.text ?? "Guest conversation";
+    const { data: conversation, error } = await context.supabase.from("conversations")
+      .insert({ user_id: context.userId, title: first.slice(0, 64) }).select("id").single();
+    if (error || !conversation) throw new Error("Guest conversation could not be saved.");
+    const base = Date.now();
+    const rows = data.messages.map((message, index) => ({
+      conversation_id: conversation.id, user_id: context.userId,
+      client_message_id: `guest-${base}-${index}`, role: message.role,
+      parts: [{ type: "text", text: message.text }] as unknown as Json,
+      department: "platform", created_at: new Date(base + index).toISOString(),
+    }));
+    const { error: messageError } = await context.supabase.from("messages").insert(rows);
+    if (messageError) {
+      await context.supabase.from("conversations").delete().eq("id", conversation.id).eq("user_id", context.userId);
+      throw new Error("Guest conversation could not be saved.");
+    }
+    return { conversationId: conversation.id };
   });
 
 export const saveMessage = createServerFn({ method: "POST" })
