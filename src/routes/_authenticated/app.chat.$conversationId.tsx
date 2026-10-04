@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import {
   DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { archiveConversation, createConversation, getConversation, renameConversation } from "@/lib/chat.functions";
+import { archiveConversation, createConversation, deleteConversation, getConversation, renameConversation } from "@/lib/chat.functions";
 import { getDepartment } from "@/lib/departments";
 
 export const Route = createFileRoute("/_authenticated/app/chat/$conversationId")({
@@ -95,6 +95,15 @@ function ConversationPage() {
     } catch { toast.error("Could not delete this conversation."); }
   }
 
+  async function remove() {
+    if (!window.confirm("Permanently delete this conversation? This cannot be undone.")) return;
+    try {
+      await deleteConversation({ data: { conversationId } });
+      window.dispatchEvent(new Event("nuru-history-changed"));
+      await navigate({ to: "/app", replace: true });
+    } catch { toast.error("Could not delete this conversation."); }
+  }
+
   return (
     <div className="chat-workspace mx-auto flex h-[calc(100dvh-3.5rem)] min-h-0 w-full max-w-4xl flex-1 flex-col overflow-hidden bg-background px-0 lg:h-screen lg:px-4 lg:py-5">
       <header className="mb-2 hidden min-h-11 items-center justify-between gap-3 lg:flex">
@@ -121,7 +130,7 @@ function ConversationPage() {
               <DropdownMenuItem onClick={() => void rename()}><Pencil /> Rename</DropdownMenuItem>
               <DropdownMenuItem onClick={() => void clearChat()}><Sparkles /> Start new chat</DropdownMenuItem>
               <DropdownMenuItem onClick={() => void archive()}><Archive /> Archive</DropdownMenuItem>
-              <DropdownMenuItem className="text-destructive" onClick={() => void archive()}><Trash2 /> Delete</DropdownMenuItem>
+              <DropdownMenuItem className="text-destructive" onClick={() => void remove()}><Trash2 /> Delete permanently</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

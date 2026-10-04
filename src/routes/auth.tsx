@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable";
+import { importGuestConversation } from "@/lib/chat.functions";
 
 export const Route = createFileRoute("/auth")({
   staticData: { sitemap: false },
@@ -56,13 +57,27 @@ function AuthPage() {
   const [sent, setSent] = useState<string | null>(null);
   const [errors, setErrors] = useState<{ email?: string; password?: string; confirm?: string }>({});
 
+  async function continueAfterSignIn() {
+    const raw = window.sessionStorage.getItem("nuru.guest.transcript");
+    if (raw) {
+      try {
+        const messages = JSON.parse(raw) as Array<{ role: "user" | "assistant"; text: string }>;
+        const imported = await importGuestConversation({ data: { messages } });
+        window.sessionStorage.removeItem("nuru.guest.transcript");
+        await navigate({ to: "/app/chat/$conversationId", params: { conversationId: imported.conversationId }, replace: true });
+        return;
+      } catch { toast.error("Your account is ready, but the guest chat could not be transferred."); }
+    }
+    await navigate({ to: "/app", replace: true });
+  }
+
   useEffect(() => {
     let cancelled = false;
     supabase.auth.getUser().then(({ data }) => {
-      if (!cancelled && data.user) navigate({ to: "/app", replace: true });
+      if (!cancelled && data.user) void continueAfterSignIn();
     });
     const { data: sub } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") navigate({ to: "/app", replace: true });
+      if (event === "SIGNED_IN") void continueAfterSignIn();
     });
     return () => {
       cancelled = true;

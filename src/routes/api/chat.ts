@@ -23,6 +23,7 @@ export const Route = createFileRoute("/api/chat")({
           department?: DepartmentId;
           language?: string;
           projectContext?: string;
+          projectId?: string;
           webAccess?: boolean;
           conversationId?: string;
           capability?: NuruCapabilityId;
@@ -134,7 +135,18 @@ export const Route = createFileRoute("/api/chat")({
 
           // Caller-supplied projectContext is untrusted data: it travels as a
           // user message, never inside the server-owned system prompt.
-          const contextText = typeof body.projectContext === "string" ? body.projectContext.slice(0, 4000).trim() : "";
+          let contextText = typeof body.projectContext === "string" ? body.projectContext.slice(0, 4000).trim() : "";
+          if (body.projectId && userId) {
+            const projectId = z.string().uuid().safeParse(body.projectId);
+            if (!projectId.success) return new Response("Invalid project", { status: 400 });
+            const { data: project } = await userDb.from("projects")
+              .select("name, description, instructions, project_files(file_name, extracted_text, status)")
+              .eq("id", projectId.data).eq("user_id", userId).eq("archived", false).maybeSingle();
+            if (!project) return new Response("Project not found", { status: 404 });
+            const fileContext = project.project_files.filter((file) => file.status === "ready" && file.extracted_text).slice(0, 5)
+              .map((file) => `File ${file.file_name}:\n${file.extracted_text.slice(0, 12000)}`).join("\n\n");
+            contextText = [`Project: ${project.name}`, project.description, project.instructions, fileContext].filter(Boolean).join("\n\n").slice(0, 50000);
+          }
           const chatMessages: UIMessage[] = contextText
             ? [
                 ...body.messages.slice(0, -1),
@@ -250,7 +262,7 @@ export const Route = createFileRoute("/api/chat")({
                 client_message_id: responseMessage.id,
                 role: "assistant",
                 parts: responseMessage.parts as unknown as Json,
-                department: body.department ?? "platform",
+                department: routedDepartment,
               }, { onConflict: "conversation_id,client_message_id" });
               if (messageError) console.error("Nuru assistant persistence failed");
               await userDb

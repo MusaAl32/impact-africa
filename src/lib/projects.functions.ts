@@ -50,6 +50,9 @@ export const addProjectFileRecord = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: owned } = await context.supabase.from("projects").select("id").eq("id", data.projectId).eq("user_id", context.userId).maybeSingle();
     if (!owned || !data.storagePath.startsWith(`${context.userId}/${data.projectId}/`)) throw new Error("Project not found.");
+    const { consumeQuota, limitMessage } = await import("@/lib/billing.server");
+    const quota = await consumeQuota(context.userId, "file");
+    if (!quota.allowed) throw new Error(limitMessage(quota));
     const { error } = await context.supabase.from("project_files").insert({
       project_id: data.projectId, user_id: context.userId, storage_path: data.storagePath,
       file_name: data.fileName, mime_type: data.mimeType, size_bytes: data.sizeBytes,

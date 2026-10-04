@@ -1,6 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { Check } from "lucide-react";
 import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
+import { Button } from "@/components/ui/button";
+import { listPublicPlans } from "@/lib/plans.functions";
 
 export const Route = createFileRoute("/pricing")({
   staticData: { sitemap: true },
@@ -9,32 +12,35 @@ export const Route = createFileRoute("/pricing")({
       { title: "Nuru AI — Plans" },
       {
         name: "description",
-        content: "Nuru AI plans and usage options. Paid services will be introduced on the Nuru platform.",
+        content: "Compare Nuru AI Free, Pro, Pro Plus and Pro Max planned usage allowances.",
       },
+      { property: "og:title", content: "Nuru AI plans" },
+      { property: "og:description", content: "Compare Nuru AI plans and daily usage allowances." },
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary" },
     ],
   }),
+  loader: () => listPublicPlans(),
   component: PricingPage,
 });
 
 function PricingPage() {
+  const plans = Route.useLoaderData();
   return (
     <div className="min-h-screen bg-background">
       <SiteHeader />
-      <main className="mx-auto flex min-h-[70vh] w-full max-w-3xl items-center justify-center px-4 py-16">
-        <section className="w-full rounded-3xl border border-border bg-card p-8 text-center shadow-sm sm:p-12">
-          <p className="text-sm font-medium text-primary">Nuru AI</p>
-          <h1 className="mt-3 text-3xl font-semibold tracking-tight">Plans are coming soon</h1>
-          <p className="mx-auto mt-4 max-w-xl text-sm leading-6 text-muted-foreground">
-            Nuru AI is currently focused on building the core platform. Subscription and payment
-            services will be added later through Nuru AI's own production platform.
-          </p>
-          <Link
-            to="/app"
-            className="mt-8 inline-flex rounded-xl bg-primary px-5 py-3 text-sm font-medium text-primary-foreground"
-          >
-            Open Nuru AI
-          </Link>
-        </section>
+      <main className="mx-auto min-h-[70vh] w-full max-w-6xl px-4 py-16">
+        <div className="max-w-2xl"><p className="text-sm font-medium text-primary">Nuru AI plans</p><h1 className="font-display mt-3 text-4xl">Choose the room you need to work</h1><p className="mt-4 text-muted-foreground">Free access is available now. Paid tiers are planned and shown transparently; no checkout is enabled until production payments are ready.</p></div>
+        <div className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {plans.map((plan) => <article key={plan.slug} className="company-card flex flex-col p-6">
+            <h2 className="text-lg font-semibold">{plan.name}</h2>
+            <p className="mt-3 text-3xl font-semibold">{plan.price_cents === 0 ? "Free" : `$${plan.price_cents / 100}`}<span className="text-sm font-normal text-muted-foreground">{plan.price_cents ? "/month" : ""}</span></p>
+            <ul className="my-6 space-y-3 text-sm">{[
+              `${plan.messages_per_day} messages daily`, `${plan.voice_minutes_per_day} voice minutes daily`, `${plan.searches_per_day} web searches daily`, `${plan.files_per_day} files daily`,
+            ].map((feature) => <li key={feature} className="flex gap-2"><Check className="size-4 shrink-0 text-primary" />{feature}</li>)}</ul>
+            {plan.price_cents === 0 ? <Button asChild className="mt-auto"><Link to="/chat">Try Nuru free</Link></Button> : <Button disabled variant="outline" className="mt-auto">Planned</Button>}
+          </article>)}
+        </div>
       </main>
       <SiteFooter />
     </div>
