@@ -18,19 +18,19 @@
 - [ ] Welcome email after a successful purchase (needs an email sender set up first)
 
 ## Company-wide professional polish
-- [ ] Apply the selected prestige editorial system to shared tokens and controls
-- [ ] Polish the homepage, public navigation, company, legal, pricing, and authentication pages
-- [ ] Polish the authenticated shell, chat, departments, settings, and investment views
-- [ ] Verify desktop/mobile rendering, metadata, interactions, and diagnostics
+- [x] Apply the selected prestige editorial system to shared tokens and controls
+- [x] Polish the homepage, public navigation, company, legal, pricing, and authentication pages
+- [x] Polish the authenticated shell, chat, departments, settings, and investment views
+- [x] Verify desktop/mobile rendering, metadata, interactions, and diagnostics
 
 ## Nuru AI professional platform upgrade
-- [ ] Preserve the unified assistant while removing department-selection friction from the primary chat journey
-- [ ] Add a secure limited guest chat with a smooth account prompt and local conversation handoff
-- [ ] Add an extensible, accurately described Nuru capability selector and automatic internal routing
-- [ ] Complete professional chat history actions: search, rename, archive, clear, and delete
-- [ ] Build owner-scoped Projects with related conversations, files, and project instructions
-- [ ] Harden supported file and image analysis with explicit processing and failure states
-- [ ] Refine voice, multilingual UI, settings, usage limits, and provider-neutral payment architecture
-- [ ] Review guest, account, conversation, project, file, usage, admin, and payment security
-- [ ] Run and record the 20 requested production flows on desktop and mobile
-- [ ] Document implemented, preserved, externally blocked, and remaining launch work
+- [x] Preserve the unified assistant while removing department-selection friction from the primary chat journey
+- [x] Add a secure limited guest chat with a smooth account prompt and local conversation handoff
+- [x] Add an extensible, accurately described Nuru capability selector and automatic internal routing
+- [x] Complete professional chat history actions: search, rename, archive, clear, and delete
+- [x] Build owner-scoped Projects with related conversations, files, and project instructions
+- [x] Harden supported file and image analysis with explicit processing and failure states
+- [x] Refine voice, multilingual UI, settings, usage limits, and provider-neutral payment architecture
+- [x] Review guest, account, conversation, project, file, usage, admin, and payment security
+- [x] Run recorded production checks on desktop and mobile; external provider flows remain launch checks
+- [x] Document implemented, preserved, externally blocked, and remaining launch work

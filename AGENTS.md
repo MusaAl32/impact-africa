@@ -10,3 +10,4 @@
 <!-- LOVABLE:END -->
 
 - The shared visual system uses semantic midnight-and-gold tokens, Instrument Serif display type, and Work Sans body type so public and authenticated surfaces remain coherent.
+- Projects and files are account-owned cloud records; chat accepts a project ID and derives trusted context server-side so browser text cannot impersonate stored project context.
