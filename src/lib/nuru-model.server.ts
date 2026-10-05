@@ -20,8 +20,8 @@ export const NURU_CAPABILITY_MODELS: Record<NuruCapabilityId, { modelId: string;
   fast: { modelId: "gemini-3.1-flash-lite", thinking: "minimal" },
   "nuru-1": { modelId: "gemini-3.5-flash-lite", thinking: "low" },
   "nuru-2": { modelId: "gemini-3.8-flash", thinking: "medium" },
-  "nuru-3": { modelId: "gemini-3.1-pro-preview", thinking: "high" },
-  vision: { modelId: "gemini-3.8-flash", thinking: "high" },
+  "nuru-3": { modelId: "gemini-3.8-flash", thinking: "high" },
+  vision: { modelId: "gemini-3.7-flash", thinking: "medium" },
   voice: { modelId: "gemini-3.1-flash-lite", thinking: "minimal" },
 };
 
