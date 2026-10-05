@@ -26,6 +26,7 @@ import { Shimmer } from "@/components/ai-elements/shimmer";
 import { Tool, ToolContent, ToolHeader, ToolInput, ToolOutput } from "@/components/ai-elements/tool";
 import { NuruLiveVoice } from "@/components/nuru-live-voice";
 import { NuruMark } from "@/components/nuru-logo";
+import { prepareImageAttachment } from "@/lib/image-prep";
 import { Button } from "@/components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -169,9 +170,10 @@ export function NuruChat({
     setMessages(initialMessagesRef.current);
   }, [conversationId, setMessages]);
 
-  const submit = useCallback(async (text: string, files: FileUIPart[] = []) => {
+  const submit = useCallback(async (text: string, rawFiles: FileUIPart[] = []) => {
     const clean = text.trim();
-    if ((!clean && files.length === 0) || busy) return;
+    if ((!clean && rawFiles.length === 0) || busy) return;
+    const files = await Promise.all(rawFiles.map(prepareImageAttachment));
     cancelSavedRef.current = false;
     const id = editingId ?? crypto.randomUUID();
     const parts: UIMessage["parts"] = [
