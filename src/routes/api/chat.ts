@@ -41,7 +41,7 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
       const filePart = part as { mediaType?: string; url?: string; filename?: string };
       const name = (filePart.filename ?? "image").slice(0, 80);
       if (index !== lastImageIndex) return [{ type: "text" as const, text: `[Earlier attachment: ${name}]` }];
-      return [{ ...part, __keep: true } as unknown as typeof part];
+      return [part];
     }),
   }));
 
