@@ -38,4 +38,4 @@
 ## Company profile and policy hub
 - [x] Expand the company profile with mission, capabilities, operating model, pricing status, trust, and contact information
 - [x] Link and align the pricing, privacy, terms, and refund pages
-- [ ] Verify the company and policy pages on desktop and mobile, then confirm diagnostics
+- [x] Verify the company and policy pages on desktop and mobile, then confirm diagnostics
