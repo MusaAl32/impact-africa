@@ -19,8 +19,10 @@ export const Route = createFileRoute("/terms")({
         content: "Acceptable use, AI accuracy limits and contribution rules.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://africaopportunity.app/terms" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://africaopportunity.app/terms" }],
   }),
   component: TermsPage,
 });
@@ -66,8 +68,8 @@ function TermsPage() {
           significant financial, legal, medical, educational, or professional consequences.
         </p>
         <p>
-          Free and paid plans are available. Features and allowances vary by plan and may change as
-          described on the pricing page.
+          Free access is currently available. Planned paid tiers and their intended allowances are
+          described on the pricing page, but paid services and checkout are not yet enabled.
         </p>
       </LegalSection>
 

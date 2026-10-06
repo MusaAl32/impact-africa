@@ -19,8 +19,10 @@ export const Route = createFileRoute("/privacy")({
         content: "What data Nuru AI collects, why, and the choices you have.",
       },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://africaopportunity.app/privacy" },
       { name: "twitter:card", content: "summary" },
     ],
+    links: [{ rel: "canonical", href: "https://africaopportunity.app/privacy" }],
   }),
   component: PrivacyPage,
 });
@@ -137,9 +139,10 @@ function PrivacyPage() {
 
       <LegalSection title="7. Payment information">
         <p>
-          Nuru AI does not currently process paid subscriptions in this version of the platform.
-          own privacy notice and security practices. We keep only the subscription reference and
-          plan status needed to give you access to the plan you paid for.
+          Nuru AI does not currently process paid subscriptions or accept payment through this
+          version of the platform. Before paid services are enabled, we will identify the payment
+          provider, explain what billing information is shared, and publish the applicable purchase
+          and refund terms.
         </p>
       </LegalSection>
 
