@@ -34,3 +34,8 @@
 - [x] Review guest, account, conversation, project, file, usage, admin, and payment security
 - [x] Run recorded production checks on desktop and mobile; external provider flows remain launch checks
 - [x] Document implemented, preserved, externally blocked, and remaining launch work
+
+## Company profile and policy hub
+- [x] Expand the company profile with mission, capabilities, operating model, pricing status, trust, and contact information
+- [x] Link and align the pricing, privacy, terms, and refund pages
+- [x] Verify the company and policy pages on desktop and mobile, then confirm diagnostics
