@@ -36,7 +36,7 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
   let hasImage = false;
   const next = messages.map((message, index) => ({
     ...message,
-    parts: message.parts.flatMap((part) => {
+    parts: message.parts.flatMap((part): UIMessage["parts"] => {
       if (part.type !== "file") return [part];
       const filePart = part as { mediaType?: string; url?: string; filename?: string };
       const name = (filePart.filename ?? "image").slice(0, 80);
