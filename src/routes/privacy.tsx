@@ -57,13 +57,19 @@ function PrivacyPage() {
             Problems, research, submissions and other contributions you choose to add to the public
             Africa Opportunity Map.
           </li>
-          <li>Information necessary to provide, maintain, secure, and improve our services.</li>
+          <li>Projects, workspace content, saved memories, feedback, and support communications.</li>
+          <li>
+            Technical and usage information such as device and browser type, IP address, sign-in
+            events, approximate location derived from IP, feature usage, error records, security
+            events, and timestamps.
+          </li>
         </ul>
         <p>
-          We only collect information that is reasonably necessary for providing and improving the{" "}
-          {COMPANY.product} experience. We do not ask for identity documents, financial account
-          details or sensitive personal categories, and you should not paste them into the assistant
-          or public submissions.
+          We collect information you provide, information created when you use the service, and
+          limited information received from authentication and infrastructure providers. Please do
+          not submit identity documents, financial-account credentials, health records, or other
+          highly sensitive information unless a feature expressly asks for it and explains how it
+          will be handled.
         </p>
       </LegalSection>
 
@@ -72,16 +78,19 @@ function PrivacyPage() {
         <ul>
           <li>Create and manage your account.</li>
           <li>Provide personalized AI features and services.</li>
-          <li>Maintain conversation and application history.</li>
+          <li>Generate responses, analyse files and images, search public sources, and maintain history.</li>
+          <li>Remember preferences or details when you choose to use memory features.</li>
           <li>Improve reliability, security, and performance.</li>
           <li>Communicate with you about your account or our services.</li>
           <li>Detect and prevent fraud, abuse, and unauthorized access.</li>
         </ul>
         <p>We do not sell your personal information and we do not run advertising profiles.</p>
         <p>
-          We process account and service data to perform our contract with you; security, reliability,
-          analytics and product-improvement data for our legitimate interests; consent-based features
-          where you have made a choice; and records we must keep to meet legal obligations.
+          Our legal bases, where applicable, are: performing our contract with you; our legitimate
+          interests in operating, securing, supporting, and improving the service; your consent where
+          a feature or law requires it; and compliance with legal obligations. Where we rely on
+          legitimate interests, we consider the impact on your rights and do not use that basis where
+          your interests override ours.
         </p>
       </LegalSection>
 
@@ -91,20 +100,21 @@ function PrivacyPage() {
           against unauthorized access, alteration, disclosure, or destruction.
         </p>
         <p>
-          Where applicable, {COMPANY.product} uses authentication controls and database access
-          controls, including Row-Level Security (RLS), to help ensure that users can access only the
-          data they are authorized to access. Private records, contact details and unpublished
-          submissions are never exposed through public or agent-facing endpoints.
+          {COMPANY.product} uses authentication, account-scoped database permissions, encryption in
+          transit, access restrictions, and operational monitoring designed to prevent unauthorized
+          access. Private records, contact details, and unpublished submissions are not intentionally
+          made available through public or agent-facing endpoints.
         </p>
         <p>However, no online service can guarantee absolute security.</p>
       </LegalSection>
 
       <LegalSection title="4. AI processing and web browsing">
         <p>
-          Prompts are processed by third-party AI model providers through our AI gateway so that a
-          reply can be generated. When you use web-evidence mode, your search terms are sent to a web
-          search and retrieval provider so that public pages can be fetched and cited. Only the text
-          needed for the request is sent.
+          Prompts, recent conversation context, and attachments may be processed by AI infrastructure
+          providers to generate a reply. When you use web-evidence mode, search terms are sent to a
+          search or retrieval provider so public pages can be found and cited. We aim to send only the
+          information reasonably needed to perform the request. Provider handling is also governed by
+          our agreements with those providers.
         </p>
         <p>
           AI output can be wrong or incomplete. It is not professional, legal, medical, agronomic,
@@ -135,6 +145,12 @@ function PrivacyPage() {
           providers; professional legal or
           accounting advisers; and public authorities when the law requires disclosure.
         </p>
+        <p>
+          We may also disclose information in connection with a genuine merger, financing,
+          reorganisation, or sale of all or part of the business, subject to confidentiality and
+          applicable law. We do not disclose private account content to other users unless you choose
+          to share or publish it.
+        </p>
       </LegalSection>
 
       <LegalSection title="7. Payment information">
@@ -152,25 +168,33 @@ function PrivacyPage() {
           personal information, including access, correction, deletion, restriction, portability,
           objection, and withdrawal of consent without affecting earlier lawful processing. You may
           also complain to the data-protection authority that applies where you live. We aim to answer
-          verified requests within one month where applicable law requires it.
+          verified requests within the period required by applicable law. We may need to confirm your
+          identity and may lawfully refuse or limit a request where an exemption applies.
         </p>
         <ul>
-          <li>Clear your browser storage to remove locally saved preferences and workspace notes.</li>
+          <li>Change available preferences and memory controls in Settings.</li>
+          <li>Delete individual conversations or projects through their available controls.</li>
           <li>
             Ask us to correct or delete content you submitted by emailing{" "}
             <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a>.
           </li>
           <li>Use the platform without web-evidence mode if you prefer no external lookups.</li>
         </ul>
-        <p>To make a privacy request, contact us through the official {COMPANY.product} support channel.</p>
+        <p>
+          To exercise a right, email <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a>.
+          You may also complain to a competent data-protection authority, including the authority in
+          the country where you live or work, where that right applies.
+        </p>
       </LegalSection>
 
       <LegalSection title="9. Retention and international transfers">
         <p>
-          We keep account and service records while your account is active and only as long afterward
-          as reasonably needed for security, disputes, legal obligations and legitimate business
-          records. We then delete or anonymise them. Public contributions may remain public until they
-          are removed or a valid deletion request is accepted.
+          We keep account content while your account is active or until you delete it, unless a longer
+          period is reasonably required for security, dispute resolution, fraud prevention, backups,
+          or legal obligations. Operational logs and support records are retained only for an
+          appropriate period for their purpose. We then delete or anonymise information. Deletion
+          from backups may take additional time. Public contributions may remain visible until removed
+          or until a valid deletion request is completed.
         </p>
         <p>
           Our providers may process information outside your country. Where UK or EEA information is
@@ -190,19 +214,30 @@ function PrivacyPage() {
 
       <LegalSection title="11. Children">
         <p>
-          The platform is intended for people aged 16 and over, or younger users with the consent
-          of a parent, guardian or school.
+          The platform is not directed to children under 16. A person under 16 may use it only where
+          a parent, legal guardian, or authorised school has provided any consent required by local
+          law and supervises that use. If we learn that we collected a child&apos;s personal information
+          without required permission, we will take reasonable steps to delete it.
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Changes to this policy">
+      <LegalSection title="12. Automated processing">
+        <p>
+          Nuru uses automated systems to generate content and to apply safety, fraud, and abuse
+          controls. Nuru does not make solely automated decisions that produce legal or similarly
+          significant effects about your employment, credit, education, healthcare, insurance, or
+          access to essential services. Do not use its output as the sole basis for such decisions.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="13. Changes to this policy">
         <p>
           We may update this Privacy Policy from time to time. When significant changes are made, we
           will provide appropriate notice and update the effective date shown above.
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Contact">
+      <LegalSection title="14. Contact">
         <p>
           {COMPANY.product} is owned and operated by {COMPANY.name}. For privacy questions or
           requests, please contact us through the official {COMPANY.product} support channel, or email{" "}

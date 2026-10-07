@@ -39,9 +39,19 @@ function TermsPage() {
           regulations. If you do not agree with these Terms, please do not use the service. Your
           contract for the service is with {COMPANY.name}, trading as {COMPANY.tradingName}.
         </p>
+        <p>
+          If you use the service for an organisation, you confirm that you have authority to bind
+          that organisation, and “you” includes that organisation. The Privacy Policy explains how
+          personal information is handled and forms part of your relationship with us.
+        </p>
       </LegalSection>
 
-      <LegalSection title="2. User accounts">
+      <LegalSection title="2. Eligibility and user accounts">
+        <p>
+          You must be at least 16 years old, or use the service with the legally valid consent and
+          supervision of a parent, guardian, or authorised school. You must be legally capable of
+          entering this agreement under the laws that apply to you.
+        </p>
         <p>You are responsible for:</p>
         <ul>
           <li>Providing accurate account information.</li>
@@ -52,6 +62,11 @@ function TermsPage() {
         <p>
           If you believe your account has been compromised, you should contact {COMPANY.product}{" "}
           promptly through <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>.
+        </p>
+        <p>
+          Accounts are personal unless we expressly provide an organisational account. You may not
+          sell, transfer, share, or lend access credentials. We may require reasonable verification
+          before restoring access or acting on an account request.
         </p>
       </LegalSection>
 
@@ -68,8 +83,9 @@ function TermsPage() {
           significant financial, legal, medical, educational, or professional consequences.
         </p>
         <p>
-          Free access is currently available. Planned paid tiers and their intended allowances are
-          described on the pricing page, but paid services and checkout are not yet enabled.
+          Free access is currently available, subject to fair-use, technical, and usage limits. Any
+          planned paid tiers shown on the pricing page are informational only; paid services and
+          checkout are not currently enabled and do not constitute an offer to sell.
         </p>
       </LegalSection>
 
@@ -82,7 +98,7 @@ function TermsPage() {
           <li>Introduce malware or other harmful code.</li>
           <li>Abuse, disrupt, or overload the service, including by scraping or bypassing rate limits.</li>
           <li>Attempt to reverse-engineer or compromise protected portions of the platform.</li>
-          <li>Submit unlawful, hateful, defamatory, deliberately false or harmful content.</li>
+          <li>Submit unlawful, threatening, hateful, defamatory, exploitative, or harmful content.</li>
           <li>Create deceptive deepfakes, facilitate fraud or spam, infringe intellectual-property rights, generate malware, or attempt to jailbreak safety controls.</li>
           <li>Use the service in ways that violate applicable laws.</li>
         </ul>
@@ -90,6 +106,11 @@ function TermsPage() {
           We may restrict or terminate access where there is a reasonable basis to believe that an
           account is being used in violation of these Terms or to compromise the security of the
           service.
+        </p>
+        <p>
+          You may not use automated means to extract content or data except through an interface we
+          expressly provide and subject to its published limits. Security research must be lawful and
+          must not access, alter, retain, or disclose another person&apos;s information.
         </p>
       </LegalSection>
 
@@ -102,12 +123,12 @@ function TermsPage() {
           advice.
         </p>
         <p>
-          We actively moderate the service. We may remove or restrict content, refuse or filter
+          We use safety systems and may review reported or flagged activity. We may remove or restrict content, refuse or filter
           outputs, and suspend or terminate accounts that generate or attempt to generate unlawful,
           harmful, deceptive or infringing material — including child sexual abuse material,
           non-consensual intimate imagery, deepfakes intended to deceive, hate speech, incitement to
           violence, fraud, spam or malware. We do not permit use of the service to build competing AI
-          models or to circumvent safety controls.
+          models where doing so would violate our or a provider&apos;s rights or terms, or to circumvent safety controls.
         </p>
       </LegalSection>
 
@@ -133,79 +154,143 @@ function TermsPage() {
           <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a> with identification of the
           work, the disputed material and their contact details.
         </p>
+        <p>
+          To operate the service, you grant us a non-exclusive, worldwide, royalty-free licence to
+          host, copy, transmit, process, and display your inputs and outputs only as reasonably needed
+          to provide, secure, maintain, and improve the service, comply with law, and enforce these
+          Terms. This licence ends when the content is deleted, except for lawful retention, backups,
+          and content you made public.
+        </p>
       </LegalSection>
 
-      <LegalSection title="6. Security">
+      <LegalSection title="6. Our service and intellectual property">
         <p>
-          {COMPANY.product} uses authentication, database access controls — including Row-Level
-          Security (RLS) — and other security measures designed to protect user accounts and data.
+          The software, interface, branding, designs, documentation, and other materials supplied by
+          us are owned by or licensed to {COMPANY.name} and are protected by applicable intellectual-
+          property laws. Subject to these Terms, we grant you a limited, revocable, non-exclusive,
+          non-transferable right to use the service for its intended purpose. No ownership in the
+          service or our branding is transferred to you.
+        </p>
+        <p>
+          AI outputs may not be unique, and another user may receive similar output. We do not promise
+          that an output is eligible for copyright or other protection, or that it will not resemble
+          third-party material. You are responsible for checking output before publishing or using it.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="7. Security">
+        <p>
+          {COMPANY.product} uses authentication, account-scoped data access controls, and other
+          reasonable safeguards designed to protect user accounts and data.
         </p>
         <p>No internet-connected service can guarantee complete protection against every possible security threat.</p>
       </LegalSection>
 
-      <LegalSection title="7. Third-party services">
+      <LegalSection title="8. Third-party services and links">
         <p>
           {COMPANY.product} may integrate with third-party services, including payment, AI, hosting,
           authentication, search, analytics, and other technology providers. Your use of third-party
           services may also be subject to their own terms and policies.
         </p>
-      </LegalSection>
-
-      <LegalSection title="8. Payments and subscriptions">
         <p>
-          Paid plans renew at the billing interval and price shown at checkout until cancelled.
-          Matola is the seller of record for all orders and provides customer service, billing
-          support and refunds. Paid services are not currently enabled in this version of Nuru AI.
-          See our <a href="/refunds">Refund Policy</a>.
+          Search results, citations, and links may lead to third-party material. We do not control or
+          endorse that material and are not responsible for its availability, accuracy, security, or
+          practices. You should assess third-party terms before relying on or purchasing from them.
         </p>
       </LegalSection>
 
-      <LegalSection title="9. Changes to the service">
+      <LegalSection title="9. Payments and subscriptions">
+        <p>
+          Paid services are not currently enabled. Before accepting payment, we will display the
+          seller, total price, currency, taxes where applicable, billing period, renewal terms,
+          included allowances, cancellation method, and applicable refund terms. You will not be
+          charged unless you take an express purchase action. See our <a href="/refunds">Refund Policy</a>.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="10. Changes to the service">
         <p>
           {COMPANY.product} may add, modify, suspend, or discontinue features as the platform develops.
           We will make reasonable efforts to communicate significant changes where appropriate.
         </p>
       </LegalSection>
 
-      <LegalSection title="10. Availability, warranties and liability">
+      <LegalSection title="11. Availability and disclaimers">
         <p>
-          We do not promise uninterrupted or error-free service. The service is provided as available,
-          without implied warranties of merchantability or fitness for a particular purpose to the
-          fullest extent the law permits. To that extent, we are not liable for indirect, consequential
-          or special loss, lost profits, lost data or lost goodwill. Our aggregate liability is limited
-          to fees you paid for the service in the 12 months before the claim. Nothing excludes liability
-          that cannot lawfully be excluded, including liability for fraud, death or personal injury
-          caused by negligence where applicable.
+          We do not promise that the service or any AI output will be uninterrupted, error-free,
+          accurate, complete, secure, or suitable for a particular purpose. To the fullest extent
+          permitted by law, the service is provided “as is” and “as available,” and implied warranties
+          of merchantability, fitness for purpose, and non-infringement are excluded. You remain
+          responsible for professional review, backups, and decisions made using the service.
         </p>
       </LegalSection>
 
-      <LegalSection title="11. Governing law">
+      <LegalSection title="12. Limitation of liability">
+        <p>
+          To the fullest extent permitted by law, {COMPANY.name} and its suppliers will not be liable
+          for indirect, incidental, special, exemplary, or consequential loss; lost profits, revenue,
+          opportunity, goodwill, or anticipated savings; or loss or corruption of data arising from
+          the service. Our total aggregate liability arising from the service will not exceed the
+          greater of the fees you paid us for the service during the 12 months before the event giving
+          rise to the claim or USD 50 (or its local-currency equivalent).
+        </p>
+        <p>
+          Nothing in these Terms excludes or limits liability that cannot lawfully be excluded or
+          limited, including liability for fraud or fraudulent misrepresentation, or any mandatory
+          consumer right. These limitations apply only to the maximum extent allowed where you live.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="13. Indemnity for business misuse">
+        <p>
+          If you use the service for a business or organisation, that organisation will indemnify
+          {COMPANY.name} against third-party claims, damages, and reasonable costs arising from its
+          unlawful use of the service, its content, or its material breach of these Terms. This does
+          not apply to individual consumers acting for personal purposes where prohibited by law.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="14. Governing law and disputes">
         <p>
           These Terms are governed by the laws of {COMPANY.jurisdiction}, subject to any mandatory
           consumer protections that apply where you live. We will first try to resolve disputes in good
-          faith through direct discussion; unresolved disputes may be brought before the competent
-          courts of {COMPANY.jurisdiction}.
+          faith through direct discussion. Please email {COMPANY.legalEmail} with the nature of the
+          dispute and the result you seek. Unresolved disputes may be brought before the competent
+          courts of {COMPANY.jurisdiction}, unless mandatory law gives you the right to use another court.
         </p>
       </LegalSection>
 
-      <LegalSection title="12. Suspension and termination">
+      <LegalSection title="15. Suspension and termination">
         <p>
           We may suspend or terminate access for a material breach, non-payment, security or fraud
           risk, or repeated or serious policy violations. You may stop using the service or cancel a
           paid plan at any time. When access ends, we may delete account content after a reasonable
-          period, subject to legal retention duties and any available export options.
+          period, subject to legal retention duties, backup cycles, and any available export options.
+          Provisions that by their nature should survive termination—including intellectual property,
+          disclaimers, liability limits, and dispute terms—will continue to apply.
         </p>
       </LegalSection>
 
-      <LegalSection title="13. Changes to these terms">
+      <LegalSection title="16. Changes to these terms">
         <p>
           We may update these Terms from time to time. Continued use of {COMPANY.product} after
-          updated Terms become effective constitutes acceptance of the updated Terms, where permitted
-          by applicable law.
+          will provide reasonable notice of material changes. Continued use after the effective date
+          constitutes acceptance where permitted by law. If you do not agree, you must stop using the
+          service before the updated Terms take effect.
         </p>
       </LegalSection>
 
-      <LegalSection title="14. Contact">
+      <LegalSection title="17. General provisions">
+        <p>
+          If any provision is found unenforceable, the remaining provisions remain in effect. A delay
+          in enforcing a right is not a waiver. You may not assign these Terms without our written
+          consent; we may assign them as part of a lawful reorganisation or transfer of the service.
+          These Terms, the Privacy Policy, and any purchase terms shown at checkout form the entire
+          agreement about the service and replace earlier discussions on the same subject.
+        </p>
+      </LegalSection>
+
+      <LegalSection title="18. Contact">
         <p>
           {COMPANY.product} is proudly owned and operated by {COMPANY.name}. For questions regarding
           these Terms, please contact us through the official {COMPANY.product} contact channel, or
