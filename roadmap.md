@@ -39,3 +39,4 @@
 - [x] Expand the company profile with mission, capabilities, operating model, pricing status, trust, and contact information
 - [x] Link and align the pricing, privacy, terms, and refund pages
 - [x] Verify the company and policy pages on desktop and mobile, then confirm diagnostics
+- [x] Publish complete operational Privacy, Terms, and Refund language based on verified company facts
