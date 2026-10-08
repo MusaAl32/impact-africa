@@ -3,7 +3,7 @@
  * Edit this file to update Privacy, Terms and contact details everywhere.
  */
 export const COMPANY = {
-  name: "Matola",
+  name: "Lenadi \n\n",
   tradingName: "Africa Opportunity Hub",
   product: "Nuru AI",
   status: "Matola is the seller, service provider and data controller for Nuru AI.",
