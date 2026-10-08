@@ -339,7 +339,7 @@ export function NuruChat({
               <div className="animate-fade-up w-full max-w-xl">
                 <NuruMark className="mb-4 size-10" />
                 <h1 className="font-display text-3xl text-foreground">{heading}</h1>
-                <p className="mb-6 mt-2 text-sm text-muted-foreground">Your intelligent assistant for Africa and beyond.</p>
+                <p className="mb-6 mt-2 text-sm text-muted-foreground">Good news for all African to the world</p>
                 <div className="flex flex-col items-start gap-2">
                   {emptyActions.filter((item) => !guest || item.label === "Write or edit").map(({ label, icon: Icon, action }) => (
                     <Button
