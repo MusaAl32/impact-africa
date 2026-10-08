@@ -40,3 +40,8 @@
 - [x] Link and align the pricing, privacy, terms, and refund pages
 - [x] Verify the company and policy pages on desktop and mobile, then confirm diagnostics
 - [x] Publish complete operational Privacy, Terms, and Refund language based on verified company facts
+
+## Notifications
+- [x] Connect secure account-owned browser notification registration and per-device opt-out
+- [x] Add foreground alerts, background delivery, notification click-through, and stale-token cleanup
+- [ ] Complete Firebase “Include web push” configuration so browsers can register (external connection setup)
