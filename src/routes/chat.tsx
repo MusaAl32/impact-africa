@@ -18,7 +18,7 @@ export const Route = createFileRoute("/chat")({
 function GuestChatPage() {
   return (
     <main className="chat-workspace flex min-h-screen bg-background text-foreground">
-      <NuruChat department="platform" guest heading="What would you like to explore?" className="min-h-screen" />
+      <NuruChat department="platform" guest heading="Welcome African to the world\n\n" className="min-h-screen" />
     </main>
   );
 }
