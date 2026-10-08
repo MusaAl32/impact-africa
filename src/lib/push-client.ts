@@ -93,6 +93,7 @@ export async function listenForForegroundPush(
   const app = getApps()[0] ?? initializeApp(config);
   return onMessage(getMessaging(app), (payload) => {
     const title = payload.notification?.title?.trim() || "Nuru AI";
-    notify({ title, body: payload.notification?.body?.trim() });
+    const body = payload.notification?.body?.trim();
+    notify(body ? { title, body } : { title });
   });
 }
