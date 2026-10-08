@@ -14,6 +14,8 @@ import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { I18nProvider } from "@/lib/i18n";
 import { supabase } from "@/integrations/supabase/client";
+import { listenForForegroundPush } from "@/lib/push-client";
+import { toast } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -201,6 +203,14 @@ function RootComponent() {
       data.subscription.unsubscribe();
     };
   }, [queryClient, router]);
+
+  useEffect(() => {
+    let unsubscribe: (() => void) | undefined;
+    void listenForForegroundPush(({ title, body }) => {
+      toast(title, { description: body });
+    }).then((stop) => { unsubscribe = stop; });
+    return () => unsubscribe?.();
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

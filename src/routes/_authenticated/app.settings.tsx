@@ -1,11 +1,11 @@
 import { useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { Loader2, LogOut } from "lucide-react";
+import { Bell, BellOff, ExternalLink, Loader2, LogOut } from "lucide-react";
 import { useCallback, useEffect, useState } from "react";
 
 import { Switch } from "@/components/ui/switch";
 import { clearMyMemory, getMemoryStats } from "@/lib/memory.functions";
-import { enablePush } from "@/lib/push-client";
+import { disablePush, enablePush, getPushAvailability, getStoredPushToken, type PushAvailability } from "@/lib/push-client";
 import { getPushStatus, registerPushToken, unregisterPush } from "@/lib/push.functions";
 import { toast } from "sonner";
 
@@ -284,13 +284,20 @@ function SettingsPage() {
 function MemoryAndNotifications() {
   const [memory, setMemory] = useState<number | null>(null);
   const [devices, setDevices] = useState<number | null>(null);
+  const [pushAvailability, setPushAvailability] = useState<PushAvailability | null>(null);
+  const [thisDevice, setThisDevice] = useState(false);
   const [busy, setBusy] = useState<"memory" | "push" | null>(null);
   const [loadError, setLoadError] = useState(false);
 
   const load = useCallback(() => {
     setLoadError(false);
-    Promise.all([getMemoryStats(), getPushStatus()])
-      .then(([m, p]) => { setMemory(m.count); setDevices(p.devices); })
+    Promise.all([getMemoryStats(), getPushStatus(), getPushAvailability()])
+      .then(([m, p, availability]) => {
+        setMemory(m.count);
+        setDevices(p.devices);
+        setPushAvailability(availability);
+        setThisDevice(Boolean(getStoredPushToken()) && availability === "ready" && Notification.permission === "granted");
+      })
       .catch(() => setLoadError(true));
   }, []);
   useEffect(load, [load]);
@@ -306,9 +313,22 @@ function MemoryAndNotifications() {
   async function togglePush(on: boolean) {
     setBusy("push");
     try {
-      if (!on) { await unregisterPush(); setDevices(0); toast.success("Notifications turned off"); return; }
+      if (!on) {
+        const token = await disablePush();
+        if (token) await unregisterPush({ data: { token } });
+        setThisDevice(false);
+        setDevices((count) => Math.max(0, (count ?? 1) - (token ? 1 : 0)));
+        toast.success("Notifications turned off on this device");
+        return;
+      }
       const result = await enablePush();
-      if (result.status === "registered") { await registerPushToken({ data: { token: result.token } }); setDevices((d) => (d ?? 0) + 1); toast.success("Notifications are on for this device"); }
+      if (result.status === "registered") {
+        await registerPushToken({ data: { token: result.token } });
+        setThisDevice(true);
+        setDevices((count) => Math.max(1, count ?? 0));
+        setPushAvailability("ready");
+        toast.success("Notifications are on for this device");
+      }
       else if (result.status === "open-in-new-tab") toast.error("Open Nuru in its own browser tab to allow notifications.");
       else if (result.status === "denied") toast.error("Notifications are blocked. Allow them in your browser's site settings.");
       else if (result.status === "unsupported") toast.error("This browser doesn't support notifications.");
@@ -333,12 +353,39 @@ function MemoryAndNotifications() {
           {busy === "memory" && <Loader2 className="mr-1 size-4 animate-spin" />} Clear my memory
         </Button>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        <div>
-          <Label htmlFor="push-switch" className="text-sm font-semibold">Notifications</Label>
-          <p className="text-xs text-muted-foreground">Get alerts from Nuru on this device.</p>
+      <div className="space-y-3 border-t border-border pt-5">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <div className="flex min-w-0 items-start gap-3">
+            {thisDevice ? <Bell className="mt-0.5 size-5 shrink-0 text-primary" /> : <BellOff className="mt-0.5 size-5 shrink-0 text-muted-foreground" />}
+            <div>
+              <Label htmlFor="push-switch" className="text-sm font-semibold">Notifications on this device</Label>
+              <p className="mt-1 text-xs leading-5 text-muted-foreground">
+                {pushAvailability === null && "Checking notification support…"}
+                {pushAvailability === "ready" && (thisDevice ? "This device can receive Nuru alerts." : "Allow Nuru to send important alerts to this browser.")}
+                {pushAvailability === "open-in-new-tab" && "Open Nuru in its own browser tab to allow notifications."}
+                {pushAvailability === "denied" && "Notifications are blocked in this browser's site settings."}
+                {pushAvailability === "unsupported" && "This browser does not support web notifications."}
+                {pushAvailability === "not-configured" && "Browser notifications are not ready yet."}
+              </p>
+            </div>
+          </div>
+          <Switch
+            id="push-switch"
+            disabled={busy !== null || devices === null || pushAvailability !== "ready"}
+            checked={thisDevice}
+            onCheckedChange={(value) => void togglePush(value)}
+          />
         </div>
-        <Switch id="push-switch" disabled={busy !== null || devices === null} checked={(devices ?? 0) > 0} onCheckedChange={(v) => void togglePush(v)} />
+        {pushAvailability === "open-in-new-tab" && (
+          <Button asChild size="sm" variant="outline">
+            <a href="/app/settings" target="_blank" rel="noreferrer">Open in a new tab <ExternalLink className="ml-2 size-4" /></a>
+          </Button>
+        )}
+        {(devices ?? 0) > 0 && (
+          <p className="text-xs text-muted-foreground">
+            Enabled on {devices} device{devices === 1 ? "" : "s"} for your account.
+          </p>
+        )}
       </div>
     </section>
   );
