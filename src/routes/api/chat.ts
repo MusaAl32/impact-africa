@@ -14,7 +14,9 @@ import { detectCapability, getNuruCapability, NURU_CAPABILITY_IDS, type NuruCapa
 
 
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
+const ALLOWED_DOCUMENT_TYPES = new Set(["application/pdf", "text/plain", "text/markdown", "text/csv"]);
 const MAX_IMAGE_BYTES = 4 * 1024 * 1024;
+const MAX_DOCUMENT_BYTES = 10 * 1024 * 1024;
 const MAX_IMAGES_PER_MESSAGE = 4;
 
 const VISION_INSTRUCTIONS = [
@@ -53,15 +55,17 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
       if (part.type !== "file") { cleaned.push(part); continue; }
       const filePart = part as { mediaType?: string; url?: string; filename?: string };
       const mediaType = (filePart.mediaType ?? "").toLowerCase();
-      if (!ALLOWED_IMAGE_TYPES.has(mediaType)) {
-        cleaned.push({ type: "text", text: `[Attachment ${(filePart.filename ?? "file").slice(0, 80)} was not analysed: only JPEG, PNG, WebP and HEIC images are supported.]` });
+      const isImage = ALLOWED_IMAGE_TYPES.has(mediaType);
+      if (!isImage && !ALLOWED_DOCUMENT_TYPES.has(mediaType)) {
+        cleaned.push({ type: "text", text: `[Attachment ${(filePart.filename ?? "file").slice(0, 80)} was not analysed: supported files are images, PDF, TXT, Markdown and CSV.]` });
         continue;
       }
       const match = /^data:([^;,]+);base64,([A-Za-z0-9+/=]+)$/.exec(filePart.url ?? "");
-      if (!match || match[1]!.toLowerCase() !== mediaType) return { ok: false, error: "That image could not be read. Please try another photo." };
-      if (Math.floor((match[2]!.length * 3) / 4) > MAX_IMAGE_BYTES) return { ok: false, error: "That image is too large. Please use a photo under 4 MB." };
-      if (++count > MAX_IMAGES_PER_MESSAGE) return { ok: false, error: "Please attach up to 4 images at a time." };
-      hasImage = true;
+      if (!match || match[1]!.toLowerCase() !== mediaType) return { ok: false, error: "That file could not be read. Please try another file." };
+      const limit = isImage ? MAX_IMAGE_BYTES : MAX_DOCUMENT_BYTES;
+      if (Math.floor((match[2]!.length * 3) / 4) > limit) return { ok: false, error: isImage ? "That image is too large. Please use a photo under 4 MB." : "That document is too large. Please use a file under 10 MB." };
+      if (++count > MAX_IMAGES_PER_MESSAGE) return { ok: false, error: "Please attach up to 4 files at a time." };
+      if (isImage) hasImage = true; else hasDocument = true;
       cleaned.push({ type: "file", mediaType, url: filePart.url!, ...(filePart.filename ? { filename: filePart.filename } : {}) });
     }
     target.parts = cleaned;
