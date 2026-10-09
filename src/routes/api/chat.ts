@@ -27,7 +27,7 @@ const VISION_INSTRUCTIONS = [
   "For medical or legal images, give general information only and recommend a qualified professional.",
 ].join(" ");
 
-type PreparedMessages = { ok: true; messages: UIMessage[]; hasImage: boolean } | { ok: false; error: string };
+type PreparedMessages = { ok: true; messages: UIMessage[]; hasImage: boolean; hasDocument: boolean } | { ok: false; error: string };
 
 /** Validates image attachments and keeps only the most recent photo set so requests stay small and fast. */
 function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
@@ -36,6 +36,7 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
     if (message.parts.some((part) => part.type === "file")) lastImageIndex = index;
   });
   let hasImage = false;
+  let hasDocument = false;
   const next = messages.map((message, index) => ({
     ...message,
     parts: message.parts.flatMap((part): UIMessage["parts"] => {
@@ -70,7 +71,7 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
     }
     target.parts = cleaned;
   }
-  return { ok: true, messages: next as UIMessage[], hasImage };
+  return { ok: true, messages: next as UIMessage[], hasImage, hasDocument };
 }
 
 export const Route = createFileRoute("/api/chat")({
@@ -168,7 +169,7 @@ export const Route = createFileRoute("/api/chat")({
           .join("\n")
           .trim() ?? "";
         let longTermContext = "";
-        const routedDepartment = detectCapability(latestUserText, hasVisual) as DepartmentId;
+        const routedDepartment = (prepared.hasDocument && !hasVisual ? "documents" : detectCapability(latestUserText, hasVisual)) as DepartmentId;
         const capability = getNuruCapability(hasVisual ? "vision" : body.capability);
         try {
           if (userId) {
