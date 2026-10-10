@@ -11,6 +11,7 @@ import { searchWeb, webSearchConfigured } from "@/lib/websearch.server";
 import type { DepartmentId } from "@/lib/departments";
 import type { Database, Json } from "@/integrations/supabase/types";
 import { detectCapability, getNuruCapability, NURU_CAPABILITY_IDS, type NuruCapabilityId } from "@/lib/nuru-capabilities";
+import { describeZip, isZipAttachment } from "@/lib/zip-reader.server";
 
 
 const ALLOWED_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"]);
@@ -56,6 +57,18 @@ function prepareVisualMessages(messages: UIMessage[]): PreparedMessages {
       if (part.type !== "file") { cleaned.push(part); continue; }
       const filePart = part as { mediaType?: string; url?: string; filename?: string };
       const mediaType = (filePart.mediaType ?? "").toLowerCase();
+      if (isZipAttachment(mediaType, filePart.filename)) {
+        const zipMatch = /^data:[^;,]*;base64,([A-Za-z0-9+/=]+)$/.exec(filePart.url ?? "");
+        if (!zipMatch) return { ok: false, error: "That ZIP file could not be read." };
+        if (Math.floor((zipMatch[1]!.length * 3) / 4) > MAX_DOCUMENT_BYTES) return { ok: false, error: "That ZIP is too large. Please use a file under 10 MB." };
+        try {
+          cleaned.push({ type: "text", text: describeZip(zipMatch[1]!, (filePart.filename ?? "archive.zip").slice(0, 80)) });
+        } catch (error) {
+          return { ok: false, error: (error as Error).message === "ZIP_TOO_LARGE" ? "That ZIP unpacks to too many or too large files. Please remove dependency folders and try again." : "That ZIP file could not be opened. It may be damaged or password-protected." };
+        }
+        hasDocument = true;
+        continue;
+      }
       const isImage = ALLOWED_IMAGE_TYPES.has(mediaType);
       if (!isImage && !ALLOWED_DOCUMENT_TYPES.has(mediaType)) {
         cleaned.push({ type: "text", text: `[Attachment ${(filePart.filename ?? "file").slice(0, 80)} was not analysed: supported files are images, PDF, TXT, Markdown and CSV.]` });

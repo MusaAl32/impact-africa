@@ -57,8 +57,8 @@ function DepartmentPage() {
           dept.id === "vision"
             ? "image/*"
             : dept.id === "documents"
-              ? "application/pdf,.txt,.md,.csv,image/*"
-              : "image/*,application/pdf,.txt,.md,.csv"
+              ? "application/pdf,.txt,.md,.csv,.zip,image/*"
+              : "image/*,application/pdf,.txt,.md,.csv,.zip"
         }
       />
     </div>
