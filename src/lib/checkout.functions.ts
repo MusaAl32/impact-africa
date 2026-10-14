@@ -46,7 +46,7 @@ export const startCheckout = createServerFn({ method: "POST" })
     }
 
     const email = typeof context.claims.email === "string" ? context.claims.email : undefined;
-    const firstName = typeof context.claims.given_name === "string" ? context.claims.given_name : undefined;
+    const firstName = typeof context.claims["given_name"] === "string" ? context.claims["given_name"] : undefined;
     const txRef = `nuru-${crypto.randomUUID().replace(/-/g, "").slice(0, 24)}`;
     const amount = plan.price_cents / 100;
 

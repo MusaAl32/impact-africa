@@ -36,13 +36,13 @@ export type InitiateInput = {
   amount: number;
   currency: string;
   txRef: string;
-  email?: string;
-  firstName?: string;
+  email?: string | undefined;
+  firstName?: string | undefined;
   callbackUrl: string;
   returnUrl: string;
   title: string;
   description: string;
-  meta?: Record<string, unknown>;
+  meta?: Record<string, unknown> | undefined;
 };
 
 /** Creates a hosted checkout link for the customer to pay on Paychangu. */
@@ -78,8 +78,8 @@ export type VerifyResult = {
   txRef: string;
   currency: string;
   amount: number;
-  mode?: string;
-  chargeId?: string;
+  mode?: string | undefined;
+  chargeId?: string | undefined;
 };
 
 /** Verifies a transaction with Paychangu before any plan is granted. */
