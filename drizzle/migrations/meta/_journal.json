@@ -8,6 +8,13 @@
       "when": 1791089241384,
       "tag": "0000_fix_guest_quota_service_role_check",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1791963218943,
+      "tag": "0001_create_paychangu_payments",
+      "breakpoints": true
     }
   ]
 }
