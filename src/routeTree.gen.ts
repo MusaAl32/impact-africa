@@ -35,6 +35,7 @@ import { Route as AuthenticatedAppOpportunitiesRouteImport } from './routes/_aut
 import { Route as AuthenticatedAppSettingsRouteImport } from './routes/_authenticated/app.settings'
 import { Route as AuthenticatedAppWorkspaceRouteImport } from './routes/_authenticated/app.workspace'
 import { Route as AuthenticatedAppChatConversationIdRouteImport } from './routes/_authenticated/app.chat.$conversationId'
+import { Route as ApiPublicPaychanguWebhookRouteImport } from './routes/api/public/paychangu/webhook'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -173,6 +174,12 @@ const AuthenticatedAppChatConversationIdRoute =
     path: '/chat/$conversationId',
     getParentRoute: () => AuthenticatedAppRoute,
   } as any)
+const ApiPublicPaychanguWebhookRoute =
+  ApiPublicPaychanguWebhookRouteImport.update({
+    id: '/api/public/paychangu/webhook',
+    path: '/api/public/paychangu/webhook',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -200,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app/': typeof AuthenticatedAppIndexRoute
   '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
+  '/api/public/paychangu/webhook': typeof ApiPublicPaychanguWebhookRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -226,6 +234,7 @@ export interface FileRoutesByTo {
   '/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/app': typeof AuthenticatedAppIndexRoute
   '/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
+  '/api/public/paychangu/webhook': typeof ApiPublicPaychanguWebhookRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -255,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/app/workspace': typeof AuthenticatedAppWorkspaceRoute
   '/_authenticated/app/': typeof AuthenticatedAppIndexRoute
   '/_authenticated/app/chat/$conversationId': typeof AuthenticatedAppChatConversationIdRoute
+  '/api/public/paychangu/webhook': typeof ApiPublicPaychanguWebhookRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -284,6 +294,7 @@ export interface FileRouteTypes {
     | '/app/workspace'
     | '/app/'
     | '/app/chat/$conversationId'
+    | '/api/public/paychangu/webhook'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -310,6 +321,7 @@ export interface FileRouteTypes {
     | '/app/workspace'
     | '/app'
     | '/app/chat/$conversationId'
+    | '/api/public/paychangu/webhook'
   id:
     | '__root__'
     | '/'
@@ -338,6 +350,7 @@ export interface FileRouteTypes {
     | '/_authenticated/app/workspace'
     | '/_authenticated/app/'
     | '/_authenticated/app/chat/$conversationId'
+    | '/api/public/paychangu/webhook'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -356,6 +369,7 @@ export interface RootRouteChildren {
   VerifyEmailRoute: typeof VerifyEmailRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   ApiChatRoute: typeof ApiChatRoute
+  ApiPublicPaychanguWebhookRoute: typeof ApiPublicPaychanguWebhookRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -542,6 +556,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAppChatConversationIdRouteImport
       parentRoute: typeof AuthenticatedAppRoute
     }
+    '/api/public/paychangu/webhook': {
+      id: '/api/public/paychangu/webhook'
+      path: '/api/public/paychangu/webhook'
+      fullPath: '/api/public/paychangu/webhook'
+      preLoaderRoute: typeof ApiPublicPaychanguWebhookRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -603,6 +624,7 @@ const rootRouteChildren: RootRouteChildren = {
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,
   ApiChatRoute: ApiChatRoute,
+  ApiPublicPaychanguWebhookRoute: ApiPublicPaychanguWebhookRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

@@ -421,6 +421,54 @@ export type Database = {
           },
         ]
       }
+      payments: {
+        Row: {
+          amount: number
+          charge_id: string | null
+          checkout_url: string | null
+          created_at: string
+          currency: string
+          id: string
+          mode: string
+          plan_slug: string
+          provider: string
+          status: string
+          tx_ref: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          charge_id?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          mode?: string
+          plan_slug: string
+          provider?: string
+          status?: string
+          tx_ref: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          charge_id?: string | null
+          checkout_url?: string | null
+          created_at?: string
+          currency?: string
+          id?: string
+          mode?: string
+          plan_slug?: string
+          provider?: string
+          status?: string
+          tx_ref?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       plans: {
         Row: {
           active: boolean
