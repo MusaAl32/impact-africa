@@ -23,14 +23,14 @@ function RefundsPage() {
   return (
     <LegalPage
       title="Refund Policy"
-      intro={`This policy explains cancellations, refunds, billing corrections, and statutory rights for ${COMPANY.product}. Paid checkout is not currently available, so no active ${COMPANY.product} purchase can presently be made through the platform.`}
+      intro={`This policy explains cancellations, refunds, billing corrections, and statutory rights for ${COMPANY.product}. Paid checkout is available and processed securely through Paychangu.`}
     >
       <LegalSection title="1. Current payment status">
         <p>
-          {COMPANY.product} currently provides free access and does not accept subscription payments
-          through this version of the service. Prices and allowances shown for planned tiers are
-          previews only and are not an offer, invoice, or active subscription. You cannot currently
-          be charged by {COMPANY.name} through {COMPANY.product}.
+          {COMPANY.product} provides free access, and paid plans are available as one-time 30-day
+          passes. Checkout is processed by Paychangu, which supports Airtel Money, TNM Mpamba, bank
+          transfer, and cards. Prices and allowances are shown on the pricing page before you pay.
+          Purchases do not renew automatically.
         </p>
       </LegalSection>
 
@@ -49,24 +49,19 @@ function RefundsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="3. Cancelling a future subscription">
+      <LegalSection title="3. Stopping future charges">
         <p>
-          When subscriptions become available, you will be able to cancel through the method shown
-          in your account or purchase confirmation, or by contacting support. Unless checkout states
-          otherwise, cancellation will stop future renewal and access will continue until the end of
-          the paid billing period. Cancelling does not by itself refund time already used.
-        </p>
-        <p>
-          Submit a cancellation before the renewal date. Processing times outside our control may
-          apply, so contact us promptly if an expected cancellation does not appear in your account.
+          Paid plans do not renew automatically, so there is nothing to cancel. When a 30-day pass
+          ends, you will not be charged again unless you choose to purchase another pass. If you
+          ever see a charge you did not expect, contact us immediately.
         </p>
       </LegalSection>
 
-      <LegalSection title="4. Refund eligibility after paid launch">
+      <LegalSection title="4. Refund eligibility">
         <p>
-          Once paid services are launched, refund requests will be assessed under the terms displayed
-          at purchase and applicable law. Unless the checkout terms or mandatory law provide a broader
-          right, a refund may be appropriate where:
+          Refund requests are assessed under the terms displayed at purchase and applicable law.
+          Unless the checkout terms or mandatory law provide a broader right, a refund may be
+          appropriate where:
         </p>
         <ul>
           <li>You were charged more than once for the same subscription period.</li>
@@ -99,7 +94,7 @@ function RefundsPage() {
 
       <LegalSection title="6. How to request a refund">
         <p>
-          After paid services launch, email <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>
+          Email <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>
           with the account email, payment reference, date and amount, plan name, reason for the request,
           and relevant evidence. We may ask for limited additional information to verify account
           ownership and prevent fraud.
@@ -113,10 +108,9 @@ function RefundsPage() {
 
       <LegalSection title="7. Plan changes and avoiding double billing">
         <p>
-          Before paid plan changes are enabled, the service will disclose when the new plan starts,
-          how unused value is treated, and whether any immediate charge applies. We will design plan
-          changes to replace the existing subscription rather than create an unintended second active
-          subscription. Report any overlapping charge so it can be investigated and corrected.
+          Buying a different plan replaces the plan on your account rather than creating a second
+          active plan; the new 30-day period starts when the new payment is confirmed. Report any
+          overlapping or duplicate charge so it can be investigated and corrected.
         </p>
       </LegalSection>
 
@@ -148,7 +142,7 @@ function RefundsPage() {
 
       <LegalSection title="11. Changes and contact">
         <p>
-          We may update this policy before or after paid services launch. Material changes will apply
+          We may update this policy as payments evolve. Material changes will apply
           prospectively and will be communicated as required by law. Billing and refund questions can
           be sent to <a href={`mailto:${COMPANY.supportEmail}`}>{COMPANY.supportEmail}</a>; legal
           questions can be sent to <a href={`mailto:${COMPANY.legalEmail}`}>{COMPANY.legalEmail}</a>.

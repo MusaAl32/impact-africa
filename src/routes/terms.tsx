@@ -83,9 +83,9 @@ function TermsPage() {
           significant financial, legal, medical, educational, or professional consequences.
         </p>
         <p>
-          Free access is currently available, subject to fair-use, technical, and usage limits. Any
-          planned paid tiers shown on the pricing page are informational only; paid services and
-          checkout are not currently enabled and do not constitute an offer to sell.
+          Free access is available, subject to fair-use, technical, and usage limits. Paid plans are
+          sold as one-time 30-day passes through the pricing page and are processed by Paychangu;
+          purchases do not renew automatically. Refunds are governed by the Refund Policy.
         </p>
       </LegalSection>
 

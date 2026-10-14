@@ -94,7 +94,7 @@ const policies = [
   {
     to: "/pricing" as const,
     title: "Plans and pricing",
-    description: "Free access available now, with planned paid tiers clearly labelled before checkout launches.",
+    description: "Free access available now, with paid 30-day plans payable securely through Paychangu.",
   },
 ];
 
@@ -224,9 +224,9 @@ function CompanyProfilePage() {
                 <Sparkles className="size-7 text-primary" aria-hidden="true" />
                 <h2 className="font-display mt-5 text-4xl">Plans and cost</h2>
                 <p className="mt-4 leading-7 text-muted-foreground">
-                  Nuru currently provides free access. Paid plans and their intended allowances are
-                  displayed transparently on the pricing page, but payment and checkout are not yet
-                  enabled. No one can be charged through this version of the platform.
+                  Nuru provides free access, and paid plans are available as one-time 30-day passes.
+                  Checkout is processed securely by Paychangu — Airtel Money, TNM Mpamba, bank
+                  transfer, and cards. Nothing is charged automatically and purchases do not renew.
                 </p>
                 <Button asChild variant="outline" className="mt-6">
                   <Link to="/pricing">See plans and allowances <ArrowRight className="size-4" /></Link>
