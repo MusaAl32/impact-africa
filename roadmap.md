@@ -7,7 +7,10 @@
 
 ## Pricing, plans and limits
 - [x] Database: plans, subscriptions, usage_events, entitlement + quota functions
-- [x] Enable PayPal payments
+- [x] Replace PayPal with Paychangu checkout (one-time 30-day passes)
+- [ ] Store the Paychangu secret key (waiting for Lena to paste it in the secure form)
+- [ ] Point Paychangu's webhook to the app's payment endpoint
+- [ ] Test a real Paychangu checkout end to end (needs the secret key)
 - [x] Create the three paid subscription products and prices
 - [x] Public /pricing page: four plans, current plan, usage remaining, reset countdown, upgrade button
 - [x] Checkout flow (overlay) linked to the signed-in user
