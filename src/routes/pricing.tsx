@@ -125,7 +125,7 @@ function PricingPage() {
             <article key={plan.slug} className="company-card flex flex-col p-6">
               <h2 className="text-lg font-semibold">{plan.name}</h2>
               <p className="mt-3 text-3xl font-semibold">
-                {plan.price_cents === 0 ? "Free" : `$${plan.price_cents / 100}`}
+                {plan.price_cents === 0 ? "Free" : `${plan.currency === "MWK" ? "MK" : "$"}${(plan.price_cents / 100).toLocaleString("en-US")}`}
                 <span className="text-sm font-normal text-muted-foreground">{plan.price_cents ? "/30 days" : ""}</span>
               </p>
               <ul className="my-6 space-y-3 text-sm">
