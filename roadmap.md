@@ -8,9 +8,9 @@
 ## Pricing, plans and limits
 - [x] Database: plans, subscriptions, usage_events, entitlement + quota functions
 - [x] Replace PayPal with Paychangu checkout (one-time 30-day passes)
-- [ ] Store the Paychangu secret key (waiting for Lena to paste it in the secure form)
-- [ ] Point Paychangu's webhook to the app's payment endpoint
-- [ ] Test a real Paychangu checkout end to end (needs the secret key)
+- [x] Store the Paychangu secret key and switch all prices to Malawi kwacha (MK 20,000 / 30,000 / 40,000)
+- [ ] Point Paychangu's webhook to the app's payment endpoint (needs Lena's Paychangu dashboard)
+- [ ] Complete a real payment end to end (checkout page opens correctly; needs a real payment attempt)
 - [x] Create the three paid subscription products and prices
 - [x] Public /pricing page: four plans, current plan, usage remaining, reset countdown, upgrade button
 - [x] Checkout flow (overlay) linked to the signed-in user
