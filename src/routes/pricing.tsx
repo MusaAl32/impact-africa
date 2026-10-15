@@ -101,7 +101,8 @@ function PricingPage() {
           <p className="text-sm font-medium text-primary">Nuru AI plans</p>
           <h1 className="font-display mt-3 text-4xl">Choose the room you need to work</h1>
           <p className="mt-4 text-muted-foreground">
-            Free access is available now. Paid plans are one-time 30-day passes, paid securely through Paychangu.
+            Free access is available now. Paid plans are one-time 30-day passes, paid securely
+            through Paychangu. All prices are in Malawi kwacha.
           </p>
         </div>
         {confirmState !== "idle" && (
