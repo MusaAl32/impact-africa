@@ -20,7 +20,7 @@ export const startCheckout = createServerFn({ method: "POST" })
 
     const { data: plan, error: planError } = await context.supabase
       .from("plans")
-      .select("slug, name, price_cents, active")
+      .select("slug, name, price_cents, currency, active")
       .eq("slug", data.planSlug)
       .maybeSingle();
     if (planError) throw new Error(planError.message);
@@ -56,7 +56,7 @@ export const startCheckout = createServerFn({ method: "POST" })
       plan_slug: plan.slug,
       tx_ref: txRef,
       amount,
-      currency: "USD",
+      currency: plan.currency,
       mode: paychanguMode(),
       status: "pending",
     });
@@ -65,7 +65,7 @@ export const startCheckout = createServerFn({ method: "POST" })
     try {
       const { checkoutUrl } = await initiateCheckout({
         amount,
-        currency: "USD",
+        currency: plan.currency,
         txRef,
         email,
         firstName,

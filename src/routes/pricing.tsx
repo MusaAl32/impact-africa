@@ -101,7 +101,8 @@ function PricingPage() {
           <p className="text-sm font-medium text-primary">Nuru AI plans</p>
           <h1 className="font-display mt-3 text-4xl">Choose the room you need to work</h1>
           <p className="mt-4 text-muted-foreground">
-            Free access is available now. Paid plans are one-time 30-day passes, paid securely through Paychangu.
+            Free access is available now. Paid plans are one-time 30-day passes, paid securely
+            through Paychangu. All prices are in Malawi kwacha.
           </p>
         </div>
         {confirmState !== "idle" && (
@@ -125,7 +126,7 @@ function PricingPage() {
             <article key={plan.slug} className="company-card flex flex-col p-6">
               <h2 className="text-lg font-semibold">{plan.name}</h2>
               <p className="mt-3 text-3xl font-semibold">
-                {plan.price_cents === 0 ? "Free" : `$${plan.price_cents / 100}`}
+                {plan.price_cents === 0 ? "Free" : `${plan.currency === "MWK" ? "MK" : "$"}${(plan.price_cents / 100).toLocaleString("en-US")}`}
                 <span className="text-sm font-normal text-muted-foreground">{plan.price_cents ? "/30 days" : ""}</span>
               </p>
               <ul className="my-6 space-y-3 text-sm">
@@ -159,7 +160,7 @@ function PricingPage() {
         </div>
         <p className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldCheck className="size-4 shrink-0 text-primary" />
-          Payments are processed securely by Paychangu — Airtel Money, TNM Mpamba, bank transfer and cards.
+          Payments are processed securely by Paychangu — Airtel Money, TNM Mpamba, Changu, bank transfer and cards.
         </p>
       </main>
       <SiteFooter />
