@@ -44,10 +44,6 @@ function RefundsPage() {
         </ul>
         <p>Those disclosures control if they offer rights more favourable than this policy.</p>
       </LegalSection>
-          Those checkout disclosures will control if they offer rights more favourable than this
-          policy. We will update this policy before accepting payment.
-        </p>
-      </LegalSection>
 
       <LegalSection title="3. Stopping future charges">
         <p>
