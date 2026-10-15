@@ -160,7 +160,7 @@ function PricingPage() {
         </div>
         <p className="mt-8 flex items-center gap-2 text-sm text-muted-foreground">
           <ShieldCheck className="size-4 shrink-0 text-primary" />
-          Payments are processed securely by Paychangu — Airtel Money, TNM Mpamba, bank transfer and cards.
+          Payments are processed securely by Paychangu — Airtel Money, TNM Mpamba, Changu, bank transfer and cards.
         </p>
       </main>
       <SiteFooter />
