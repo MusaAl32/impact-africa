@@ -34,16 +34,16 @@ function RefundsPage() {
         </p>
       </LegalSection>
 
-      <LegalSection title="2. Before paid services begin">
-        <p>Before we enable any paid service, the checkout screen and applicable purchase terms will state:</p>
+      <LegalSection title="2. What checkout tells you">
+        <p>The pricing page and Paychangu checkout screen state:</p>
         <ul>
-          <li>The seller&apos;s identity and contact details.</li>
-          <li>The plan, included allowances, total price, currency, and applicable taxes.</li>
-          <li>Whether the purchase is one-time or recurring and the renewal interval.</li>
-          <li>How to cancel, when cancellation takes effect, and any refund eligibility.</li>
-          <li>The payment provider and any additional terms that apply to payment processing.</li>
+          <li>The seller's identity and contact details, as shown in this policy.</li>
+          <li>The plan, included allowances, total price, and currency.</li>
+          <li>That the purchase is a one-time 30-day pass and does not renew automatically.</li>
+          <li>How to request a refund, and that the payment is processed by Paychangu under Paychangu's own payment terms.</li>
         </ul>
-        <p>
+        <p>Those disclosures control if they offer rights more favourable than this policy.</p>
+      </LegalSection>
           Those checkout disclosures will control if they offer rights more favourable than this
           policy. We will update this policy before accepting payment.
         </p>
